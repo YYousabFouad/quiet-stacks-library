@@ -1,0 +1,237 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 130" width="100%" height="130" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="shelfGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4a3319"/>
+      <stop offset="50%" stop-color="#3d2812"/>
+      <stop offset="100%" stop-color="#2a1a09"/>
+    </linearGradient>
+    <filter id="bookShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="1" dy="0" stdDeviation="1.5" flood-color="#000000" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- Shelf Base Line -->
+  <rect x="0" y="122" width="1200" height="8" fill="url(#shelfGrad)"/>
+  <rect x="0" y="120" width="1200" height="2" fill="#6d4c27"/>
+
+  <!-- Books Collection Spines -->
+  <g id="books" filter="url(#bookShadow)">
+    <!-- Book 1 (Dark Green) -->
+    <rect x="15" y="42" width="18" height="78" rx="2" fill="#2d5a43"/>
+    <line x1="17" y1="52" x2="31" y2="52" stroke="#d4af37" stroke-width="1.5" stroke-opacity="0.7"/>
+    <line x1="17" y1="56" x2="31" y2="56" stroke="#d4af37" stroke-width="1.5" stroke-opacity="0.7"/>
+    <line x1="17" y1="108" x2="31" y2="108" stroke="#d4af37" stroke-width="1.5" stroke-opacity="0.7"/>
+
+    <!-- Book 2 (Olive) -->
+    <rect x="36" y="60" width="22" height="60" rx="2" fill="#606c38"/>
+    <rect x="39" y="70" width="16" height="40" fill="#283618" opacity="0.3"/>
+    <circle cx="47" cy="88" r="3" fill="#e9c46a"/>
+
+    <!-- Book 3 (Mustard Gold) -->
+    <rect x="61" y="32" width="26" height="88" rx="2" fill="#c28e2b"/>
+    <line x1="64" y1="44" x2="84" y2="44" stroke="#ffffff" stroke-width="1" stroke-opacity="0.5"/>
+    <line x1="64" y1="48" x2="84" y2="48" stroke="#ffffff" stroke-width="1" stroke-opacity="0.5"/>
+    <rect x="67" y="62" width="14" height="28" fill="#a07018"/>
+    <line x1="64" y1="110" x2="84" y2="110" stroke="#ffffff" stroke-width="1" stroke-opacity="0.5"/>
+
+    <!-- Book 4 (Terracotta) -->
+    <rect x="90" y="50" width="16" height="70" rx="2" fill="#bc6c25"/>
+    <line x1="92" y1="58" x2="104" y2="58" stroke="#fefae0" stroke-width="1" opacity="0.6"/>
+
+    <!-- Book 5 (Sage Green) -->
+    <rect x="109" y="38" width="28" height="82" rx="2" fill="#52796f"/>
+    <line x1="112" y1="48" x2="134" y2="48" stroke="#84a98c" stroke-width="2"/>
+    <line x1="112" y1="108" x2="134" y2="108" stroke="#84a98c" stroke-width="2"/>
+
+    <!-- Book 6 (Dark Forest) -->
+    <rect x="140" y="24" width="20" height="96" rx="2" fill="#1b4332"/>
+    <line x1="142" y1="36" x2="158" y2="36" stroke="#d4af37" stroke-width="1.5" stroke-opacity="0.7"/>
+    <rect x="144" y="55" width="12" height="35" rx="1" fill="#2d6a4f"/>
+
+    <!-- Book 7 (Teal Blue) -->
+    <rect x="163" y="48" width="24" height="72" rx="2" fill="#355070"/>
+    <line x1="166" y1="58" x2="184" y2="58" stroke="#e0a96d" stroke-width="1"/>
+    <line x1="166" y1="62" x2="184" y2="62" stroke="#e0a96d" stroke-width="1"/>
+
+    <!-- Book 8 (Burgundy) -->
+    <rect x="190" y="30" width="26" height="90" rx="2" fill="#6b2d35"/>
+    <rect x="194" y="44" width="18" height="24" fill="#4d1921"/>
+    <circle cx="203" cy="56" r="3.5" fill="#d4af37"/>
+    <line x1="193" y1="105" x2="213" y2="105" stroke="#d4af37" stroke-width="1" opacity="0.8"/>
+
+    <!-- Book 9 (Warm Ochre) -->
+    <rect x="219" y="55" width="18" height="65" rx="2" fill="#d4a373"/>
+    <line x1="222" y1="65" x2="234" y2="65" stroke="#7f5539" stroke-width="1.5"/>
+    <line x1="222" y1="110" x2="234" y2="110" stroke="#7f5539" stroke-width="1.5"/>
+
+    <!-- Book 10 (Deep Green) -->
+    <rect x="240" y="28" width="30" height="92" rx="2" fill="#2d5a43"/>
+    <line x1="244" y1="40" x2="266" y2="40" stroke="#95d5b2" stroke-width="2"/>
+    <rect x="246" y="56" width="18" height="36" fill="#1b4332"/>
+    <line x1="244" y1="108" x2="266" y2="108" stroke="#95d5b2" stroke-width="2"/>
+
+    <!-- Book 11 (Navy) -->
+    <rect x="273" y="46" width="20" height="74" rx="2" fill="#1d3557"/>
+    <line x1="276" y1="56" x2="290" y2="56" stroke="#f1faee" stroke-width="1" opacity="0.7"/>
+    <line x1="276" y1="60" x2="290" y2="60" stroke="#f1faee" stroke-width="1" opacity="0.7"/>
+
+    <!-- Book 12 (Golden Amber) -->
+    <rect x="296" y="20" width="24" height="100" rx="2" fill="#b07d1a"/>
+    <line x1="299" y1="32" x2="317" y2="32" stroke="#fff" stroke-width="1.5" opacity="0.6"/>
+    <rect x="301" y="50" width="14" height="40" fill="#8f6310"/>
+    <line x1="299" y1="110" x2="317" y2="110" stroke="#fff" stroke-width="1.5" opacity="0.6"/>
+
+    <!-- Book 13 (Rust) -->
+    <rect x="323" y="58" width="16" height="62" rx="2" fill="#a44a3f"/>
+    <line x1="325" y1="68" x2="337" y2="68" stroke="#f5cac3" stroke-width="1"/>
+
+    <!-- Book 14 (Pine Green) -->
+    <rect x="342" y="34" width="26" height="86" rx="2" fill="#31572c"/>
+    <line x1="346" y1="46" x2="364" y2="46" stroke="#90a955" stroke-width="2"/>
+    <circle cx="355" cy="72" r="4" fill="#d4af37"/>
+
+    <!-- Book 15 (Slate Blue) -->
+    <rect x="371" y="44" width="22" height="76" rx="2" fill="#457b9d"/>
+    <line x1="374" y1="54" x2="390" y2="54" stroke="#a8dadc" stroke-width="1.5"/>
+    <line x1="374" y1="108" x2="390" y2="108" stroke="#a8dadc" stroke-width="1.5"/>
+
+    <!-- Book 16 (Dark Walnut) -->
+    <rect x="396" y="26" width="32" height="94" rx="2" fill="#4a3933"/>
+    <line x1="400" y1="38" x2="424" y2="38" stroke="#d4af37" stroke-width="1.5"/>
+    <rect x="403" y="52" width="18" height="42" fill="#2b1e19"/>
+    <line x1="400" y1="110" x2="424" y2="110" stroke="#d4af37" stroke-width="1.5"/>
+
+    <!-- Book 17 (Ochre) -->
+    <rect x="431" y="52" width="18" height="68" rx="2" fill="#c68b24"/>
+    <line x1="433" y1="62" x2="447" y2="62" stroke="#faedcd" stroke-width="1"/>
+
+    <!-- Book 18 (Emerald) -->
+    <rect x="452" y="36" width="25" height="84" rx="2" fill="#2d6a4f"/>
+    <line x1="456" y1="48" x2="473" y2="48" stroke="#74c69d" stroke-width="1.5"/>
+    <rect x="457" y="62" width="15" height="30" fill="#1b4332"/>
+
+    <!-- Book 19 (Dark Plum) -->
+    <rect x="480" y="22" width="28" height="98" rx="2" fill="#582f48"/>
+    <line x1="484" y1="34" x2="504" y2="34" stroke="#d4af37" stroke-width="1.5"/>
+    <line x1="484" y1="110" x2="504" y2="110" stroke="#d4af37" stroke-width="1.5"/>
+
+    <!-- Book 20 (Deep Teal) -->
+    <rect x="511" y="46" width="22" height="74" rx="2" fill="#2c5d63"/>
+    <line x1="514" y1="56" x2="530" y2="56" stroke="#e0ece4" stroke-width="1"/>
+
+    <!-- Book 21 (Warm Gold) -->
+    <rect x="536" y="32" width="24" height="88" rx="2" fill="#d99b26"/>
+    <rect x="540" y="46" width="16" height="38" fill="#a47113"/>
+    <line x1="539" y1="108" x2="557" y2="108" stroke="#fff" stroke-width="1.5" opacity="0.6"/>
+
+    <!-- Book 22 (Forest) -->
+    <rect x="563" y="18" width="30" height="102" rx="2" fill="#1b4332"/>
+    <line x1="567" y1="30" x2="589" y2="30" stroke="#d4af37" stroke-width="2"/>
+    <rect x="569" y="48" width="18" height="42" fill="#0d281e"/>
+    <line x1="567" y1="110" x2="589" y2="110" stroke="#d4af37" stroke-width="2"/>
+
+    <!-- Book 23 (Terracotta) -->
+    <rect x="596" y="54" width="18" height="66" rx="2" fill="#b05d42"/>
+    <line x1="599" y1="64" x2="611" y2="64" stroke="#f6bd60" stroke-width="1.5"/>
+
+    <!-- Book 24 (Navy Blue) -->
+    <rect x="617" y="36" width="26" height="84" rx="2" fill="#1f364d"/>
+    <line x1="621" y1="48" x2="639" y2="48" stroke="#8da9c4" stroke-width="2"/>
+    <circle cx="630" cy="74" r="3.5" fill="#e0f2fe"/>
+
+    <!-- Book 25 (Olive Green) -->
+    <rect x="646" y="48" width="20" height="72" rx="2" fill="#4f5d2f"/>
+    <line x1="649" y1="58" x2="663" y2="58" stroke="#d8f3dc" stroke-width="1"/>
+
+    <!-- Book 26 (Burgundy) -->
+    <rect x="669" y="24" width="32" height="96" rx="2" fill="#6f1d1b"/>
+    <line x1="673" y1="36" x2="697" y2="36" stroke="#d4af37" stroke-width="1.5"/>
+    <rect x="676" y="52" width="18" height="40" fill="#431413"/>
+    <line x1="673" y1="108" x2="697" y2="108" stroke="#d4af37" stroke-width="1.5"/>
+
+    <!-- Book 27 (Mustard) -->
+    <rect x="704" y="42" width="22" height="78" rx="2" fill="#c28e2b"/>
+    <line x1="707" y1="52" x2="723" y2="52" stroke="#fff" stroke-width="1" opacity="0.6"/>
+
+    <!-- Book 28 (Hunter Green) -->
+    <rect x="729" y="28" width="28" height="92" rx="2" fill="#2d5a43"/>
+    <line x1="733" y1="40" x2="753" y2="40" stroke="#74c69d" stroke-width="1.5"/>
+    <rect x="735" y="56" width="16" height="36" fill="#1b4332"/>
+
+    <!-- Book 29 (Denim Blue) -->
+    <rect x="760" y="50" width="20" height="70" rx="2" fill="#3d5a80"/>
+    <line x1="763" y1="60" x2="777" y2="60" stroke="#98c1d9" stroke-width="1.5"/>
+
+    <!-- Book 30 (Warm Sand) -->
+    <rect x="783" y="34" width="24" height="86" rx="2" fill="#c99b6d"/>
+    <rect x="787" y="48" width="16" height="34" fill="#a47343"/>
+    <line x1="786" y1="108" x2="804" y2="108" stroke="#fefae0" stroke-width="1"/>
+
+    <!-- Book 31 (Dark Green) -->
+    <rect x="810" y="22" width="30" height="98" rx="2" fill="#1b4332"/>
+    <line x1="814" y1="34" x2="836" y2="34" stroke="#d4af37" stroke-width="2"/>
+    <circle cx="825" cy="65" r="4" fill="#d4af37"/>
+    <line x1="814" y1="110" x2="836" y2="110" stroke="#d4af37" stroke-width="2"/>
+
+    <!-- Book 32 (Auburn) -->
+    <rect x="843" y="56" width="18" height="64" rx="2" fill="#934b35"/>
+    <line x1="846" y1="66" x2="858" y2="66" stroke="#f6bd60" stroke-width="1"/>
+
+    <!-- Book 33 (Sage) -->
+    <rect x="864" y="38" width="26" height="82" rx="2" fill="#588157"/>
+    <line x1="868" y1="50" x2="886" y2="50" stroke="#a3b18a" stroke-width="1.5"/>
+    <rect x="870" y="64" width="14" height="30" fill="#3a5a40"/>
+
+    <!-- Book 34 (Indigo) -->
+    <rect x="893" y="26" width="24" height="94" rx="2" fill="#283d70"/>
+    <line x1="896" y1="38" x2="914" y2="38" stroke="#d4af37" stroke-width="1.5"/>
+    <line x1="896" y1="108" x2="914" y2="108" stroke="#d4af37" stroke-width="1.5"/>
+
+    <!-- Book 35 (Amber Gold) -->
+    <rect x="920" y="48" width="22" height="72" rx="2" fill="#b07d1a"/>
+    <line x1="923" y1="58" x2="939" y2="58" stroke="#fff" stroke-width="1" opacity="0.6"/>
+
+    <!-- Book 36 (Dark Forest) -->
+    <rect x="945" y="16" width="32" height="104" rx="2" fill="#183a2d"/>
+    <line x1="949" y1="28" x2="973" y2="28" stroke="#d4af37" stroke-width="2"/>
+    <rect x="952" y="46" width="18" height="46" fill="#0f261e"/>
+    <line x1="949" y1="110" x2="973" y2="110" stroke="#d4af37" stroke-width="2"/>
+
+    <!-- Book 37 (Burnt Sienna) -->
+    <rect x="980" y="52" width="18" height="68" rx="2" fill="#aa4d39"/>
+    <line x1="983" y1="62" x2="995" y2="62" stroke="#fed0bb" stroke-width="1"/>
+
+    <!-- Book 38 (Teal) -->
+    <rect x="1001" y="36" width="26" height="84" rx="2" fill="#335c67"/>
+    <line x1="1005" y1="48" x2="1023" y2="48" stroke="#e09f3e" stroke-width="1.5"/>
+    <circle cx="1014" cy="72" r="3.5" fill="#fff3b0"/>
+
+    <!-- Book 39 (Olive) -->
+    <rect x="1030" y="44" width="22" height="76" rx="2" fill="#556b2f"/>
+    <line x1="1033" y1="54" x2="1049" y2="54" stroke="#d8f3dc" stroke-width="1"/>
+
+    <!-- Book 40 (Burgundy) -->
+    <rect x="1055" y="24" width="30" height="96" rx="2" fill="#66222b"/>
+    <line x1="1059" y1="36" x2="1081" y2="36" stroke="#d4af37" stroke-width="1.5"/>
+    <rect x="1061" y="52" width="18" height="40" fill="#44131a"/>
+    <line x1="1059" y1="108" x2="1081" y2="108" stroke="#d4af37" stroke-width="1.5"/>
+
+    <!-- Book 41 (Warm Mustard) -->
+    <rect x="1088" y="50" width="20" height="70" rx="2" fill="#c28e2b"/>
+    <line x1="1091" y1="60" x2="1105" y2="60" stroke="#fff" stroke-width="1" opacity="0.6"/>
+
+    <!-- Book 42 (Forest Green) -->
+    <rect x="1111" y="28" width="28" height="92" rx="2" fill="#2d5a43"/>
+    <line x1="1115" y1="40" x2="1135" y2="40" stroke="#74c69d" stroke-width="1.5"/>
+    <rect x="1117" y="56" width="16" height="36" fill="#1b4332"/>
+
+    <!-- Book 43 (Dark Teal) -->
+    <rect x="1142" y="40" width="24" height="80" rx="2" fill="#264653"/>
+    <line x1="1146" y1="52" x2="1162" y2="52" stroke="#2a9d8f" stroke-width="2"/>
+    <line x1="1146" y1="108" x2="1162" y2="108" stroke="#2a9d8f" stroke-width="2"/>
+
+    <!-- Book 44 (Gold) -->
+    <rect x="1169" y="48" width="20" height="72" rx="2" fill="#b07d1a"/>
+    <line x1="1172" y1="58" x2="1186" y2="58" stroke="#fff" stroke-width="1" opacity="0.6"/>
+  </g>
+</svg>

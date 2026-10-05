@@ -1,0 +1,91 @@
+/* ==========================================================================
+   Design Tokens & CSS Variables
+   Quiet Stacks Library Design System
+   ========================================================================== */
+
+:root {
+  /* Brand Colors */
+  --color-primary: #1b4332;
+  --color-primary-hover: #133325;
+  --color-primary-light: #2d6a4f;
+  --color-primary-subtle: #ebf4ee;
+
+  --color-accent-amber: #b07d1a;
+  --color-accent-amber-hover: #966914;
+  --color-accent-amber-subtle: #fef7e6;
+
+  /* Neutrals & Surfaces */
+  --color-bg-page: #fbf8f1;
+  --color-bg-surface: #ffffff;
+  --color-bg-muted: #f4efe4;
+  --color-bg-subtle: #faf6ed;
+
+  /* Borders & Dividers */
+  --color-border: #e6decb;
+  --color-border-subtle: #ede6d8;
+  --color-border-hover: #cfc2a8;
+
+  /* Typography Colors */
+  --color-text-main: #24292e;
+  --color-text-secondary: #57606a;
+  --color-text-muted: #8c959f;
+  --color-text-inverse: #ffffff;
+
+  /* Status Badges */
+  --badge-available-bg: #e8f5e9;
+  --badge-available-text: #1b4332;
+  --badge-available-border: #c8e6c9;
+
+  --badge-borrowed-bg: #fef3c7;
+  --badge-borrowed-text: #92400e;
+  --badge-borrowed-border: #fde68a;
+
+  --badge-overdue-bg: #fee2e2;
+  --badge-overdue-text: #991b1b;
+  --badge-overdue-border: #fecaca;
+
+  --badge-inactive-bg: #f3f4f6;
+  --badge-inactive-text: #4b5563;
+  --badge-inactive-border: #e5e7eb;
+
+  /* Typography */
+  --font-serif: 'Lora', 'Playfair Display', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Font Sizes */
+  --text-xs: 0.75rem;     /* 12px */
+  --text-sm: 0.84375rem;  /* 13.5px */
+  --text-base: 0.9375rem; /* 15px */
+  --text-md: 1.0625rem;   /* 17px */
+  --text-lg: 1.25rem;     /* 20px */
+  --text-xl: 1.5rem;      /* 24px */
+  --text-2xl: 1.875rem;   /* 30px */
+  --text-3xl: 2.375rem;   /* 38px */
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(45, 30, 10, 0.03);
+  --shadow-hover: 0 4px 14px rgba(27, 67, 50, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-modal: 0 12px 36px rgba(18, 38, 28, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}

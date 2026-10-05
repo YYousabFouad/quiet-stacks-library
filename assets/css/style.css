@@ -1,0 +1,18 @@
+/* ==========================================================================
+   Quiet Stacks Library — Main Stylesheet
+   Architecture:
+   - Fonts (Google Fonts Lora & Plus Jakarta Sans)
+   - variables.css (Design tokens)
+   - reset.css (CSS reset & base settings)
+   - layout.css (Grid, containers, headers)
+   - components.css (Cards, badges, tables, modals)
+   ========================================================================== */
+
+/* Typography Imports */
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+/* Architecture Module Imports */
+@import url('variables.css');
+@import url('reset.css');
+@import url('layout.css');
+@import url('components.css');
