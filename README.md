@@ -27,18 +27,19 @@ Libaray-system/
 
 ---
 
-## 💾 LocalStorage Data Schema
+## 💾 LocalStorage Data Schema & Sample Dataset
 
-The data layer in [storage.js](file:///home/soupa-fedora/Projects/Libaray-system/assets/js/storage.js) handles persistent client-side storage across four keys:
+The data layer in [storage.js](file:///home/soupa-fedora/Projects/Libaray-system/assets/js/storage.js) handles persistent client-side storage across four keys, seeded with 20 books across 5 categories, 8 members, and 8 active/overdue loans:
 
-1. **`quiet_stacks_books`**
-   - List of book objects: `id`, `title`, `author`, `category`, `categoryLabel`, `isbn`, `year`, `status` (`available` | `borrowed` | `overdue`).
-2. **`quiet_stacks_members`**
-   - List of members: `id` (e.g. `M-001`), `name`, `email`, `membershipType`, `status` (`active` | `inactive`), `borrowedCount`.
-3. **`quiet_stacks_loans`**
+1. **`quiet_stacks_books`** (20 Books)
+   - Fields: `id`, `title`, `author`, `category` (Programming, Science, Fiction, Philosophy, History), `isbn`, `year`, `status` (`available` | `borrowed` | `overdue`).
+2. **`quiet_stacks_members`** (8 Members)
+   - Fields: `id` (e.g. `M-001` through `M-008`), `name`, `email`, `membershipType` (Standard, Student, Faculty, Premium), `status` (`active` | `inactive`), `borrowedCount`.
+3. **`quiet_stacks_loans`** (8 Loans)
    - Active lending records: `id`, `bookId`, `bookTitle`, `memberId`, `memberName`, `borrowedDate`, `dueDate`, `status`.
 4. **`quiet_stacks_statistics`**
-   - Summary statistics snapshot: `totalBooks`, `totalMembers`, `borrowed`, `overdue`, `lastUpdated`.
+   - Automatically updated summary metrics: `totalBooks: 20`, `totalMembers: 8`, `borrowed: 6`, `overdue: 2`.
+   - Use the **"Reset Sample Data"** button in the navigation bar to restore the sample dataset at any time.
 
 ---
 

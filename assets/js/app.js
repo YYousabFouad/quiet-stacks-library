@@ -415,7 +415,9 @@
         } else if (target.classList.contains('btn-view-member')) {
           const member = window.LibraryStorage.getMemberById(memberId);
           if (member) {
-            alert(`Member Details:\n\nName: ${member.name}\nID: ${member.id}\nEmail: ${member.email}\nMembership: ${capitalize(member.membershipType)}\nStatus: ${capitalize(member.status)}\nBorrowed Books: ${member.borrowedCount}`);
+            const memberLoans = window.LibraryStorage.getLoans().filter((l) => l.memberId === memberId);
+            const loanTitles = memberLoans.length > 0 ? memberLoans.map((l) => `  • ${l.bookTitle} (Due: ${l.dueDate}, ${capitalize(l.status)})`).join('\n') : '  None';
+            alert(`Member Details:\n\nName: ${member.name}\nID: ${member.id}\nEmail: ${member.email}\nMembership: ${capitalize(member.membershipType)}\nStatus: ${capitalize(member.status)}\n\nCurrently Borrowed (${member.borrowedCount}):\n${loanTitles}`);
           }
         }
       });
@@ -430,6 +432,17 @@
         const loanId = target.getAttribute('data-id');
         window.LibraryStorage.returnLoan(loanId);
         renderAll();
+      });
+    }
+
+    // Reset Demo Data Button
+    const resetBtn = document.getElementById('btn-reset-data');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', function () {
+        if (confirm('Restore full sample library dataset (20 books, 8 members, 8 loans)?')) {
+          window.LibraryStorage.resetDefaults();
+          renderAll();
+        }
       });
     }
   }
