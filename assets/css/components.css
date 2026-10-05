@@ -669,3 +669,113 @@
   font-size: var(--text-sm);
 }
 
+/* --------------------------------------------------------------------------
+   Daily Literary Quote Banner
+   -------------------------------------------------------------------------- */
+.daily-quote-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(247, 242, 230, 0.9) 100%);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-6);
+  margin-bottom: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
+}
+
+.daily-quote-content {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  flex: 1;
+}
+
+.quote-mark-icon {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  color: var(--color-accent-amber);
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+.quote-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.quote-text {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: var(--color-text-main);
+  transition: opacity 200ms ease;
+}
+
+.quote-author {
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-primary);
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.quote-source {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.btn-refresh-quote {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.4rem 0.85rem;
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.btn-refresh-quote:hover {
+  background-color: var(--color-primary-subtle);
+  color: var(--color-primary);
+  border-color: var(--color-primary-light);
+}
+
+.btn-refresh-quote:hover .refresh-icon {
+  transform: rotate(180deg);
+}
+
+.refresh-icon {
+  width: 14px;
+  height: 14px;
+  transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (max-width: 768px) {
+  .daily-quote-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--space-4);
+  }
+
+  .btn-refresh-quote {
+    align-self: flex-end;
+  }
+}
+
+

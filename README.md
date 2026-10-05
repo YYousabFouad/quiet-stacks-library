@@ -74,6 +74,8 @@ The data layer in [storage.js](file:///home/soupa-fedora/Projects/Libaray-system
   - Clicking the user profile badge in the navigation bar opens the account modal, showing active loans (with due dates and a 1-click **Return** button) and purchased books with invoices.
 - **Sticky Navbar & ScrollSpy:**
   - The navigation bar sticks with frosted-glass backdrop blur and dynamically updates active section tabs using `IntersectionObserver`.
+- **Daily Literary Quotes Banner:**
+  - Positioned directly beneath the illustrated bookshelf header, displaying quotes from titles in the library collection (*The Alchemist*, *Cosmos*, *Clean Code*, *1984*, *Meditations*, etc.) with a 1-click **"Another Excerpt"** cycling button.
 
 ---
 

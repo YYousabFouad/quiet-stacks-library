@@ -814,6 +814,49 @@
   }
 
   // --------------------------------------------------------------------------
+  // Daily Literary Quote Banner
+  // --------------------------------------------------------------------------
+  let currentQuoteIndex = 0;
+
+  function displayQuote(index, animate = false) {
+    const textEl = document.getElementById('daily-quote-text');
+    const authorEl = document.getElementById('daily-quote-author');
+    const sourceEl = document.getElementById('daily-quote-source');
+    if (!textEl || !authorEl || !sourceEl) return;
+
+    const quotes = window.LibraryStorage.getQuotes ? window.LibraryStorage.getQuotes() : [];
+    if (!quotes || quotes.length === 0) return;
+
+    currentQuoteIndex = ((index % quotes.length) + quotes.length) % quotes.length;
+    const q = quotes[currentQuoteIndex];
+
+    if (animate) {
+      textEl.style.opacity = '0';
+      setTimeout(() => {
+        textEl.textContent = `"${q.text}"`;
+        authorEl.textContent = q.author;
+        sourceEl.textContent = q.source;
+        textEl.style.opacity = '1';
+      }, 150);
+    } else {
+      textEl.textContent = `"${q.text}"`;
+      authorEl.textContent = q.author;
+      sourceEl.textContent = q.source;
+    }
+  }
+
+  function setupQuoteBanner() {
+    displayQuote(0);
+
+    const btnNext = document.getElementById('btn-next-quote');
+    if (btnNext) {
+      btnNext.addEventListener('click', function () {
+        displayQuote(currentQuoteIndex + 1, true);
+      });
+    }
+  }
+
+  // --------------------------------------------------------------------------
   // Application Bootstrap
   // --------------------------------------------------------------------------
   function init() {
@@ -822,6 +865,7 @@
     setupForms();
     setupDelegatedActions();
     setupScrollSpy();
+    setupQuoteBanner();
   }
 
   // Run on DOM ready

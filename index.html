@@ -23,6 +23,29 @@
       <div class="bookshelf-banner-container" aria-hidden="true">
         <img src="assets/images/book-banner.svg" alt="Library bookshelf illustration banner" class="bookshelf-banner-img">
       </div>
+
+      <!-- Daily Literary Quote Banner -->
+      <aside class="daily-quote-banner" aria-label="Daily Book Quote">
+        <div class="daily-quote-content">
+          <svg class="quote-mark-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+          </svg>
+          <div class="quote-body">
+            <blockquote class="quote-text" id="daily-quote-text">
+              "When you want something, all the universe conspires in helping you to achieve it."
+            </blockquote>
+            <cite class="quote-author" id="daily-quote-cite">
+              &mdash; <span id="daily-quote-author">Paulo Coelho</span>, <span class="quote-source" id="daily-quote-source">The Alchemist</span>
+            </cite>
+          </div>
+        </div>
+        <button type="button" class="btn-refresh-quote" id="btn-next-quote" title="Read another quote from our shelves">
+          <svg class="refresh-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+          </svg>
+          <span>Another Excerpt</span>
+        </button>
+      </aside>
     </header>
 
     <!-- Sticky Navigation Bar -->
