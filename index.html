@@ -23,15 +23,17 @@
       <div class="bookshelf-banner-container" aria-hidden="true">
         <img src="assets/images/book-banner.svg" alt="Library bookshelf illustration banner" class="bookshelf-banner-img">
       </div>
+    </header>
 
-      <!-- Navigation Tabs -->
-      <nav class="nav-tabs" aria-label="Library Dashboard Navigation">
+    <!-- Sticky Navigation Bar -->
+    <nav class="sticky-nav-bar" aria-label="Library Dashboard Navigation">
+      <div class="nav-tabs">
         <a href="#books" class="nav-tab-item active">Books</a>
         <a href="#members" class="nav-tab-item">Members</a>
         <a href="#loans" class="nav-tab-item">Loans</a>
         <a href="#statistics" class="nav-tab-item">Statistics</a>
-      </nav>
-    </header>
+      </div>
+    </nav>
 
     <!-- Section 1: Books -->
     <section id="books" class="dashboard-section" aria-labelledby="books-heading">
@@ -375,5 +377,8 @@
     </div>
   </aside>
 
+  <!-- Application Scripts -->
+  <script src="assets/js/storage.js"></script>
+  <script src="assets/js/app.js"></script>
 </body>
 </html>

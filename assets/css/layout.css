@@ -48,14 +48,34 @@
   display: block;
 }
 
-/* Navigation Tabs */
+/* Sticky Navigation Bar */
+.sticky-nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: rgba(251, 248, 241, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: var(--space-3) 0;
+  margin-bottom: var(--space-8);
+  border-bottom: 1px solid var(--color-border);
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.sticky-nav-bar.is-stuck {
+  box-shadow: 0 4px 14px rgba(27, 67, 50, 0.08);
+  border-bottom-color: var(--color-border-hover);
+}
+
 .nav-tabs {
   display: flex;
   gap: var(--space-2);
-  margin-bottom: var(--space-8);
-  border-bottom: 1px solid var(--color-border);
-  padding-bottom: var(--space-3);
   overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.nav-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .nav-tab-item {
@@ -86,7 +106,7 @@
 /* Content Sections */
 .dashboard-section {
   margin-bottom: var(--space-10);
-  scroll-margin-top: 2rem;
+  scroll-margin-top: 5rem;
 }
 
 .section-header {
