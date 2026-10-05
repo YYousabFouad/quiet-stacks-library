@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up — Quiet Stacks Library</title>
+  <meta name="description" content="Create a library member account to borrow books, purchase copies, and track your reading stack.">
+  
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/auth.css">
+</head>
+<body class="auth-page">
+
+  <div class="auth-container">
+    <!-- Brand Header -->
+    <header class="auth-brand">
+      <a href="index.html" class="auth-brand-logo">
+        <h1 class="auth-brand-title">Quiet Stacks Library</h1>
+      </a>
+      <p class="auth-brand-subtitle">One calm place for every book and reader</p>
+    </header>
+
+    <!-- Signup Card -->
+    <main class="auth-card">
+      <h2 class="auth-title">Create an Account</h2>
+      <p class="auth-subtitle">Register to borrow books, purchase copies, and manage your reading account.</p>
+
+      <!-- Alert Messages -->
+      <div id="auth-alert" class="auth-alert" role="alert"></div>
+
+      <!-- Signup Form -->
+      <form id="signup-form" class="auth-form" novalidate>
+        <div class="auth-form-group">
+          <label for="signup-name" class="auth-label">Full Name</label>
+          <input 
+            type="text" 
+            id="signup-name" 
+            class="auth-input" 
+            placeholder="e.g. Jane Doe" 
+            required 
+            autocomplete="name"
+          >
+        </div>
+
+        <div class="auth-form-group">
+          <label for="signup-email" class="auth-label">Email Address</label>
+          <input 
+            type="email" 
+            id="signup-email" 
+            class="auth-input" 
+            placeholder="e.g. jane@example.com" 
+            required 
+            autocomplete="email"
+          >
+        </div>
+
+        <div class="auth-form-group">
+          <label for="signup-type" class="auth-label">Membership Type</label>
+          <select id="signup-type" class="auth-select" required>
+            <option value="standard" selected>Standard Member</option>
+            <option value="student">Student (Academic)</option>
+            <option value="faculty">Faculty / Scholar</option>
+            <option value="premium">Premium Patron</option>
+          </select>
+        </div>
+
+        <div class="auth-form-group">
+          <label for="signup-password" class="auth-label">Password</label>
+          <input 
+            type="password" 
+            id="signup-password" 
+            class="auth-input" 
+            placeholder="Minimum 6 characters" 
+            minlength="6" 
+            required 
+            autocomplete="new-password"
+          >
+        </div>
+
+        <div class="auth-form-group">
+          <label for="signup-confirm-password" class="auth-label">Confirm Password</label>
+          <input 
+            type="password" 
+            id="signup-confirm-password" 
+            class="auth-input" 
+            placeholder="Re-enter your password" 
+            minlength="6" 
+            required 
+            autocomplete="new-password"
+          >
+        </div>
+
+        <button type="submit" class="btn btn-primary auth-btn-submit">
+          Create Member Account
+        </button>
+      </form>
+
+      <!-- Footer Links -->
+      <div class="auth-footer">
+        Already have an account? <a href="login.html" class="auth-link">Log In</a>
+      </div>
+    </main>
+
+    <!-- Back to Library -->
+    <div class="back-to-library">
+      <a href="index.html">&larr; Return to Library Shelves</a>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="assets/js/storage.js"></script>
+  <script src="assets/js/auth.js"></script>
+</body>
+</html>

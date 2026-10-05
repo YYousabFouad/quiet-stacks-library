@@ -1,6 +1,6 @@
 /**
  * Quiet Stacks Library — Storage Service
- * Manages localStorage persistence for Books, Members, Loans, and Statistics.
+ * Manages localStorage persistence for Books, Members, Loans, Accounts, and Statistics.
  */
 
 (function (window) {
@@ -12,12 +12,14 @@
     BOOKS: 'quiet_stacks_books',
     MEMBERS: 'quiet_stacks_members',
     LOANS: 'quiet_stacks_loans',
-    STATISTICS: 'quiet_stacks_statistics'
+    STATISTICS: 'quiet_stacks_statistics',
+    ACCOUNTS: 'quiet_stacks_accounts',
+    CURRENT_USER: 'quiet_stacks_current_user'
   };
 
-  const CURRENT_DATA_VERSION = '2.0';
+  const CURRENT_DATA_VERSION = '2.1';
 
-  // Comprehensive Seed Dataset for Realistic Testing
+  // Comprehensive Seed Dataset with Prices for Purchasing
   const INITIAL_BOOKS = [
     {
       id: 'book-1',
@@ -27,6 +29,7 @@
       categoryLabel: 'Programming',
       isbn: '978-0132350884',
       year: 2008,
+      price: 28.50,
       status: 'borrowed'
     },
     {
@@ -37,6 +40,7 @@
       categoryLabel: 'Programming',
       isbn: '978-0596517748',
       year: 2008,
+      price: 19.95,
       status: 'borrowed'
     },
     {
@@ -47,6 +51,7 @@
       categoryLabel: 'Science',
       isbn: '978-0345331359',
       year: 1980,
+      price: 16.99,
       status: 'available'
     },
     {
@@ -57,6 +62,7 @@
       categoryLabel: 'Fiction',
       isbn: '978-0062315007',
       year: 1988,
+      price: 14.50,
       status: 'overdue'
     },
     {
@@ -67,6 +73,7 @@
       categoryLabel: 'Programming',
       isbn: '978-0201616224',
       year: 1999,
+      price: 32.00,
       status: 'available'
     },
     {
@@ -77,6 +84,7 @@
       categoryLabel: 'Programming',
       isbn: '978-0201633610',
       year: 1994,
+      price: 38.99,
       status: 'borrowed'
     },
     {
@@ -87,6 +95,7 @@
       categoryLabel: 'Programming',
       isbn: '978-0201485677',
       year: 1999,
+      price: 29.95,
       status: 'available'
     },
     {
@@ -97,6 +106,7 @@
       categoryLabel: 'Programming',
       isbn: '978-0262510875',
       year: 1996,
+      price: 34.50,
       status: 'available'
     },
     {
@@ -107,6 +117,7 @@
       categoryLabel: 'Science',
       isbn: '978-0553380163',
       year: 1988,
+      price: 18.00,
       status: 'borrowed'
     },
     {
@@ -117,6 +128,7 @@
       categoryLabel: 'Science',
       isbn: '978-0199291151',
       year: 1976,
+      price: 15.99,
       status: 'available'
     },
     {
@@ -127,6 +139,7 @@
       categoryLabel: 'Science',
       isbn: '978-0618249060',
       year: 1962,
+      price: 13.95,
       status: 'available'
     },
     {
@@ -137,6 +150,7 @@
       categoryLabel: 'Science',
       isbn: '978-0393609394',
       year: 2017,
+      price: 14.95,
       status: 'available'
     },
     {
@@ -147,6 +161,7 @@
       categoryLabel: 'Fiction',
       isbn: '978-0451524935',
       year: 1949,
+      price: 11.99,
       status: 'borrowed'
     },
     {
@@ -157,6 +172,7 @@
       categoryLabel: 'Fiction',
       isbn: '978-0060935467',
       year: 1960,
+      price: 12.50,
       status: 'available'
     },
     {
@@ -167,6 +183,7 @@
       categoryLabel: 'Fiction',
       isbn: '978-0060883287',
       year: 1967,
+      price: 16.50,
       status: 'overdue'
     },
     {
@@ -177,6 +194,7 @@
       categoryLabel: 'Fiction',
       isbn: '978-0143107637',
       year: 1866,
+      price: 13.25,
       status: 'available'
     },
     {
@@ -187,6 +205,7 @@
       categoryLabel: 'Philosophy',
       isbn: '978-0140449334',
       year: 180,
+      price: 9.99,
       status: 'available'
     },
     {
@@ -197,6 +216,7 @@
       categoryLabel: 'Philosophy',
       isbn: '978-0140455113',
       year: -375,
+      price: 10.50,
       status: 'available'
     },
     {
@@ -207,6 +227,7 @@
       categoryLabel: 'History',
       isbn: '978-0062316097',
       year: 2014,
+      price: 21.99,
       status: 'borrowed'
     },
     {
@@ -217,6 +238,7 @@
       categoryLabel: 'History',
       isbn: '978-0393317558',
       year: 1997,
+      price: 17.50,
       status: 'available'
     }
   ];
@@ -371,6 +393,75 @@
     }
   ];
 
+  // Seed User Accounts with login credentials and their purchase/borrow histories
+  const INITIAL_ACCOUNTS = [
+    {
+      id: 'M-001',
+      name: 'John Smith',
+      email: 'john@example.com',
+      password: 'password123',
+      role: 'member',
+      membershipType: 'standard',
+      status: 'active',
+      borrowedBooks: [
+        { bookId: 'book-1', title: 'Clean Code', borrowedDate: 'Sep 20', dueDate: 'Oct 04', status: 'borrowed' },
+        { bookId: 'book-4', title: 'The Alchemist', borrowedDate: 'Sep 10', dueDate: 'Sep 24', status: 'overdue' }
+      ],
+      purchasedBooks: [
+        {
+          bookId: 'book-5',
+          title: 'The Pragmatic Programmer',
+          author: 'Andrew Hunt & David Thomas',
+          price: 32.00,
+          purchaseDate: 'Sep 15, 2026',
+          invoiceNumber: 'INV-1001'
+        }
+      ]
+    },
+    {
+      id: 'M-002',
+      name: 'Sarah Ali',
+      email: 'sarah@example.com',
+      password: 'password123',
+      role: 'member',
+      membershipType: 'student',
+      status: 'active',
+      borrowedBooks: [
+        { bookId: 'book-2', title: 'JavaScript: The Good Parts', borrowedDate: 'Sep 18', dueDate: 'Oct 02', status: 'borrowed' }
+      ],
+      purchasedBooks: [
+        {
+          bookId: 'book-8',
+          title: 'Structure and Interpretation of Computer Programs',
+          author: 'Harold Abelson & Gerald Jay Sussman',
+          price: 34.50,
+          purchaseDate: 'Sep 12, 2026',
+          invoiceNumber: 'INV-1002'
+        }
+      ]
+    },
+    {
+      id: 'M-000',
+      name: 'Chief Librarian',
+      email: 'admin@quietstacks.com',
+      password: 'admin123',
+      role: 'admin',
+      membershipType: 'faculty',
+      status: 'active',
+      borrowedBooks: [],
+      purchasedBooks: [
+        {
+          bookId: 'book-3',
+          title: 'Cosmos',
+          author: 'Carl Sagan',
+          price: 16.99,
+          purchaseDate: 'Sep 01, 2026',
+          invoiceNumber: 'INV-1000'
+        }
+      ]
+    }
+  ];
+
   // Helper Methods for Safe LocalStorage Handling
   function read(key, fallback = []) {
     try {
@@ -398,12 +489,128 @@
     init() {
       const storedVersion = localStorage.getItem(STORAGE_KEYS.VERSION);
 
-      // If version is missing, old, or books are empty, seed the full dataset
-      if (storedVersion !== CURRENT_DATA_VERSION || !localStorage.getItem(STORAGE_KEYS.BOOKS)) {
+      if (storedVersion !== CURRENT_DATA_VERSION || !localStorage.getItem(STORAGE_KEYS.BOOKS) || !localStorage.getItem(STORAGE_KEYS.ACCOUNTS)) {
         this.resetDefaults();
       } else {
         this.recalculateStatistics();
       }
+    },
+
+    // ------------------------------------------------------------------------
+    // Authentication & Account Management
+    // ------------------------------------------------------------------------
+    getAccounts() {
+      return read(STORAGE_KEYS.ACCOUNTS, []);
+    },
+
+    getAccountByEmail(email) {
+      if (!email) return null;
+      const lower = email.trim().toLowerCase();
+      return this.getAccounts().find((acc) => acc.email.toLowerCase() === lower) || null;
+    },
+
+    getAccountById(id) {
+      if (!id) return null;
+      return this.getAccounts().find((acc) => acc.id === id) || null;
+    },
+
+    getCurrentUser() {
+      const user = read(STORAGE_KEYS.CURRENT_USER, null);
+      if (user) {
+        // Return latest updated account record from accounts collection
+        const fresh = this.getAccountById(user.id);
+        return fresh || user;
+      }
+      return null;
+    },
+
+    setCurrentUser(user) {
+      write(STORAGE_KEYS.CURRENT_USER, user);
+    },
+
+    clearCurrentUser() {
+      localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+    },
+
+    /**
+     * Register a new user account (creates both account & member records)
+     */
+    register(userData) {
+      const email = userData.email.trim().toLowerCase();
+      const existing = this.getAccountByEmail(email);
+
+      if (existing) {
+        return { success: false, error: 'An account with this email already exists.' };
+      }
+
+      // Generate member ID
+      const members = this.getMembers();
+      const nextNum = members.length + 1;
+      const memberId = 'M-' + String(nextNum).padStart(3, '0');
+
+      const newAccount = {
+        id: memberId,
+        name: userData.name.trim(),
+        email: email,
+        password: userData.password, // demo storage
+        role: userData.role || 'member',
+        membershipType: userData.membershipType || 'standard',
+        status: 'active',
+        borrowedBooks: [],
+        purchasedBooks: [],
+        createdAt: new Date().toISOString()
+      };
+
+      // Add to accounts
+      const accounts = this.getAccounts();
+      accounts.push(newAccount);
+      write(STORAGE_KEYS.ACCOUNTS, accounts);
+
+      // Add to members list
+      this.addMember({
+        id: memberId,
+        name: newAccount.name,
+        email: newAccount.email,
+        membershipType: newAccount.membershipType,
+        status: 'active',
+        borrowedCount: 0
+      });
+
+      // Automatically set as active user
+      this.setCurrentUser(newAccount);
+      return { success: true, account: newAccount };
+    },
+
+    /**
+     * Authenticate existing user
+     */
+    login(emailOrId, password) {
+      if (!emailOrId || !password) {
+        return { success: false, error: 'Please enter both email/ID and password.' };
+      }
+
+      const query = emailOrId.trim().toLowerCase();
+      const accounts = this.getAccounts();
+
+      const account = accounts.find((acc) => {
+        return acc.email.toLowerCase() === query || acc.id.toLowerCase() === query;
+      });
+
+      if (!account) {
+        return { success: false, error: 'No account found with this email or Member ID.' };
+      }
+
+      if (account.password !== password) {
+        return { success: false, error: 'Incorrect password. Please try again.' };
+      }
+
+      this.setCurrentUser(account);
+      return { success: true, account };
+    },
+
+    logout() {
+      this.clearCurrentUser();
+      return true;
     },
 
     // ------------------------------------------------------------------------
@@ -427,6 +634,7 @@
         categoryLabel: bookData.categoryLabel || bookData.category,
         isbn: bookData.isbn ? bookData.isbn.trim() : 'N/A',
         year: bookData.year ? parseInt(bookData.year, 10) : new Date().getFullYear(),
+        price: bookData.price ? parseFloat(bookData.price) : 19.99,
         status: bookData.status || 'available'
       };
       books.unshift(newBook);
@@ -465,6 +673,125 @@
     },
 
     // ------------------------------------------------------------------------
+    // User Borrow & Buy Actions
+    // ------------------------------------------------------------------------
+
+    /**
+     * Borrows a book for a specific account
+     */
+    borrowBookForAccount(bookId, accountId) {
+      const book = this.getBookById(bookId);
+      if (!book) return { success: false, error: 'Book not found' };
+      if (book.status !== 'available') return { success: false, error: 'Book is currently unavailable' };
+
+      const account = this.getAccountById(accountId);
+      if (!account) return { success: false, error: 'Account not found' };
+
+      const borrowDateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const dueDateStr = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+      // Create loan
+      this.addLoan({
+        bookId: book.id,
+        bookTitle: book.title,
+        memberId: account.id,
+        memberName: account.name,
+        borrowedDate: borrowDateStr,
+        dueDate: dueDateStr,
+        status: 'borrowed'
+      });
+
+      // Update account's borrowedBooks list
+      const accounts = this.getAccounts();
+      const accIndex = accounts.findIndex((a) => a.id === accountId);
+      if (accIndex !== -1) {
+        accounts[accIndex].borrowedBooks = accounts[accIndex].borrowedBooks || [];
+        accounts[accIndex].borrowedBooks.push({
+          bookId: book.id,
+          title: book.title,
+          author: book.author,
+          borrowedDate: borrowDateStr,
+          dueDate: dueDateStr,
+          status: 'borrowed'
+        });
+        write(STORAGE_KEYS.ACCOUNTS, accounts);
+
+        // Update active session if it matches
+        const curr = this.getCurrentUser();
+        if (curr && curr.id === accountId) {
+          this.setCurrentUser(accounts[accIndex]);
+        }
+      }
+
+      return { success: true, book, account };
+    },
+
+    /**
+     * Returns a borrowed book for an account
+     */
+    returnBookForAccount(bookId, accountId) {
+      const loans = this.getLoans();
+      const loan = loans.find((l) => l.bookId === bookId && l.memberId === accountId);
+
+      if (loan) {
+        this.returnLoan(loan.id);
+      } else {
+        this.updateBook(bookId, { status: 'available' });
+      }
+
+      // Update account's borrowed list
+      const accounts = this.getAccounts();
+      const accIndex = accounts.findIndex((a) => a.id === accountId);
+      if (accIndex !== -1 && accounts[accIndex].borrowedBooks) {
+        accounts[accIndex].borrowedBooks = accounts[accIndex].borrowedBooks.filter((b) => b.bookId !== bookId);
+        write(STORAGE_KEYS.ACCOUNTS, accounts);
+
+        const curr = this.getCurrentUser();
+        if (curr && curr.id === accountId) {
+          this.setCurrentUser(accounts[accIndex]);
+        }
+      }
+
+      return { success: true };
+    },
+
+    /**
+     * Buys a book for an account (stores invoice and book in purchased list)
+     */
+    buyBookForAccount(bookId, accountId) {
+      const book = this.getBookById(bookId);
+      if (!book) return { success: false, error: 'Book not found' };
+
+      const account = this.getAccountById(accountId);
+      if (!account) return { success: false, error: 'Account not found' };
+
+      const purchaseRecord = {
+        bookId: book.id,
+        title: book.title,
+        author: book.author,
+        price: book.price || 19.99,
+        category: book.categoryLabel || book.category,
+        purchaseDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        invoiceNumber: 'INV-' + Math.floor(1000 + Math.random() * 9000)
+      };
+
+      const accounts = this.getAccounts();
+      const accIndex = accounts.findIndex((a) => a.id === accountId);
+      if (accIndex !== -1) {
+        accounts[accIndex].purchasedBooks = accounts[accIndex].purchasedBooks || [];
+        accounts[accIndex].purchasedBooks.push(purchaseRecord);
+        write(STORAGE_KEYS.ACCOUNTS, accounts);
+
+        const curr = this.getCurrentUser();
+        if (curr && curr.id === accountId) {
+          this.setCurrentUser(accounts[accIndex]);
+        }
+      }
+
+      return { success: true, purchase: purchaseRecord, book, account };
+    },
+
+    // ------------------------------------------------------------------------
     // Members Methods
     // ------------------------------------------------------------------------
     getMembers() {
@@ -478,10 +805,10 @@
     addMember(memberData) {
       const members = this.getMembers();
       const nextNum = members.length + 1;
-      const id = 'M-' + String(nextNum).padStart(3, '0');
+      const id = memberData.id || 'M-' + String(nextNum).padStart(3, '0');
 
       const newMember = {
-        id: memberData.id || id,
+        id: id,
         name: memberData.name.trim(),
         email: memberData.email.trim(),
         membershipType: memberData.membershipType || 'standard',
@@ -612,6 +939,9 @@
       write(STORAGE_KEYS.BOOKS, INITIAL_BOOKS);
       write(STORAGE_KEYS.MEMBERS, INITIAL_MEMBERS);
       write(STORAGE_KEYS.LOANS, INITIAL_LOANS);
+      write(STORAGE_KEYS.ACCOUNTS, INITIAL_ACCOUNTS);
+      // Set John Smith as default logged-in demo user for convenience
+      write(STORAGE_KEYS.CURRENT_USER, INITIAL_ACCOUNTS[0]);
       this.recalculateStatistics();
     }
   };

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log In — Quiet Stacks Library</title>
+  <meta name="description" content="Sign in to your Quiet Stacks Library account to manage borrowed books and purchases.">
+  
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/auth.css">
+</head>
+<body class="auth-page">
+
+  <div class="auth-container">
+    <!-- Brand Header -->
+    <header class="auth-brand">
+      <a href="index.html" class="auth-brand-logo">
+        <h1 class="auth-brand-title">Quiet Stacks Library</h1>
+      </a>
+      <p class="auth-brand-subtitle">One calm place for every book and reader</p>
+    </header>
+
+    <!-- Login Card -->
+    <main class="auth-card">
+      <h2 class="auth-title">Welcome Back</h2>
+      <p class="auth-subtitle">Sign in with your email or Member ID to view your books.</p>
+
+      <!-- Alert Messages -->
+      <div id="auth-alert" class="auth-alert" role="alert"></div>
+
+      <!-- Login Form -->
+      <form id="login-form" class="auth-form" novalidate>
+        <div class="auth-form-group">
+          <label for="login-email" class="auth-label">Email or Member ID</label>
+          <input 
+            type="text" 
+            id="login-email" 
+            class="auth-input" 
+            placeholder="e.g. john@example.com or M-001" 
+            required 
+            autocomplete="username"
+          >
+        </div>
+
+        <div class="auth-form-group">
+          <label for="login-password" class="auth-label">Password</label>
+          <input 
+            type="password" 
+            id="login-password" 
+            class="auth-input" 
+            placeholder="Enter your password" 
+            required 
+            autocomplete="current-password"
+          >
+        </div>
+
+        <button type="submit" class="btn btn-primary auth-btn-submit">
+          Log In
+        </button>
+      </form>
+
+      <!-- Demo Accounts Box -->
+      <div class="demo-accounts-box">
+        <div class="demo-accounts-title">
+          <span>Demo Accounts (Instant Fill)</span>
+        </div>
+        <div class="demo-account-item">
+          <div>
+            <strong>John Smith</strong> (Standard)
+            <br><span style="color: var(--color-text-muted);">john@example.com &bull; 2 borrowed, 1 bought</span>
+          </div>
+          <button type="button" class="btn-fill-demo" data-email="john@example.com" data-pass="password123">Fill</button>
+        </div>
+        <div class="demo-account-item">
+          <div>
+            <strong>Sarah Ali</strong> (Student)
+            <br><span style="color: var(--color-text-muted);">sarah@example.com &bull; 1 borrowed, 1 bought</span>
+          </div>
+          <button type="button" class="btn-fill-demo" data-email="sarah@example.com" data-pass="password123">Fill</button>
+        </div>
+        <div class="demo-account-item">
+          <div>
+            <strong>Chief Librarian</strong> (Admin)
+            <br><span style="color: var(--color-text-muted);">admin@quietstacks.com</span>
+          </div>
+          <button type="button" class="btn-fill-demo" data-email="admin@quietstacks.com" data-pass="admin123">Fill</button>
+        </div>
+      </div>
+
+      <!-- Footer Links -->
+      <div class="auth-footer">
+        Don't have an account? <a href="signup.html" class="auth-link">Sign Up</a>
+      </div>
+    </main>
+
+    <!-- Back to Library -->
+    <div class="back-to-library">
+      <a href="index.html">&larr; Return to Library Shelves</a>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="assets/js/storage.js"></script>
+  <script src="assets/js/auth.js"></script>
+</body>
+</html>

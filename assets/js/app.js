@@ -1,7 +1,7 @@
 /**
  * Quiet Stacks Library — Application UI Controller
  * Binds LocalStorage Service to UI components, manages real-time filtering,
- * modal submissions, and dynamic state updates.
+ * user authentication sessions, buy/borrow interactions, and modal dialogs.
  */
 
 (function () {
@@ -9,6 +9,10 @@
 
   // DOM Elements Selection
   const elements = {
+    // Navigation & Session
+    userSessionBar: document.getElementById('user-session-bar'),
+    stickyNavBar: document.querySelector('.sticky-nav-bar'),
+
     // Books Elements
     booksGrid: document.querySelector('.books-grid'),
     bookSearchInput: document.querySelector('#books .input-search'),
@@ -27,7 +31,16 @@
     statTotalBooks: document.querySelector('.stat-card:nth-child(1) .stat-value'),
     statMembers: document.querySelector('.stat-card:nth-child(2) .stat-value'),
     statBorrowed: document.querySelector('.stat-card:nth-child(3) .stat-value'),
-    statOverdue: document.querySelector('.stat-card:nth-child(4) .stat-value')
+    statOverdue: document.querySelector('.stat-card:nth-child(4) .stat-value'),
+
+    // My Account Modal Elements
+    profileSummary: document.getElementById('account-profile-summary'),
+    userBorrowedCount: document.getElementById('user-borrowed-count'),
+    userPurchasedCount: document.getElementById('user-purchased-count'),
+    accountBorrowedContent: document.getElementById('account-tab-borrowed-content'),
+    accountPurchasedContent: document.getElementById('account-tab-purchased-content'),
+    tabBtnBorrowed: document.getElementById('btn-tab-borrowed'),
+    tabBtnPurchased: document.getElementById('btn-tab-purchased')
   };
 
   /**
@@ -50,6 +63,46 @@
   // --------------------------------------------------------------------------
   // Render Functions
   // --------------------------------------------------------------------------
+
+  /**
+   * Renders User Session Controls in the Navbar
+   */
+  function renderUserSession() {
+    const sessionBar = elements.userSessionBar || document.getElementById('user-session-bar');
+    if (!sessionBar) return;
+
+    const currentUser = window.LibraryStorage.getCurrentUser();
+
+    if (currentUser) {
+      const roleLabel = currentUser.role === 'admin' ? 'Chief Librarian' : capitalize(currentUser.membershipType || 'Member');
+      sessionBar.innerHTML = `
+        <a href="#modal-my-account" class="user-badge" id="btn-open-account" title="View my borrowed and purchased books">
+          <svg class="user-avatar-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+          </svg>
+          <span>${escapeHtml(currentUser.name)} (${escapeHtml(roleLabel)})</span>
+        </a>
+        <button type="button" class="btn btn-sm btn-action-ghost" id="btn-logout" title="Sign out of account">
+          Log Out
+        </button>
+      `;
+
+      // Wire logout button
+      const logoutBtn = sessionBar.querySelector('#btn-logout');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function () {
+          window.LibraryStorage.logout();
+          alert('You have logged out.');
+          renderAll();
+        });
+      }
+    } else {
+      sessionBar.innerHTML = `
+        <a href="login.html" class="btn btn-sm btn-secondary">Log In</a>
+        <a href="signup.html" class="btn btn-sm btn-primary">Sign Up</a>
+      `;
+    }
+  }
 
   /**
    * Renders the Statistics counters from storage
@@ -88,7 +141,7 @@
 
     if (filtered.length === 0) {
       elements.booksGrid.innerHTML = `
-        <div style="grid-column: 1 / -1; padding: 2rem; text-align: center; color: var(--color-text-secondary); background: var(--color-bg-surface); border: 1px dashed var(--color-border); border-radius: var(--radius-md);">
+        <div style="grid-column: 1 / -1; padding: 2.5rem; text-align: center; color: var(--color-text-secondary); background: var(--color-bg-surface); border: 1px dashed var(--color-border); border-radius: var(--radius-md);">
           No books found matching your criteria.
         </div>
       `;
@@ -112,6 +165,8 @@
           actionBtnText = 'Return';
         }
 
+        const priceDisplay = (book.price || 19.99).toFixed(2);
+
         return `
           <article class="book-card" data-book-id="${book.id}">
             <div class="book-card-header">
@@ -119,7 +174,10 @@
               <p class="book-author">${escapeHtml(book.author)}</p>
             </div>
             <div class="book-meta">
-              <span class="book-category">${escapeHtml(book.categoryLabel || capitalize(book.category))}</span>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                <span class="book-category">${escapeHtml(book.categoryLabel || capitalize(book.category))}</span>
+                <span class="book-price-tag">$${priceDisplay}</span>
+              </div>
               <span>ISBN ${escapeHtml(book.isbn)} &bull; ${escapeHtml(String(book.year))}</span>
             </div>
             <div class="book-card-footer">
@@ -127,6 +185,9 @@
               <div class="card-actions">
                 <button type="button" class="btn btn-sm btn-action-primary btn-book-action" data-action="${isAvailable ? 'borrow' : 'return'}" data-id="${book.id}">
                   ${actionBtnText}
+                </button>
+                <button type="button" class="btn btn-sm btn-action-buy btn-buy-book" data-id="${book.id}" title="Purchase a permanent personal copy">
+                  Buy
                 </button>
                 <button type="button" class="btn btn-sm btn-action-danger btn-delete-book" data-id="${book.id}">
                   Delete
@@ -233,13 +294,124 @@
   }
 
   /**
+   * Renders the Logged-in User Account Profile & Lists
+   */
+  function renderMyAccountModal() {
+    const profileSummary = document.getElementById('account-profile-summary');
+    const borrowedCountSpan = document.getElementById('user-borrowed-count');
+    const purchasedCountSpan = document.getElementById('user-purchased-count');
+    const borrowedListContainer = document.getElementById('account-tab-borrowed-content');
+    const purchasedListContainer = document.getElementById('account-tab-purchased-content');
+
+    const currentUser = window.LibraryStorage.getCurrentUser();
+    if (!currentUser) return;
+
+    // Refresh user from storage
+    const freshUser = window.LibraryStorage.getAccountById(currentUser.id) || currentUser;
+
+    const borrowedList = freshUser.borrowedBooks || [];
+    const purchasedList = freshUser.purchasedBooks || [];
+
+    if (borrowedCountSpan) borrowedCountSpan.textContent = borrowedList.length;
+    if (purchasedCountSpan) purchasedCountSpan.textContent = purchasedList.length;
+
+    if (profileSummary) {
+      profileSummary.innerHTML = `
+        <div class="account-info-item">
+          <span class="account-info-label">Member Name</span>
+          <span class="account-info-val">${escapeHtml(freshUser.name)}</span>
+        </div>
+        <div class="account-info-item">
+          <span class="account-info-label">Member ID</span>
+          <span class="account-info-val">${escapeHtml(freshUser.id)}</span>
+        </div>
+        <div class="account-info-item">
+          <span class="account-info-label">Email Address</span>
+          <span class="account-info-val">${escapeHtml(freshUser.email)}</span>
+        </div>
+        <div class="account-info-item">
+          <span class="account-info-label">Membership Tier</span>
+          <span class="account-info-val">${capitalize(freshUser.membershipType || 'standard')}</span>
+        </div>
+      `;
+    }
+
+    // Render Borrowed Books list
+    if (borrowedListContainer) {
+      if (borrowedList.length === 0) {
+        borrowedListContainer.innerHTML = `
+          <div class="account-empty-state">
+            You do not currently have any borrowed books. Browse the shelves and click "Borrow" to add to your stack.
+          </div>
+        `;
+      } else {
+        borrowedListContainer.innerHTML = borrowedList
+          .map((b) => {
+            const isOverdue = b.status === 'overdue';
+            const badgeClass = isOverdue ? 'badge-overdue' : 'badge-borrowed';
+
+            return `
+              <div class="account-item-card">
+                <div>
+                  <strong style="font-size: var(--text-sm);">${escapeHtml(b.title)}</strong>
+                  <div style="color: var(--color-text-muted); margin-top: 2px;">
+                    Borrowed: ${escapeHtml(b.borrowedDate)} &bull; Due: ${escapeHtml(b.dueDate)}
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <span class="badge ${badgeClass}">${capitalize(b.status)}</span>
+                  <button type="button" class="btn btn-sm btn-action-primary btn-account-return" data-id="${b.bookId}">
+                    Return
+                  </button>
+                </div>
+              </div>
+            `;
+          })
+          .join('');
+      }
+    }
+
+    // Render Purchased Books list
+    if (purchasedListContainer) {
+      if (purchasedList.length === 0) {
+        purchasedListContainer.innerHTML = `
+          <div class="account-empty-state">
+            You haven't purchased any book copies yet. Click "Buy" on any title to own a copy.
+          </div>
+        `;
+      } else {
+        purchasedListContainer.innerHTML = purchasedList
+          .map((p) => {
+            return `
+              <div class="account-item-card">
+                <div>
+                  <strong style="font-size: var(--text-sm);">${escapeHtml(p.title)}</strong>
+                  <div style="color: var(--color-text-muted); margin-top: 2px;">
+                    Invoice: <span style="font-family: monospace;">${escapeHtml(p.invoiceNumber)}</span> &bull; Purchased: ${escapeHtml(p.purchaseDate)}
+                  </div>
+                </div>
+                <div style="text-align: right;">
+                  <span style="font-weight: 700; color: var(--color-primary);">$${(p.price || 19.99).toFixed(2)}</span>
+                  <div style="color: #2e7d32; font-size: 11px; font-weight: 600;">Owned</div>
+                </div>
+              </div>
+            `;
+          })
+          .join('');
+      }
+    }
+  }
+
+  /**
    * Refreshes all UI components in sync with localStorage
    */
   function renderAll() {
+    renderUserSession();
     renderBooks();
     renderMembers();
     renderLoans();
     renderStatistics();
+    renderMyAccountModal();
   }
 
   // --------------------------------------------------------------------------
@@ -290,6 +462,7 @@
           categoryLabel,
           isbn,
           year,
+          price: 19.99,
           status: 'available'
         });
 
@@ -297,7 +470,6 @@
         elements.addBookForm.reset();
         window.location.hash = '';
 
-        // Re-render UI
         renderAll();
       });
     }
@@ -325,18 +497,53 @@
           borrowedCount: 0
         });
 
-        // Reset and close modal
         elements.addMemberForm.reset();
         window.location.hash = '';
 
-        // Re-render UI
         renderAll();
+      });
+    }
+
+    // Account Modal Tabs Toggle
+    const btnBorrowed = document.getElementById('btn-tab-borrowed');
+    const btnPurchased = document.getElementById('btn-tab-purchased');
+    const borrowedContent = document.getElementById('account-tab-borrowed-content');
+    const purchasedContent = document.getElementById('account-tab-purchased-content');
+
+    if (btnBorrowed && btnPurchased && borrowedContent && purchasedContent) {
+      btnBorrowed.addEventListener('click', function () {
+        btnBorrowed.classList.add('active');
+        btnPurchased.classList.remove('active');
+        borrowedContent.style.display = 'flex';
+        purchasedContent.style.display = 'none';
+      });
+
+      btnPurchased.addEventListener('click', function () {
+        btnPurchased.classList.add('active');
+        btnBorrowed.classList.remove('active');
+        purchasedContent.style.display = 'flex';
+        borrowedContent.style.display = 'none';
+      });
+    }
+
+    // Return button inside My Account modal
+    if (borrowedContent) {
+      borrowedContent.addEventListener('click', function (e) {
+        const btn = e.target.closest('.btn-account-return');
+        if (!btn) return;
+
+        const bookId = btn.getAttribute('data-id');
+        const currentUser = window.LibraryStorage.getCurrentUser();
+        if (currentUser) {
+          window.LibraryStorage.returnBookForAccount(bookId, currentUser.id);
+          renderAll();
+        }
       });
     }
   }
 
   /**
-   * Setup Delegated Click Actions (Borrow, Return, Delete)
+   * Setup Delegated Click Actions (Borrow, Buy, Return, Delete)
    */
   function setupDelegatedActions() {
     // Books Grid Actions
@@ -346,13 +553,37 @@
         if (!target) return;
 
         const bookId = target.getAttribute('data-id');
+        const book = window.LibraryStorage.getBookById(bookId);
+        if (!book) return;
 
         // Delete Book
         if (target.classList.contains('btn-delete-book')) {
-          const book = window.LibraryStorage.getBookById(bookId);
-          if (confirm(`Are you sure you want to remove "${book?.title || 'this book'}" from shelves?`)) {
+          if (confirm(`Are you sure you want to remove "${book.title}" from shelves?`)) {
             window.LibraryStorage.deleteBook(bookId);
             renderAll();
+          }
+          return;
+        }
+
+        // Buy Book
+        if (target.classList.contains('btn-buy-book')) {
+          const currentUser = window.LibraryStorage.getCurrentUser();
+          if (!currentUser) {
+            if (confirm(`You need a member account to purchase "${book.title}". Go to Log In page now?`)) {
+              window.location.href = 'login.html';
+            }
+            return;
+          }
+
+          const price = (book.price || 19.99).toFixed(2);
+          if (confirm(`Purchase "${book.title}" for $${price}?\n\nThis copy will be permanently assigned to your account.`)) {
+            const res = window.LibraryStorage.buyBookForAccount(bookId, currentUser.id);
+            if (res.success) {
+              alert(`🎉 Purchase Confirmed!\n\nThank you, ${currentUser.name}!\nTitle: ${book.title}\nTotal: $${price}\nInvoice: ${res.purchase.invoiceNumber}\n\nYou can view your purchased receipt under "My Account".`);
+              renderAll();
+            } else {
+              alert(res.error || 'Failed to complete purchase.');
+            }
           }
           return;
         }
@@ -360,36 +591,53 @@
         // Borrow or Return Action
         if (target.classList.contains('btn-book-action')) {
           const action = target.getAttribute('data-action');
-          const book = window.LibraryStorage.getBookById(bookId);
+          const currentUser = window.LibraryStorage.getCurrentUser();
 
           if (action === 'borrow') {
-            const members = window.LibraryStorage.getMembers().filter((m) => m.status === 'active');
-            if (members.length === 0) {
-              alert('No active members available to borrow books. Please add or activate a member first.');
-              return;
+            if (!currentUser) {
+              if (confirm(`You are not logged in. Sign in to borrow "${book.title}", or borrow as a sample member? Click OK to Sign In, or Cancel to borrow as a sample member.`)) {
+                window.location.href = 'login.html';
+                return;
+              }
+
+              // Guest fallback: pick first active member
+              const members = window.LibraryStorage.getMembers().filter((m) => m.status === 'active');
+              if (members.length === 0) {
+                alert('No active members available.');
+                return;
+              }
+              const borrower = members[0];
+              window.LibraryStorage.addLoan({
+                bookId: book.id,
+                bookTitle: book.title,
+                memberId: borrower.id,
+                memberName: borrower.name,
+                borrowedDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                status: 'borrowed'
+              });
+              alert(`"${book.title}" borrowed by sample member ${borrower.name}.`);
+            } else {
+              // Borrow for logged-in user
+              const res = window.LibraryStorage.borrowBookForAccount(bookId, currentUser.id);
+              if (res.success) {
+                alert(`📚 Borrowed Successfully!\n\n"${book.title}" is now borrowed by ${currentUser.name} (${currentUser.id}).\nDue Date: In 14 days.\nManage your active loans anytime under "My Account".`);
+              } else {
+                alert(res.error || 'Unable to borrow book.');
+              }
             }
-
-            const borrower = members[0]; // Assign to first active member
-            window.LibraryStorage.addLoan({
-              bookId: book.id,
-              bookTitle: book.title,
-              memberId: borrower.id,
-              memberName: borrower.name,
-              borrowedDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-              dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-              status: 'borrowed'
-            });
-
-            alert(`"${book.title}" was borrowed by ${borrower.name}.`);
             renderAll();
           } else if (action === 'return') {
-            // Find loan related to this book
-            const loans = window.LibraryStorage.getLoans();
-            const loan = loans.find((l) => l.bookId === bookId);
-            if (loan) {
-              window.LibraryStorage.returnLoan(loan.id);
+            if (currentUser) {
+              window.LibraryStorage.returnBookForAccount(bookId, currentUser.id);
             } else {
-              window.LibraryStorage.updateBook(bookId, { status: 'available' });
+              const loans = window.LibraryStorage.getLoans();
+              const loan = loans.find((l) => l.bookId === bookId);
+              if (loan) {
+                window.LibraryStorage.returnLoan(loan.id);
+              } else {
+                window.LibraryStorage.updateBook(bookId, { status: 'available' });
+              }
             }
             alert(`"${book.title}" was returned to shelves.`);
             renderAll();
@@ -417,7 +665,7 @@
           if (member) {
             const memberLoans = window.LibraryStorage.getLoans().filter((l) => l.memberId === memberId);
             const loanTitles = memberLoans.length > 0 ? memberLoans.map((l) => `  • ${l.bookTitle} (Due: ${l.dueDate}, ${capitalize(l.status)})`).join('\n') : '  None';
-            alert(`Member Details:\n\nName: ${member.name}\nID: ${member.id}\nEmail: ${member.email}\nMembership: ${capitalize(member.membershipType)}\nStatus: ${capitalize(member.status)}\n\nCurrently Borrowed (${member.borrowedCount}):\n${loanTitles}`);
+            alert(`Member Profile:\n\nName: ${member.name}\nID: ${member.id}\nEmail: ${member.email}\nMembership: ${capitalize(member.membershipType)}\nStatus: ${capitalize(member.status)}\n\nCurrently Borrowed (${member.borrowedCount}):\n${loanTitles}`);
           }
         }
       });
@@ -439,7 +687,7 @@
     const resetBtn = document.getElementById('btn-reset-data');
     if (resetBtn) {
       resetBtn.addEventListener('click', function () {
-        if (confirm('Restore full sample library dataset (20 books, 8 members, 8 loans)?')) {
+        if (confirm('Restore full sample library dataset (20 books, 8 members, 8 loans, demo accounts)?')) {
           window.LibraryStorage.resetDefaults();
           renderAll();
         }
@@ -471,20 +719,15 @@
       }
     });
 
-    /**
-     * Activates a specific tab by section ID
-     */
     function setActiveTab(sectionId) {
       navTabs.forEach((tab) => tab.classList.remove('active'));
       const activeTab = navMap.get(sectionId);
       if (activeTab) {
         activeTab.classList.add('active');
-        // Ensure active tab is visible if navbar overflows horizontally on mobile
         activeTab.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
       }
     }
 
-    // Toggle shadow/border elevation when navbar sticks
     if (stickyNavBar) {
       const handleStickyShadow = () => {
         if (window.scrollY > 40) {
@@ -498,12 +741,10 @@
       handleStickyShadow();
     }
 
-    // Keep track of sections intersecting with the viewport
     const intersectingSections = new Set();
 
     const observerOptions = {
       root: null,
-      // Accounts for top sticky nav (~70px) and bottom half viewport
       rootMargin: '-75px 0px -50% 0px',
       threshold: [0, 0.25, 0.5, 0.75, 1.0]
     };
@@ -517,14 +758,12 @@
         }
       });
 
-      // Special check: if scrolled to the absolute bottom of page, activate the last section
       const isAtBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 60);
       if (isAtBottom && sections.length > 0) {
         setActiveTab(sections[sections.length - 1].id);
         return;
       }
 
-      // If sections are intersecting, pick the first one matching document order
       if (intersectingSections.size > 0) {
         for (const section of sections) {
           if (intersectingSections.has(section.id)) {
@@ -537,7 +776,6 @@
 
     sections.forEach((section) => sectionObserver.observe(section));
 
-    // Handle scroll bottom boundary condition
     window.addEventListener('scroll', () => {
       const isAtBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 60);
       if (isAtBottom && sections.length > 0) {
@@ -545,7 +783,6 @@
       }
     }, { passive: true });
 
-    // Smooth navigation clicking
     navTabs.forEach((tab) => {
       tab.addEventListener('click', function (e) {
         const hash = this.getAttribute('href');
@@ -568,7 +805,6 @@
       });
     });
 
-    // Check if initial URL contains a section hash
     if (window.location.hash) {
       const initialId = window.location.hash.substring(1);
       if (navMap.has(initialId)) {

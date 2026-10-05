@@ -1,6 +1,6 @@
 # Quiet Stacks Library
 
-A clean, responsive library management web interface designed faithfully from the Figma design specification using pure HTML, CSS, and vanilla JavaScript with persistent LocalStorage.
+A clean, responsive library management web interface designed faithfully from the Figma design specification using pure HTML, CSS, and vanilla JavaScript with persistent LocalStorage, user accounts, and purchase/borrow management.
 
 ---
 
@@ -8,7 +8,9 @@ A clean, responsive library management web interface designed faithfully from th
 
 ```text
 Libaray-system/
-├── index.html                   # Main semantic HTML5 document
+├── index.html                   # Main library dashboard & catalog
+├── login.html                   # User & librarian login page
+├── signup.html                  # New member registration page
 ├── README.md                    # Project documentation & structure
 └── assets/
     ├── css/
@@ -16,10 +18,12 @@ Libaray-system/
     │   ├── variables.css        # Design tokens: palette, typography, spacing, shadows
     │   ├── reset.css            # Modern CSS reset and baseline defaults
     │   ├── layout.css           # Grid layouts, header, banners, responsive breakpoints
-    │   └── components.css       # Cards, badges, buttons, tables, filters, modals
+    │   ├── components.css       # Cards, badges, buttons, tables, filters, user session, modals
+    │   └── auth.css             # Authentication card & form styles for login/signup
     ├── js/
-    │   ├── storage.js           # LocalStorage service: seeds, CRUD for books, members, loans, stats
-    │   └── app.js               # UI controller: dynamic rendering, live search/filtering, event handling
+    │   ├── storage.js           # LocalStorage service: accounts, auth, books, members, loans, stats
+    │   ├── auth.js              # Authentication controller for login and registration
+    │   └── app.js               # Dashboard controller: live rendering, search, buy/borrow, modal flows
     └── images/
         ├── book-banner.svg      # Vector SVG illustration for the header bookshelf
         └── icons/               # Icon assets
@@ -27,39 +31,55 @@ Libaray-system/
 
 ---
 
-## 💾 LocalStorage Data Schema & Sample Dataset
+## 🔐 Authentication & Accounts
 
-The data layer in [storage.js](file:///home/soupa-fedora/Projects/Libaray-system/assets/js/storage.js) handles persistent client-side storage across four keys, seeded with 20 books across 5 categories, 8 members, and 8 active/overdue loans:
+User accounts are stored persistently in `quiet_stacks_accounts`, linked directly with `quiet_stacks_members`:
 
-1. **`quiet_stacks_books`** (20 Books)
-   - Fields: `id`, `title`, `author`, `category` (Programming, Science, Fiction, Philosophy, History), `isbn`, `year`, `status` (`available` | `borrowed` | `overdue`).
-2. **`quiet_stacks_members`** (8 Members)
-   - Fields: `id` (e.g. `M-001` through `M-008`), `name`, `email`, `membershipType` (Standard, Student, Faculty, Premium), `status` (`active` | `inactive`), `borrowedCount`.
-3. **`quiet_stacks_loans`** (8 Loans)
-   - Active lending records: `id`, `bookId`, `bookTitle`, `memberId`, `memberName`, `borrowedDate`, `dueDate`, `status`.
-4. **`quiet_stacks_statistics`**
-   - Automatically updated summary metrics: `totalBooks: 20`, `totalMembers: 8`, `borrowed: 6`, `overdue: 2`.
-   - Use the **"Reset Sample Data"** button in the navigation bar to restore the sample dataset at any time.
+- **Chief Librarian (Admin):**
+  - Email: `admin@quietstacks.com` | Password: `admin123`
+- **John Smith (Standard Member):**
+  - Email: `john@example.com` | Password: `password123` (2 borrowed titles, 1 purchased title)
+- **Sarah Ali (Student Member):**
+  - Email: `sarah@example.com` | Password: `password123` (1 borrowed title, 1 purchased title)
+
+Quick "Fill" demo buttons are available on [login.html](file:///home/soupa-fedora/Projects/Libaray-system/login.html) for instantaneous testing.
 
 ---
 
-## 🎨 Design System Details
+## 💾 LocalStorage Data Schema & Sample Dataset
 
-- **Typography:** Serif headings via [Lora](https://fonts.google.com/specimen/Lora) paired with [Plus Jakarta Sans](https://fonts.google.com/specimen/Plus+Jakarta+Sans) for clear metadata.
-- **Color Palette:**
-  - Parchment background: `#fbf8f1`
-  - British Racing / Forest Green: `#1b4332`
-  - Amber / Ochre Gold: `#b07d1a`
-  - Muted borders: `#e6decb`
-  - Status Badges: Available (green), Borrowed (amber), Overdue (soft red), Inactive (slate)
-- **Interactive Modals:** Built using accessible pure CSS (`:target`) so "Add a book" and "Add a member" dialogs open and close cleanly without requiring JavaScript dependencies.
-- **Sticky Navbar & ScrollSpy:** The navigation bar sticks to the viewport header with smooth backdrop blur (`backdrop-filter: blur(8px)`) and uses an `IntersectionObserver` to highlight the active section tab as the user scrolls. Clicking tabs smoothly navigates to each section.
+The data layer in [storage.js](file:///home/soupa-fedora/Projects/Libaray-system/assets/js/storage.js) handles persistent client-side storage across five primary keys:
+
+1. **`quiet_stacks_accounts`**
+   - User account records containing `id`, `name`, `email`, `password`, `role`, `membershipType`, `borrowedBooks`, and `purchasedBooks` (with invoices, price paid, and timestamps).
+2. **`quiet_stacks_current_user`**
+   - Active session user object (tracks currently logged-in member/librarian).
+3. **`quiet_stacks_books`** (20 Books)
+   - Fields: `id`, `title`, `author`, `category`, `price`, `isbn`, `year`, `status` (`available` | `borrowed` | `overdue`).
+4. **`quiet_stacks_members`** (8 Members)
+   - Fields: `id` (e.g. `M-001` through `M-008`), `name`, `email`, `membershipType`, `status`, `borrowedCount`.
+5. **`quiet_stacks_loans`** (8 Loans)
+   - Active lending records: `id`, `bookId`, `bookTitle`, `memberId`, `memberName`, `borrowedDate`, `dueDate`, `status`.
+6. **`quiet_stacks_statistics`**
+   - Real-time counters: `totalBooks: 20`, `totalMembers: 8`, `borrowed: 6`, `overdue: 2`.
+
+---
+
+## 🎨 Interactive Features
+
+- **Buy & Borrow for Logged-In Users:**
+  - Clicking **Buy** creates a purchase record with an official invoice (e.g. `INV-1003`) stored permanently in the user's account.
+  - Clicking **Borrow** assigns the book directly to the active member, creates a loan record, and updates availability badges.
+- **My Reading Stack Modal:**
+  - Clicking the user profile badge in the navigation bar opens the account modal, showing active loans (with due dates and a 1-click **Return** button) and purchased books with invoices.
+- **Sticky Navbar & ScrollSpy:**
+  - The navigation bar sticks with frosted-glass backdrop blur and dynamically updates active section tabs using `IntersectionObserver`.
 
 ---
 
 ## 🚀 How to Run
 
-Open [index.html](file:///home/soupa-fedora/Projects/Libaray-system/index.html) directly in any modern browser, or serve it locally with any static web server:
+Open [index.html](file:///home/soupa-fedora/Projects/Libaray-system/index.html) directly in any modern browser, or run a local static server:
 
 ```bash
 # Python 3

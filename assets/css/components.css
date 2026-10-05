@@ -525,3 +525,147 @@
   gap: var(--space-3);
   margin-top: var(--space-2);
 }
+
+/* --------------------------------------------------------------------------
+   User Session & Authentication Controls
+   -------------------------------------------------------------------------- */
+.user-session-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background-color: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.user-badge:hover {
+  background-color: var(--color-bg-muted);
+  border-color: var(--color-border-hover);
+}
+
+.user-avatar-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.btn-action-buy {
+  background-color: var(--color-accent-amber);
+  color: #ffffff;
+  border: 1px solid var(--color-accent-amber);
+}
+
+.btn-action-buy:hover {
+  background-color: var(--color-accent-amber-hover);
+  border-color: var(--color-accent-amber-hover);
+}
+
+.book-price-tag {
+  font-weight: 700;
+  color: var(--color-accent-amber);
+  font-size: var(--text-xs);
+  margin-left: auto;
+}
+
+/* --------------------------------------------------------------------------
+   My Account Modal Dialog Styles
+   -------------------------------------------------------------------------- */
+.modal-dialog-large {
+  max-width: 620px;
+}
+
+.account-profile-summary {
+  background-color: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-bottom: var(--space-5);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+.account-info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.account-info-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+.account-info-val {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.account-tabs-nav {
+  display: flex;
+  gap: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-4);
+}
+
+.account-tab-btn {
+  padding: 0.5rem 1rem;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.account-tab-btn.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.account-items-list {
+  max-height: 250px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.account-item-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+}
+
+.account-item-card:hover {
+  background-color: var(--color-bg-subtle);
+}
+
+.account-empty-state {
+  text-align: center;
+  padding: var(--space-6);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+

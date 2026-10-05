@@ -33,6 +33,7 @@
         <a href="#loans" class="nav-tab-item">Loans</a>
         <a href="#statistics" class="nav-tab-item">Statistics</a>
         <button type="button" id="btn-reset-data" class="btn btn-sm btn-secondary" style="margin-left: auto;" title="Reset sample books, members and loans">Reset Sample Data</button>
+        <div id="user-session-bar" class="user-session-wrapper"></div>
       </div>
     </nav>
 
@@ -376,6 +377,45 @@
           <button type="submit" class="btn btn-primary">Add member</button>
         </div>
       </form>
+    </div>
+  </aside>
+
+  <!-- Modal: My Account & My Reading Stack -->
+  <aside id="modal-my-account" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-account-title">
+    <div class="modal-dialog modal-dialog-large">
+      <div class="modal-header">
+        <h3 id="modal-account-title" class="modal-title">My Reading Stack & Account</h3>
+        <p class="modal-description">Track your active borrowed loans, return dates, and purchased book collection.</p>
+      </div>
+
+      <!-- Account Profile Summary -->
+      <div id="account-profile-summary" class="account-profile-summary">
+        <!-- Injected dynamically by app.js -->
+      </div>
+
+      <!-- Tab Buttons: Borrowed vs Purchased -->
+      <div class="account-tabs-nav" role="tablist">
+        <button type="button" class="account-tab-btn active" data-tab="borrowed" id="btn-tab-borrowed">
+          Borrowed Books (<span id="user-borrowed-count">0</span>)
+        </button>
+        <button type="button" class="account-tab-btn" data-tab="purchased" id="btn-tab-purchased">
+          Purchased Copies (<span id="user-purchased-count">0</span>)
+        </button>
+      </div>
+
+      <!-- Tab Content: Borrowed List -->
+      <div id="account-tab-borrowed-content" class="account-items-list" role="tabpanel">
+        <!-- Injected dynamically -->
+      </div>
+
+      <!-- Tab Content: Purchased List -->
+      <div id="account-tab-purchased-content" class="account-items-list" role="tabpanel" style="display: none;">
+        <!-- Injected dynamically -->
+      </div>
+
+      <div class="modal-actions" style="margin-top: 1.5rem;">
+        <a href="#" class="btn btn-secondary">Close</a>
+      </div>
     </div>
   </aside>
 
