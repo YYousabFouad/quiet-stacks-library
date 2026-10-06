@@ -17,7 +17,7 @@
     CURRENT_USER: 'quiet_stacks_current_user'
   };
 
-  const CURRENT_DATA_VERSION = '2.1';
+  const CURRENT_DATA_VERSION = '2.2';
 
   // Comprehensive Seed Dataset with Prices for Purchasing
   const INITIAL_BOOKS = [
@@ -52,7 +52,7 @@
       isbn: '978-0345331359',
       year: 1980,
       price: 16.99,
-      status: 'available'
+      status: 'overdue'
     },
     {
       id: 'book-4',
@@ -74,7 +74,7 @@
       isbn: '978-0201616224',
       year: 1999,
       price: 32.00,
-      status: 'available'
+      status: 'borrowed'
     },
     {
       id: 'book-6',
@@ -96,7 +96,7 @@
       isbn: '978-0201485677',
       year: 1999,
       price: 29.95,
-      status: 'available'
+      status: 'borrowed'
     },
     {
       id: 'book-8',
@@ -129,7 +129,7 @@
       isbn: '978-0199291151',
       year: 1976,
       price: 15.99,
-      status: 'available'
+      status: 'borrowed'
     },
     {
       id: 'book-11',
@@ -173,7 +173,7 @@
       isbn: '978-0060935467',
       year: 1960,
       price: 12.50,
-      status: 'available'
+      status: 'overdue'
     },
     {
       id: 'book-15',
@@ -195,7 +195,7 @@
       isbn: '978-0143107637',
       year: 1866,
       price: 13.25,
-      status: 'available'
+      status: 'borrowed'
     },
     {
       id: 'book-17',
@@ -206,7 +206,7 @@
       isbn: '978-0140449334',
       year: 180,
       price: 9.99,
-      status: 'available'
+      status: 'borrowed'
     },
     {
       id: 'book-18',
@@ -239,7 +239,7 @@
       isbn: '978-0393317558',
       year: 1997,
       price: 17.50,
-      status: 'available'
+      status: 'overdue'
     }
   ];
 
@@ -250,7 +250,7 @@
       email: 'john@example.com',
       membershipType: 'standard',
       status: 'active',
-      borrowedCount: 2
+      borrowedCount: 3
     },
     {
       id: 'M-002',
@@ -258,7 +258,7 @@
       email: 'sarah@example.com',
       membershipType: 'student',
       status: 'active',
-      borrowedCount: 1
+      borrowedCount: 3
     },
     {
       id: 'M-003',
@@ -274,7 +274,7 @@
       email: 'elena.r@example.com',
       membershipType: 'premium',
       status: 'active',
-      borrowedCount: 1
+      borrowedCount: 2
     },
     {
       id: 'M-005',
@@ -282,7 +282,7 @@
       email: 'marcus.v@example.com',
       membershipType: 'standard',
       status: 'active',
-      borrowedCount: 2
+      borrowedCount: 3
     },
     {
       id: 'M-006',
@@ -290,15 +290,15 @@
       email: 'maya.lin@example.com',
       membershipType: 'student',
       status: 'active',
-      borrowedCount: 1
+      borrowedCount: 2
     },
     {
       id: 'M-007',
       name: 'David Kim',
       email: 'david.kim@example.com',
       membershipType: 'standard',
-      status: 'inactive',
-      borrowedCount: 0
+      status: 'active',
+      borrowedCount: 1
     },
     {
       id: 'M-008',
@@ -306,7 +306,7 @@
       email: 'amina.d@example.com',
       membershipType: 'faculty',
       status: 'active',
-      borrowedCount: 1
+      borrowedCount: 2
     }
   ];
 
@@ -390,6 +390,86 @@
       borrowedDate: 'Sep 24',
       dueDate: 'Oct 08',
       status: 'borrowed'
+    },
+    {
+      id: 'loan-9',
+      bookId: 'book-5',
+      bookTitle: 'The Pragmatic Programmer',
+      memberId: 'M-002',
+      memberName: 'Sarah Ali',
+      borrowedDate: 'Sep 28',
+      dueDate: 'Oct 12',
+      status: 'borrowed'
+    },
+    {
+      id: 'loan-10',
+      bookId: 'book-3',
+      bookTitle: 'Cosmos',
+      memberId: 'M-007',
+      memberName: 'David Kim',
+      borrowedDate: 'Sep 12',
+      dueDate: 'Sep 26',
+      status: 'overdue'
+    },
+    {
+      id: 'loan-11',
+      bookId: 'book-7',
+      bookTitle: 'Refactoring: Improving the Design of Existing Code',
+      memberId: 'M-004',
+      memberName: 'Elena Rostova',
+      borrowedDate: 'Oct 01',
+      dueDate: 'Oct 15',
+      status: 'borrowed'
+    },
+    {
+      id: 'loan-12',
+      bookId: 'book-10',
+      bookTitle: 'The Selfish Gene',
+      memberId: 'M-008',
+      memberName: 'Amina Diallo',
+      borrowedDate: 'Sep 26',
+      dueDate: 'Oct 10',
+      status: 'borrowed'
+    },
+    {
+      id: 'loan-13',
+      bookId: 'book-14',
+      bookTitle: 'To Kill a Mockingbird',
+      memberId: 'M-006',
+      memberName: 'Maya Lin',
+      borrowedDate: 'Sep 15',
+      dueDate: 'Sep 29',
+      status: 'overdue'
+    },
+    {
+      id: 'loan-14',
+      bookId: 'book-16',
+      bookTitle: 'Crime and Punishment',
+      memberId: 'M-001',
+      memberName: 'John Smith',
+      borrowedDate: 'Sep 27',
+      dueDate: 'Oct 11',
+      status: 'borrowed'
+    },
+    {
+      id: 'loan-15',
+      bookId: 'book-17',
+      bookTitle: 'Meditations',
+      memberId: 'M-005',
+      memberName: 'Marcus Vance',
+      borrowedDate: 'Oct 02',
+      dueDate: 'Oct 16',
+      status: 'borrowed'
+    },
+    {
+      id: 'loan-16',
+      bookId: 'book-20',
+      bookTitle: 'Guns, Germs, and Steel',
+      memberId: 'M-002',
+      memberName: 'Sarah Ali',
+      borrowedDate: 'Sep 05',
+      dueDate: 'Sep 19',
+      status: 'overdue'
     }
   ];
 
@@ -405,7 +485,8 @@
       status: 'active',
       borrowedBooks: [
         { bookId: 'book-1', title: 'Clean Code', borrowedDate: 'Sep 20', dueDate: 'Oct 04', status: 'borrowed' },
-        { bookId: 'book-4', title: 'The Alchemist', borrowedDate: 'Sep 10', dueDate: 'Sep 24', status: 'overdue' }
+        { bookId: 'book-4', title: 'The Alchemist', borrowedDate: 'Sep 10', dueDate: 'Sep 24', status: 'overdue' },
+        { bookId: 'book-16', title: 'Crime and Punishment', borrowedDate: 'Sep 27', dueDate: 'Oct 11', status: 'borrowed' }
       ],
       purchasedBooks: [
         {
@@ -427,7 +508,9 @@
       membershipType: 'student',
       status: 'active',
       borrowedBooks: [
-        { bookId: 'book-2', title: 'JavaScript: The Good Parts', borrowedDate: 'Sep 18', dueDate: 'Oct 02', status: 'borrowed' }
+        { bookId: 'book-2', title: 'JavaScript: The Good Parts', borrowedDate: 'Sep 18', dueDate: 'Oct 02', status: 'borrowed' },
+        { bookId: 'book-5', title: 'The Pragmatic Programmer', borrowedDate: 'Sep 28', dueDate: 'Oct 12', status: 'borrowed' },
+        { bookId: 'book-20', title: 'Guns, Germs, and Steel', borrowedDate: 'Sep 05', dueDate: 'Sep 19', status: 'overdue' }
       ],
       purchasedBooks: [
         {

@@ -58,10 +58,10 @@ The data layer in [storage.js](file:///home/soupa-fedora/Projects/Libaray-system
    - Fields: `id`, `title`, `author`, `category`, `price`, `isbn`, `year`, `status` (`available` | `borrowed` | `overdue`).
 4. **`quiet_stacks_members`** (8 Members)
    - Fields: `id` (e.g. `M-001` through `M-008`), `name`, `email`, `membershipType`, `status`, `borrowedCount`.
-5. **`quiet_stacks_loans`** (8 Loans)
-   - Active lending records: `id`, `bookId`, `bookTitle`, `memberId`, `memberName`, `borrowedDate`, `dueDate`, `status`.
+5. **`quiet_stacks_loans`** (16 Loans)
+   - Active lending records: `id`, `bookId`, `bookTitle`, `memberId`, `memberName`, `borrowedDate`, `dueDate`, `status` (11 *Borrowed*, 5 *Overdue*).
 6. **`quiet_stacks_statistics`**
-   - Real-time counters: `totalBooks: 20`, `totalMembers: 8`, `borrowed: 6`, `overdue: 2`.
+   - Real-time counters: `totalBooks: 20`, `totalMembers: 8`, `borrowed: 11`, `overdue: 5`.
 
 ---
 
