@@ -76,6 +76,9 @@ The data layer in [storage.js](file:///home/soupa-fedora/Projects/Libaray-system
   - The navigation bar sticks with frosted-glass backdrop blur and dynamically updates active section tabs using `IntersectionObserver`.
 - **Daily Literary Quotes Banner:**
   - Positioned directly beneath the illustrated bookshelf header, displaying quotes from titles in the library collection (_The Alchemist_, _Cosmos_, _Clean Code_, _1984_, _Meditations_, etc.) with a 1-click **"Another Excerpt"** cycling button.
+- **Back to Top "Power" Button:**
+  - Fixed floating button that appears smoothly once scrolled past 250px.
+  - Features an animated SVG power circle that charges/fills up dynamically according to page scroll progress (0%–100%) and radiates a pulsing energy aura. Clicking it smoothly returns the user to the top.
 
 ---
 

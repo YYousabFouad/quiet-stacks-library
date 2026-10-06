@@ -778,4 +778,100 @@
   }
 }
 
+/* --------------------------------------------------------------------------
+   Back to Top Button with Animated Power Circle
+   -------------------------------------------------------------------------- */
+.back-to-top-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: var(--color-bg-surface);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 850;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px) scale(0.85);
+  transition: opacity 300ms ease, visibility 300ms ease, transform 300ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 300ms ease;
+  box-shadow: 0 4px 16px rgba(27, 67, 50, 0.18), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.back-to-top-btn.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+  animation: powerGlowPulse 2.5s infinite ease-in-out;
+}
+
+.back-to-top-btn:hover {
+  transform: translateY(-4px) scale(1.08);
+  box-shadow: 0 8px 24px rgba(176, 125, 26, 0.35), 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.back-to-top-btn:active {
+  transform: translateY(-1px) scale(0.96);
+}
+
+/* SVG Progress & Power Ring */
+.back-to-top-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg); /* Start progress from 12 o'clock */
+  pointer-events: none;
+}
+
+.progress-ring-bg {
+  fill: none;
+  stroke: var(--color-border);
+  stroke-width: 3.5;
+  opacity: 0.5;
+}
+
+.progress-ring-circle {
+  fill: none;
+  stroke: url(#powerGradient);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-dasharray: 144.5;
+  stroke-dashoffset: 144.5;
+  transition: stroke-dashoffset 80ms linear;
+  filter: drop-shadow(0 0 3px rgba(176, 125, 26, 0.6));
+}
+
+.back-to-top-arrow {
+  width: 20px;
+  height: 20px;
+  color: var(--color-primary);
+  transition: transform 250ms ease, color 250ms ease;
+  z-index: 2;
+}
+
+.back-to-top-btn:hover .back-to-top-arrow {
+  color: var(--color-accent-amber);
+  transform: translateY(-3px);
+}
+
+/* Pulsing "Power" Surge Animation */
+@keyframes powerGlowPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(176, 125, 26, 0.45), 0 4px 16px rgba(27, 67, 50, 0.2);
+  }
+  60% {
+    box-shadow: 0 0 0 10px rgba(176, 125, 26, 0), 0 6px 20px rgba(27, 67, 50, 0.25);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(176, 125, 26, 0), 0 4px 16px rgba(27, 67, 50, 0.2);
+  }
+}
+
+
 

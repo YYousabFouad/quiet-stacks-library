@@ -857,6 +857,47 @@
   }
 
   // --------------------------------------------------------------------------
+  // Back to Top Button & Animated Power Ring
+  // --------------------------------------------------------------------------
+  function setupBackToTop() {
+    const btn = document.getElementById('btn-back-to-top');
+    const ringCircle = document.getElementById('power-ring-circle');
+    if (!btn || !ringCircle) return;
+
+    // Radius 23 => circumference ≈ 144.51
+    const circumference = 2 * Math.PI * 23;
+    ringCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+    ringCircle.style.strokeDashoffset = `${circumference}`;
+
+    const updateScrollProgress = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+
+      if (scrollTop > 250) {
+        btn.classList.add('visible');
+      } else {
+        btn.classList.remove('visible');
+      }
+
+      if (scrollHeight > 0) {
+        const progress = Math.min(Math.max(scrollTop / scrollHeight, 0), 1);
+        const offset = circumference - (progress * circumference);
+        ringCircle.style.strokeDashoffset = `${offset}`;
+      }
+    };
+
+    window.addEventListener('scroll', updateScrollProgress, { passive: true });
+    updateScrollProgress();
+
+    btn.addEventListener('click', function () {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  }
+
+  // --------------------------------------------------------------------------
   // Application Bootstrap
   // --------------------------------------------------------------------------
   function init() {
@@ -866,6 +907,7 @@
     setupDelegatedActions();
     setupScrollSpy();
     setupQuoteBanner();
+    setupBackToTop();
   }
 
   // Run on DOM ready
