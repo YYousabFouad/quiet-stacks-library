@@ -719,12 +719,34 @@
       }
     });
 
+    let currentActiveId = null;
+    let isClickScrolling = false;
+    let clickScrollTimeout = null;
+
+    /**
+     * Activates a specific tab by section ID without jittering or vertical shifts
+     */
     function setActiveTab(sectionId) {
+      if (!sectionId || currentActiveId === sectionId) return;
+      currentActiveId = sectionId;
+
       navTabs.forEach((tab) => tab.classList.remove('active'));
       const activeTab = navMap.get(sectionId);
       if (activeTab) {
         activeTab.classList.add('active');
-        activeTab.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
+
+        // Smoothly scroll only the horizontal tab container if it overflows (mobile),
+        // avoiding window-level scrollIntoView which causes vertical page jitter.
+        const navContainer = activeTab.closest('.nav-tabs');
+        if (navContainer && navContainer.scrollWidth > navContainer.clientWidth) {
+          const tabLeft = activeTab.offsetLeft;
+          const tabWidth = activeTab.offsetWidth;
+          const containerWidth = navContainer.offsetWidth;
+          navContainer.scrollTo({
+            left: tabLeft - (containerWidth / 2) + (tabWidth / 2),
+            behavior: 'smooth'
+          });
+        }
       }
     }
 
@@ -745,9 +767,37 @@
 
     const observerOptions = {
       root: null,
+      // Observation zone: from below sticky navbar (~75px) down to mid-viewport
       rootMargin: '-75px 0px -50% 0px',
       threshold: [0, 0.25, 0.5, 0.75, 1.0]
     };
+
+    function updateActiveSection() {
+      if (isClickScrolling) return;
+
+      // Scrolled near top: activate the first section
+      if (window.scrollY < 80 && sections.length > 0) {
+        setActiveTab(sections[0].id);
+        return;
+      }
+
+      // Scrolled near absolute bottom: activate the last section
+      const isAtBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 50);
+      if (isAtBottom && sections.length > 0) {
+        setActiveTab(sections[sections.length - 1].id);
+        return;
+      }
+
+      // Pick the last intersecting section in DOM order (the section scrolled into)
+      if (intersectingSections.size > 0) {
+        for (let i = sections.length - 1; i >= 0; i--) {
+          if (intersectingSections.has(sections[i].id)) {
+            setActiveTab(sections[i].id);
+            return;
+          }
+        }
+      }
+    }
 
     const sectionObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -758,31 +808,32 @@
         }
       });
 
-      const isAtBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 60);
-      if (isAtBottom && sections.length > 0) {
-        setActiveTab(sections[sections.length - 1].id);
-        return;
-      }
-
-      if (intersectingSections.size > 0) {
-        for (const section of sections) {
-          if (intersectingSections.has(section.id)) {
-            setActiveTab(section.id);
-            break;
-          }
-        }
-      }
+      updateActiveSection();
     }, observerOptions);
 
     sections.forEach((section) => sectionObserver.observe(section));
 
+    // Handle top and bottom boundary scroll checks
     window.addEventListener('scroll', () => {
-      const isAtBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 60);
-      if (isAtBottom && sections.length > 0) {
-        setActiveTab(sections[sections.length - 1].id);
+      if (isClickScrolling) return;
+      const isAtBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 50);
+      const isAtTop = window.scrollY < 80;
+      if (isAtBottom || isAtTop) {
+        updateActiveSection();
       }
     }, { passive: true });
 
+    // Cancel programmatic lock if user interrupts smooth scroll
+    const cancelClickScroll = () => {
+      if (isClickScrolling) {
+        isClickScrolling = false;
+        clearTimeout(clickScrollTimeout);
+      }
+    };
+    window.addEventListener('wheel', cancelClickScroll, { passive: true });
+    window.addEventListener('touchstart', cancelClickScroll, { passive: true });
+
+    // Smooth navigation clicking
     navTabs.forEach((tab) => {
       tab.addEventListener('click', function (e) {
         const hash = this.getAttribute('href');
@@ -793,14 +844,29 @@
 
         if (targetSection) {
           e.preventDefault();
-          targetSection.scrollIntoView({ behavior: 'smooth' });
+
+          // Lock observer while smooth scrolling to clicked section
+          isClickScrolling = true;
+          clearTimeout(clickScrollTimeout);
           setActiveTab(targetId);
+
+          targetSection.scrollIntoView({ behavior: 'smooth' });
 
           if (history.pushState) {
             history.pushState(null, '', hash);
           } else {
             window.location.hash = hash;
           }
+
+          const unlock = () => {
+            isClickScrolling = false;
+            window.removeEventListener('scrollend', unlock);
+          };
+
+          if ('onscrollend' in window) {
+            window.addEventListener('scrollend', unlock, { once: true });
+          }
+          clickScrollTimeout = setTimeout(unlock, 800);
         }
       });
     });
