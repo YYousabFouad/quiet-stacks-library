@@ -570,9 +570,17 @@
      * Initializes default data in localStorage if keys are empty or on schema version upgrade.
      */
     init() {
-      const storedVersion = localStorage.getItem(STORAGE_KEYS.VERSION);
+      // Use read() helper to properly deserialize the JSON version string
+      let storedVersion = read(STORAGE_KEYS.VERSION, null);
+      if (!storedVersion) {
+        // Fallback in case raw unquoted string was written
+        storedVersion = localStorage.getItem(STORAGE_KEYS.VERSION);
+      }
 
-      if (storedVersion !== CURRENT_DATA_VERSION || !localStorage.getItem(STORAGE_KEYS.BOOKS) || !localStorage.getItem(STORAGE_KEYS.ACCOUNTS)) {
+      const hasBooks = read(STORAGE_KEYS.BOOKS, null);
+      const hasAccounts = read(STORAGE_KEYS.ACCOUNTS, null);
+
+      if (storedVersion !== CURRENT_DATA_VERSION || !hasBooks || !hasAccounts) {
         this.resetDefaults();
       } else {
         this.recalculateStatistics();
@@ -1030,13 +1038,22 @@
     // Utility / Reset
     // ------------------------------------------------------------------------
     resetDefaults() {
+      // Preserve active authenticated session if one exists
+      const existingUser = this.getCurrentUser();
+
       write(STORAGE_KEYS.VERSION, CURRENT_DATA_VERSION);
       write(STORAGE_KEYS.BOOKS, INITIAL_BOOKS);
       write(STORAGE_KEYS.MEMBERS, INITIAL_MEMBERS);
       write(STORAGE_KEYS.LOANS, INITIAL_LOANS);
       write(STORAGE_KEYS.ACCOUNTS, INITIAL_ACCOUNTS);
-      // Unauthenticated by default so users start at the login/sign up portal
-      write(STORAGE_KEYS.CURRENT_USER, null);
+
+      if (existingUser) {
+        const fresh = this.getAccountById(existingUser.id);
+        write(STORAGE_KEYS.CURRENT_USER, fresh || existingUser);
+      } else {
+        write(STORAGE_KEYS.CURRENT_USER, null);
+      }
+
       this.recalculateStatistics();
     }
   };
