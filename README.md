@@ -59,7 +59,7 @@ The data layer in [storage.js](file:///home/soupa-fedora/Projects/Libaray-system
 4. **`quiet_stacks_members`** (8 Members)
    - Fields: `id` (e.g. `M-001` through `M-008`), `name`, `email`, `membershipType`, `status`, `borrowedCount`.
 5. **`quiet_stacks_loans`** (16 Loans)
-   - Active lending records: `id`, `bookId`, `bookTitle`, `memberId`, `memberName`, `borrowedDate`, `dueDate`, `status` (11 *Borrowed*, 5 *Overdue*).
+   - Active lending records: `id`, `bookId`, `bookTitle`, `memberId`, `memberName`, `borrowedDate`, `dueDate`, `status` (11 _Borrowed_, 5 _Overdue_).
 6. **`quiet_stacks_statistics`**
    - Real-time counters: `totalBooks: 20`, `totalMembers: 8`, `borrowed: 11`, `overdue: 5`.
 
@@ -75,13 +75,13 @@ The data layer in [storage.js](file:///home/soupa-fedora/Projects/Libaray-system
 - **Sticky Navbar & ScrollSpy:**
   - The navigation bar sticks with frosted-glass backdrop blur and dynamically updates active section tabs using `IntersectionObserver`.
 - **Daily Literary Quotes Banner:**
-  - Positioned directly beneath the illustrated bookshelf header, displaying quotes from titles in the library collection (*The Alchemist*, *Cosmos*, *Clean Code*, *1984*, *Meditations*, etc.) with a 1-click **"Another Excerpt"** cycling button.
+  - Positioned directly beneath the illustrated bookshelf header, displaying quotes from titles in the library collection (_The Alchemist_, _Cosmos_, _Clean Code_, _1984_, _Meditations_, etc.) with a 1-click **"Another Excerpt"** cycling button.
 
 ---
 
 ## 🚀 How to Run
 
-Open [index.html](file:///home/soupa-fedora/Projects/Libaray-system/index.html) directly in any modern browser, or run a local static server:
+Open [index.html]directly in any modern browser, or run a local static server:
 
 ```bash
 # Python 3
