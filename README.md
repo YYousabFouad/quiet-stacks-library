@@ -8,9 +8,10 @@ A clean, responsive library management web interface designed faithfully from th
 
 ```text
 Libaray-system/
-├── index.html                   # Main library dashboard & catalog
-├── login.html                   # User & librarian login page
-├── signup.html                  # New member registration page
+├── index.html                   # Starter file: unified Log In & Sign Up auth portal
+├── dashboard.html               # Main library dashboard & catalog
+├── login.html                   # Dedicated login page
+├── signup.html                  # Dedicated new member registration page
 ├── README.md                    # Project documentation & structure
 └── assets/
     ├── css/
@@ -42,7 +43,7 @@ User accounts are stored persistently in `quiet_stacks_accounts`, linked directl
 - **Sarah Ali (Student Member):**
   - Email: `sarah@example.com` | Password: `password123` (1 borrowed title, 1 purchased title)
 
-Quick "Fill" demo buttons are available on [login.html](file:///home/soupa-fedora/Projects/Libaray-system/login.html) for instantaneous testing.
+Quick "Fill" demo buttons are available on [index.html](file:///home/soupa-fedora/Projects/Libaray-system/index.html) and [login.html](file:///home/soupa-fedora/Projects/Libaray-system/login.html) for instantaneous testing.
 
 ---
 
@@ -84,9 +85,14 @@ The data layer in [storage.js](file:///home/soupa-fedora/Projects/Libaray-system
 
 ## 🚀 How to Run
 
-Open [index.html]directly in any modern browser, or run a local static server:
+Launch the starter file [index.html](file:///home/soupa-fedora/Projects/Libaray-system/index.html) directly in any modern browser, or run a local static server:
 
 ```bash
 # Python 3
 python3 -m http.server 3000
 ```
+
+1. You start on the **Log In & Sign Up** portal (`index.html`).
+2. Use the **1-click Demo Fill** buttons (`John Smith`, `Sarah Ali`, or `Chief Librarian`) or sign up as a new member.
+3. Upon authentication, you will be redirected to the library dashboard (`dashboard.html`).
+4. Logging out returns you back to the starter file. You can also preview the catalog as a guest.

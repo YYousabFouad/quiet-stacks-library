@@ -227,3 +227,107 @@
 .back-to-library a:hover {
   color: var(--color-primary);
 }
+
+/* ==========================================================================
+   Starter Page Tabs & Multi-Mode Auth Controls
+   ========================================================================== */
+
+/* Tabs navigation bar */
+.auth-tabs-nav {
+  display: flex;
+  background-color: var(--color-bg-subtle);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  margin-bottom: var(--space-6);
+  gap: 4px;
+  border: 1px solid var(--color-border);
+}
+
+.auth-tab-nav-btn {
+  flex: 1;
+  padding: 0.65rem 0.75rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
+  font-family: inherit;
+}
+
+.auth-tab-nav-btn:hover {
+  color: var(--color-text-main);
+}
+
+.auth-tab-nav-btn.active {
+  background-color: var(--color-bg-surface);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Panel visibility with gentle transition */
+.auth-panel {
+  display: none;
+}
+
+.auth-panel.active {
+  display: block;
+  animation: authFadeIn 0.22s ease-out;
+}
+
+@keyframes authFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Active Session Banner */
+.auth-session-banner {
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-bottom: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.auth-session-banner-text {
+  font-size: var(--text-sm);
+  color: #14532d;
+}
+
+.auth-session-banner-actions {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Guest link */
+.auth-guest-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.auth-guest-link:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+

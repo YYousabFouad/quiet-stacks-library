@@ -92,14 +92,13 @@
       if (logoutBtn) {
         logoutBtn.addEventListener('click', function () {
           window.LibraryStorage.logout();
-          alert('You have logged out.');
-          renderAll();
+          window.location.href = 'index.html?msg=logged_out';
         });
       }
     } else {
       sessionBar.innerHTML = `
-        <a href="login.html" class="btn btn-sm btn-secondary">Log In</a>
-        <a href="signup.html" class="btn btn-sm btn-primary">Sign Up</a>
+        <a href="index.html#login" class="btn btn-sm btn-secondary">Log In</a>
+        <a href="index.html#signup" class="btn btn-sm btn-primary">Sign Up</a>
       `;
     }
   }
@@ -570,7 +569,7 @@
           const currentUser = window.LibraryStorage.getCurrentUser();
           if (!currentUser) {
             if (confirm(`You need a member account to purchase "${book.title}". Go to Log In page now?`)) {
-              window.location.href = 'login.html';
+              window.location.href = 'index.html#login';
             }
             return;
           }
@@ -596,7 +595,7 @@
           if (action === 'borrow') {
             if (!currentUser) {
               if (confirm(`You are not logged in. Sign in to borrow "${book.title}", or borrow as a sample member? Click OK to Sign In, or Cancel to borrow as a sample member.`)) {
-                window.location.href = 'login.html';
+                window.location.href = 'index.html#login';
                 return;
               }
 
@@ -967,6 +966,17 @@
   // Application Bootstrap
   // --------------------------------------------------------------------------
   function init() {
+    // Auth route guard for the library dashboard
+    const currentUser = window.LibraryStorage ? window.LibraryStorage.getCurrentUser() : null;
+    const urlParams = new URLSearchParams(window.location.search);
+    const isGuest = urlParams.get('guest') === 'true';
+
+    // If neither authenticated nor explicit guest mode, redirect to starter login/sign up page
+    if (!currentUser && !isGuest) {
+      window.location.replace('index.html?msg=auth_required');
+      return;
+    }
+
     renderAll();
     setupFilters();
     setupForms();

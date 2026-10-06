@@ -3,465 +3,196 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quiet Stacks Library — Library Management System</title>
-  <meta name="description" content="Lend, return and keep track of every book and member in one calm place.">
+  <title>Quiet Stacks Library — Log In or Register</title>
+  <meta name="description" content="Sign in or register for Quiet Stacks Library to borrow, purchase, and manage books.">
   
-  <!-- Main Stylesheet -->
   <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/auth.css">
 </head>
-<body>
+<body class="auth-page">
 
-  <!-- Main Application Wrapper -->
-  <main class="app-container">
-
-    <!-- Header Section -->
-    <header class="site-header">
-      <h1 class="brand-title">Quiet Stacks Library</h1>
-      <p class="brand-tagline">Lend, return and keep track of every book and member in one calm place.</p>
-      
-      <!-- Decorative Bookshelf Spine Banner -->
-      <div class="bookshelf-banner-container" aria-hidden="true">
-        <img src="assets/images/book-banner.svg" alt="Library bookshelf illustration banner" class="bookshelf-banner-img">
+  <div class="auth-container">
+    <!-- Brand Header -->
+    <header class="auth-brand">
+      <div class="auth-brand-logo">
+        <h1 class="auth-brand-title">Quiet Stacks Library</h1>
       </div>
-
-      <!-- Daily Literary Quote Banner -->
-      <aside class="daily-quote-banner" aria-label="Daily Book Quote">
-        <div class="daily-quote-content">
-          <svg class="quote-mark-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
-          </svg>
-          <div class="quote-body">
-            <blockquote class="quote-text" id="daily-quote-text">
-              "When you want something, all the universe conspires in helping you to achieve it."
-            </blockquote>
-            <cite class="quote-author" id="daily-quote-cite">
-              &mdash; <span id="daily-quote-author">Paulo Coelho</span>, <span class="quote-source" id="daily-quote-source">The Alchemist</span>
-            </cite>
-          </div>
-        </div>
-        <button type="button" class="btn-refresh-quote" id="btn-next-quote" title="Read another quote from our shelves">
-          <svg class="refresh-icon" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
-          </svg>
-          <span>Another Excerpt</span>
-        </button>
-      </aside>
+      <p class="auth-brand-subtitle">One calm place for every book and reader</p>
     </header>
 
-    <!-- Sticky Navigation Bar -->
-    <nav class="sticky-nav-bar" aria-label="Library Dashboard Navigation">
-      <div class="nav-tabs">
-        <a href="#books" class="nav-tab-item active">Books</a>
-        <a href="#members" class="nav-tab-item">Members</a>
-        <a href="#loans" class="nav-tab-item">Loans</a>
-        <a href="#statistics" class="nav-tab-item">Statistics</a>
-        <button type="button" id="btn-reset-data" class="btn btn-sm btn-secondary" style="margin-left: auto;" title="Reset sample books, members and loans">Reset Sample Data</button>
-        <div id="user-session-bar" class="user-session-wrapper"></div>
-      </div>
-    </nav>
+    <!-- Already Logged In Notice (injected dynamically if session exists) -->
+    <div id="auth-active-session-banner" class="auth-session-banner" style="display: none;"></div>
 
-    <!-- Section 1: Books -->
-    <section id="books" class="dashboard-section" aria-labelledby="books-heading">
-      <div class="section-header">
-        <h2 id="books-heading" class="section-title">Books</h2>
-        <a href="#modal-add-book" class="btn btn-primary btn-pill">+ Add book</a>
-      </div>
-
-      <!-- Filter & Search Toolbar -->
-      <div class="filter-toolbar">
-        <div class="search-wrapper">
-          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <input type="search" class="input-search" placeholder="Search by title, author, or ISBN..." aria-label="Search books">
-        </div>
-        <select class="select-filter" aria-label="Filter by category">
-          <option value="">All categories</option>
-          <option value="programming">Programming</option>
-          <option value="science">Science</option>
-          <option value="fiction">Fiction</option>
-          <option value="philosophy">Philosophy</option>
-          <option value="history">History</option>
-        </select>
-      </div>
-
-      <!-- Books Cards Grid -->
-      <div class="books-grid">
-        <!-- Book Card 1 -->
-        <article class="book-card">
-          <div class="book-card-header">
-            <h3 class="book-title">Clean Code</h3>
-            <p class="book-author">Robert C. Martin</p>
-          </div>
-          <div class="book-meta">
-            <span class="book-category">Programming</span>
-            <span>ISBN 978-0132350884 &bull; 2008</span>
-          </div>
-          <div class="book-card-footer">
-            <span class="badge badge-available">Available</span>
-            <div class="card-actions">
-              <button type="button" class="btn btn-sm btn-action-primary">Borrow</button>
-              <button type="button" class="btn btn-sm btn-action-danger">Delete</button>
-            </div>
-          </div>
-        </article>
-
-        <!-- Book Card 2 -->
-        <article class="book-card">
-          <div class="book-card-header">
-            <h3 class="book-title">JavaScript: The Good Parts</h3>
-            <p class="book-author">Douglas Crockford</p>
-          </div>
-          <div class="book-meta">
-            <span class="book-category">Programming</span>
-            <span>ISBN 978-0596517748 &bull; 2008</span>
-          </div>
-          <div class="book-card-footer">
-            <span class="badge badge-borrowed">Borrowed</span>
-            <div class="card-actions">
-              <button type="button" class="btn btn-sm btn-action-primary">Return</button>
-              <button type="button" class="btn btn-sm btn-action-danger">Delete</button>
-            </div>
-          </div>
-        </article>
-
-        <!-- Book Card 3 -->
-        <article class="book-card">
-          <div class="book-card-header">
-            <h3 class="book-title">Cosmos</h3>
-            <p class="book-author">Carl Sagan</p>
-          </div>
-          <div class="book-meta">
-            <span class="book-category">Science</span>
-            <span>ISBN 978-0345331359 &bull; 1980</span>
-          </div>
-          <div class="book-card-footer">
-            <span class="badge badge-available">Available</span>
-            <div class="card-actions">
-              <button type="button" class="btn btn-sm btn-action-primary">Borrow</button>
-              <button type="button" class="btn btn-sm btn-action-danger">Delete</button>
-            </div>
-          </div>
-        </article>
-
-        <!-- Book Card 4 -->
-        <article class="book-card">
-          <div class="book-card-header">
-            <h3 class="book-title">The Alchemist</h3>
-            <p class="book-author">Paulo Coelho</p>
-          </div>
-          <div class="book-meta">
-            <span class="book-category">Fiction</span>
-            <span>ISBN 978-0062315007 &bull; 1988</span>
-          </div>
-          <div class="book-card-footer">
-            <span class="badge badge-overdue">Overdue</span>
-            <div class="card-actions">
-              <button type="button" class="btn btn-sm btn-action-primary">Return</button>
-              <button type="button" class="btn btn-sm btn-action-danger">Delete</button>
-            </div>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <!-- Section 2: Members -->
-    <section id="members" class="dashboard-section" aria-labelledby="members-heading">
-      <div class="section-header">
-        <h2 id="members-heading" class="section-title">Members</h2>
-        <a href="#modal-add-member" class="btn btn-primary btn-pill">+ Add member</a>
-      </div>
-
-      <!-- Filter Toolbar -->
-      <div class="filter-toolbar">
-        <div class="search-wrapper">
-          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <input type="search" class="input-search" placeholder="Search by name, ID or email..." aria-label="Search members">
-        </div>
-      </div>
-
-      <!-- Members Grid -->
-      <div class="members-grid">
-        <!-- Member Card 1 -->
-        <article class="member-card">
-          <div class="member-header">
-            <h3 class="member-name">John Smith</h3>
-            <span class="badge badge-active">Active</span>
-          </div>
-          <div class="member-meta">
-            <span class="member-id">ID: M-001</span>
-            <span>john@example.com</span>
-            <span class="member-borrowed-count">Borrowed: 2</span>
-          </div>
-          <div class="member-card-footer">
-            <button type="button" class="btn btn-sm btn-action-ghost">View</button>
-            <button type="button" class="btn btn-sm btn-action-danger">Delete</button>
-          </div>
-        </article>
-
-        <!-- Member Card 2 -->
-        <article class="member-card">
-          <div class="member-header">
-            <h3 class="member-name">Sarah Ali</h3>
-            <span class="badge badge-active">Active</span>
-          </div>
-          <div class="member-meta">
-            <span class="member-id">ID: M-002</span>
-            <span>sarah@example.com</span>
-            <span class="member-borrowed-count">Borrowed: 1</span>
-          </div>
-          <div class="member-card-footer">
-            <button type="button" class="btn btn-sm btn-action-ghost">View</button>
-            <button type="button" class="btn btn-sm btn-action-danger">Delete</button>
-          </div>
-        </article>
-
-        <!-- Member Card 3 -->
-        <article class="member-card">
-          <div class="member-header">
-            <h3 class="member-name">Omar Hassan</h3>
-            <span class="badge badge-inactive">Inactive</span>
-          </div>
-          <div class="member-meta">
-            <span class="member-id">ID: M-003</span>
-            <span>omar@example.com</span>
-            <span class="member-borrowed-count">Borrowed: 0</span>
-          </div>
-          <div class="member-card-footer">
-            <button type="button" class="btn btn-sm btn-action-ghost">View</button>
-            <button type="button" class="btn btn-sm btn-action-danger">Delete</button>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <!-- Section 3: Loans -->
-    <section id="loans" class="dashboard-section" aria-labelledby="loans-heading">
-      <div class="section-header">
-        <h2 id="loans-heading" class="section-title">Loans</h2>
-      </div>
-
-      <div class="table-card">
-        <div class="loans-table-wrapper">
-          <table class="loans-table">
-            <thead>
-              <tr>
-                <th scope="col">Book</th>
-                <th scope="col">Member</th>
-                <th scope="col">Borrowed</th>
-                <th scope="col">Due</th>
-                <th scope="col">Status</th>
-                <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="book-title-cell">Clean Code</td>
-                <td>John Smith</td>
-                <td>Sep 20</td>
-                <td>Oct 04</td>
-                <td><span class="badge badge-borrowed">Borrowed</span></td>
-                <td><button type="button" class="btn btn-sm btn-action-primary">Return</button></td>
-              </tr>
-              <tr>
-                <td class="book-title-cell">JavaScript: The Good Parts</td>
-                <td>Sarah Ali</td>
-                <td>Sep 18</td>
-                <td>Oct 02</td>
-                <td><span class="badge badge-borrowed">Borrowed</span></td>
-                <td><button type="button" class="btn btn-sm btn-action-primary">Return</button></td>
-              </tr>
-              <tr>
-                <td class="book-title-cell">The Alchemist</td>
-                <td>John Smith</td>
-                <td>Sep 10</td>
-                <td>Sep 24</td>
-                <td><span class="badge badge-overdue">Overdue</span></td>
-                <td><button type="button" class="btn btn-sm btn-action-primary">Return</button></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- Section 4: Statistics -->
-    <section id="statistics" class="dashboard-section" aria-labelledby="stats-heading">
-      <div class="section-header">
-        <h2 id="stats-heading" class="section-title">Statistics</h2>
-      </div>
-
-      <div class="stats-grid">
-        <!-- Metric 1 -->
-        <div class="stat-card stat-card-forest">
-          <span class="stat-label">Total books</span>
-          <span class="stat-value">4</span>
-        </div>
-
-        <!-- Metric 2 -->
-        <div class="stat-card stat-card-amber">
-          <span class="stat-label">Members</span>
-          <span class="stat-value">3</span>
-        </div>
-
-        <!-- Metric 3 -->
-        <div class="stat-card stat-card-forest">
-          <span class="stat-label">Borrowed</span>
-          <span class="stat-value">2</span>
-        </div>
-
-        <!-- Metric 4 -->
-        <div class="stat-card stat-card-amber">
-          <span class="stat-label">Overdue</span>
-          <span class="stat-value">2</span>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- ==========================================================================
-       Modals (Accessible Pure CSS :target overlays)
-       ========================================================================== -->
-
-  <!-- Modal: Add a Book -->
-  <aside id="modal-add-book" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-book-title">
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <h3 id="modal-book-title" class="modal-title">Add a book</h3>
-        <p class="modal-description">Fill in the details to add to the shelves.</p>
-      </div>
-      <form class="modal-form" action="#" method="dialog">
-        <div class="form-group">
-          <label for="book-title-input" class="form-label">Title</label>
-          <input id="book-title-input" type="text" class="form-input" placeholder="e.g. Clean Code" required>
-        </div>
-        <div class="form-group">
-          <label for="book-author-input" class="form-label">Author</label>
-          <input id="book-author-input" type="text" class="form-input" placeholder="e.g. Robert C. Martin" required>
-        </div>
-        <div class="form-group">
-          <label for="book-category-input" class="form-label">Category</label>
-          <select id="book-category-input" class="form-select" required>
-            <option value="" disabled selected>Choose a category...</option>
-            <option value="programming">Programming</option>
-            <option value="science">Science</option>
-            <option value="fiction">Fiction</option>
-            <option value="philosophy">Philosophy</option>
-            <option value="history">History</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="book-isbn-input" class="form-label">ISBN</label>
-          <input id="book-isbn-input" type="text" class="form-input" placeholder="10-digit or 13-digit, optional">
-        </div>
-        <div class="form-group">
-          <label for="book-year-input" class="form-label">Publication year</label>
-          <input id="book-year-input" type="number" class="form-input" placeholder="e.g. 2008" min="1000" max="2100">
-        </div>
-        <div class="modal-actions">
-          <a href="#" class="btn btn-secondary">Cancel</a>
-          <button type="submit" class="btn btn-primary">Add book</button>
-        </div>
-      </form>
-    </div>
-  </aside>
-
-  <!-- Modal: Add a Member -->
-  <aside id="modal-add-member" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-member-title">
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <h3 id="modal-member-title" class="modal-title">Add a member</h3>
-        <p class="modal-description">New members get an ID automatically.</p>
-      </div>
-      <form class="modal-form" action="#" method="dialog">
-        <div class="form-group">
-          <label for="member-name-input" class="form-label">Full name</label>
-          <input id="member-name-input" type="text" class="form-input" placeholder="e.g. Jane Smith" required>
-        </div>
-        <div class="form-group">
-          <label for="member-email-input" class="form-label">Email</label>
-          <input id="member-email-input" type="email" class="form-input" placeholder="name@example.com" required>
-        </div>
-        <div class="form-group">
-          <label for="member-type-input" class="form-label">Membership type</label>
-          <select id="member-type-input" class="form-select" required>
-            <option value="" disabled selected>Choose type...</option>
-            <option value="standard">Standard</option>
-            <option value="student">Student</option>
-            <option value="faculty">Faculty</option>
-            <option value="premium">Premium</option>
-          </select>
-        </div>
-        <div class="modal-actions">
-          <a href="#" class="btn btn-secondary">Cancel</a>
-          <button type="submit" class="btn btn-primary">Add member</button>
-        </div>
-      </form>
-    </div>
-  </aside>
-
-  <!-- Modal: My Account & My Reading Stack -->
-  <aside id="modal-my-account" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-account-title">
-    <div class="modal-dialog modal-dialog-large">
-      <div class="modal-header">
-        <h3 id="modal-account-title" class="modal-title">My Reading Stack & Account</h3>
-        <p class="modal-description">Track your active borrowed loans, return dates, and purchased book collection.</p>
-      </div>
-
-      <!-- Account Profile Summary -->
-      <div id="account-profile-summary" class="account-profile-summary">
-        <!-- Injected dynamically by app.js -->
-      </div>
-
-      <!-- Tab Buttons: Borrowed vs Purchased -->
-      <div class="account-tabs-nav" role="tablist">
-        <button type="button" class="account-tab-btn active" data-tab="borrowed" id="btn-tab-borrowed">
-          Borrowed Books (<span id="user-borrowed-count">0</span>)
+    <!-- Auth Card -->
+    <main class="auth-card">
+      <!-- Tabs Switcher (Log In vs Create Account) -->
+      <nav class="auth-tabs-nav" role="tablist" aria-label="Authentication Options">
+        <button type="button" class="auth-tab-nav-btn active" id="tab-login" role="tab" aria-selected="true" aria-controls="panel-login">
+          Log In
         </button>
-        <button type="button" class="account-tab-btn" data-tab="purchased" id="btn-tab-purchased">
-          Purchased Copies (<span id="user-purchased-count">0</span>)
+        <button type="button" class="auth-tab-nav-btn" id="tab-signup" role="tab" aria-selected="false" aria-controls="panel-signup">
+          Create Account
         </button>
-      </div>
+      </nav>
 
-      <!-- Tab Content: Borrowed List -->
-      <div id="account-tab-borrowed-content" class="account-items-list" role="tabpanel">
-        <!-- Injected dynamically -->
-      </div>
+      <!-- Alert Messages (Shared) -->
+      <div id="auth-alert" class="auth-alert" role="alert"></div>
 
-      <!-- Tab Content: Purchased List -->
-      <div id="account-tab-purchased-content" class="account-items-list" role="tabpanel" style="display: none;">
-        <!-- Injected dynamically -->
-      </div>
+      <!-- Panel 1: Log In -->
+      <section id="panel-login" class="auth-panel active" role="tabpanel" aria-labelledby="tab-login">
+        <h2 class="auth-title">Welcome Back</h2>
+        <p class="auth-subtitle">Sign in with your email or Member ID to view your books.</p>
 
-      <div class="modal-actions" style="margin-top: 1.5rem;">
-        <a href="#" class="btn btn-secondary">Close</a>
-      </div>
+        <form id="login-form" class="auth-form" novalidate>
+          <div class="auth-form-group">
+            <label for="login-email" class="auth-label">Email or Member ID</label>
+            <input 
+              type="text" 
+              id="login-email" 
+              class="auth-input" 
+              placeholder="e.g. john@example.com or M-001" 
+              required 
+              autocomplete="username"
+            >
+          </div>
+
+          <div class="auth-form-group">
+            <label for="login-password" class="auth-label">Password</label>
+            <input 
+              type="password" 
+              id="login-password" 
+              class="auth-input" 
+              placeholder="Enter your password" 
+              required 
+              autocomplete="current-password"
+            >
+          </div>
+
+          <button type="submit" class="btn btn-primary auth-btn-submit">
+            Log In
+          </button>
+        </form>
+
+        <!-- Demo Accounts Box (Instant Fill) -->
+        <div class="demo-accounts-box">
+          <div class="demo-accounts-title">
+            <span>Demo Accounts (Instant Fill)</span>
+          </div>
+          <div class="demo-account-item">
+            <div>
+              <strong>John Smith</strong> (Standard)
+              <br><span style="color: var(--color-text-muted);">john@example.com &bull; 2 borrowed, 1 bought</span>
+            </div>
+            <button type="button" class="btn-fill-demo" data-email="john@example.com" data-pass="password123">Fill</button>
+          </div>
+          <div class="demo-account-item">
+            <div>
+              <strong>Sarah Ali</strong> (Student)
+              <br><span style="color: var(--color-text-muted);">sarah@example.com &bull; 1 borrowed, 1 bought</span>
+            </div>
+            <button type="button" class="btn-fill-demo" data-email="sarah@example.com" data-pass="password123">Fill</button>
+          </div>
+          <div class="demo-account-item">
+            <div>
+              <strong>Chief Librarian</strong> (Admin)
+              <br><span style="color: var(--color-text-muted);">admin@quietstacks.com</span>
+            </div>
+            <button type="button" class="btn-fill-demo" data-email="admin@quietstacks.com" data-pass="admin123">Fill</button>
+          </div>
+        </div>
+
+        <div class="auth-footer">
+          Don't have an account? <a href="#signup" id="link-to-signup" class="auth-link">Sign Up</a>
+        </div>
+      </section>
+
+      <!-- Panel 2: Create Account (Sign Up) -->
+      <section id="panel-signup" class="auth-panel" role="tabpanel" aria-labelledby="tab-signup">
+        <h2 class="auth-title">Create an Account</h2>
+        <p class="auth-subtitle">Register to borrow books, purchase copies, and manage your reading account.</p>
+
+        <form id="signup-form" class="auth-form" novalidate>
+          <div class="auth-form-group">
+            <label for="signup-name" class="auth-label">Full Name</label>
+            <input 
+              type="text" 
+              id="signup-name" 
+              class="auth-input" 
+              placeholder="e.g. Jane Doe" 
+              required 
+              autocomplete="name"
+            >
+          </div>
+
+          <div class="auth-form-group">
+            <label for="signup-email" class="auth-label">Email Address</label>
+            <input 
+              type="email" 
+              id="signup-email" 
+              class="auth-input" 
+              placeholder="e.g. jane@example.com" 
+              required 
+              autocomplete="email"
+            >
+          </div>
+
+          <div class="auth-form-group">
+            <label for="signup-type" class="auth-label">Membership Type</label>
+            <select id="signup-type" class="auth-select" required>
+              <option value="standard" selected>Standard Member</option>
+              <option value="student">Student (Academic)</option>
+              <option value="faculty">Faculty / Scholar</option>
+              <option value="premium">Premium Patron</option>
+            </select>
+          </div>
+
+          <div class="auth-form-group">
+            <label for="signup-password" class="auth-label">Password</label>
+            <input 
+              type="password" 
+              id="signup-password" 
+              class="auth-input" 
+              placeholder="Minimum 6 characters" 
+              minlength="6" 
+              required 
+              autocomplete="new-password"
+            >
+          </div>
+
+          <div class="auth-form-group">
+            <label for="signup-confirm-password" class="auth-label">Confirm Password</label>
+            <input 
+              type="password" 
+              id="signup-confirm-password" 
+              class="auth-input" 
+              placeholder="Re-enter your password" 
+              minlength="6" 
+              required 
+              autocomplete="new-password"
+            >
+          </div>
+
+          <button type="submit" class="btn btn-primary auth-btn-submit">
+            Create Member Account
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          Already have an account? <a href="#login" id="link-to-login" class="auth-link">Log In</a>
+        </div>
+      </section>
+    </main>
+
+    <!-- Guest Access Link -->
+    <div class="back-to-library">
+      <a href="dashboard.html?guest=true" class="auth-guest-link">
+        Browse library shelves as guest &rarr;
+      </a>
     </div>
-  </aside>
+  </div>
 
-  <!-- Back to Top Button with Animated Power Circle -->
-  <button type="button" id="btn-back-to-top" class="back-to-top-btn" aria-label="Scroll back to top" title="Scroll back to top">
-    <svg class="back-to-top-svg" viewBox="0 0 52 52" aria-hidden="true">
-      <defs>
-        <linearGradient id="powerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#b07d1a" />
-          <stop offset="60%" stop-color="#2d6a4f" />
-          <stop offset="100%" stop-color="#1b4332" />
-        </linearGradient>
-      </defs>
-      <circle class="progress-ring-bg" cx="26" cy="26" r="23" />
-      <circle id="power-ring-circle" class="progress-ring-circle" cx="26" cy="26" r="23" />
-    </svg>
-    <svg class="back-to-top-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7" />
-    </svg>
-  </button>
-
-  <!-- Application Scripts -->
+  <!-- Scripts -->
   <script src="assets/js/storage.js"></script>
-  <script src="assets/js/app.js"></script>
+  <script src="assets/js/auth.js"></script>
 </body>
 </html>

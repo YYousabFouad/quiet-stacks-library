@@ -17,7 +17,7 @@
     CURRENT_USER: 'quiet_stacks_current_user'
   };
 
-  const CURRENT_DATA_VERSION = '2.2';
+  const CURRENT_DATA_VERSION = '2.3';
 
   // Comprehensive Seed Dataset with Prices for Purchasing
   const INITIAL_BOOKS = [
@@ -1035,8 +1035,8 @@
       write(STORAGE_KEYS.MEMBERS, INITIAL_MEMBERS);
       write(STORAGE_KEYS.LOANS, INITIAL_LOANS);
       write(STORAGE_KEYS.ACCOUNTS, INITIAL_ACCOUNTS);
-      // Set John Smith as default logged-in demo user for convenience
-      write(STORAGE_KEYS.CURRENT_USER, INITIAL_ACCOUNTS[0]);
+      // Unauthenticated by default so users start at the login/sign up portal
+      write(STORAGE_KEYS.CURRENT_USER, null);
       this.recalculateStatistics();
     }
   };
