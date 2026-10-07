@@ -203,7 +203,7 @@
         }
       }
 
-      if (window.matchMedia('(max-width: 860px)').matches) {
+      if (window.matchMedia('(max-width: 680px)').matches) {
         const bookStage = document.querySelector('.book-stage');
         if (bookStage) {
           bookStage.scrollIntoView({ behavior: 'smooth', block: 'start' });

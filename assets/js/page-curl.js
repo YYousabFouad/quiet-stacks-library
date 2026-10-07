@@ -25,7 +25,7 @@
   const DURATION = 760;                    // natural physical paper turn duration (ms)
   const THETA0 = (9 * Math.PI) / 180;      // natural corner peel tilt (deg)
   const PHI0 = (16 * Math.PI) / 180;       // max lift angle of the folded flap
-  const MOBILE_QUERY = '(max-width: 860px)';
+  const MOBILE_QUERY = '(max-width: 680px)';
 
   const easeInOutSine = (t) => 0.5 - 0.5 * Math.cos(Math.PI * t);
   const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);

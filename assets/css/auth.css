@@ -12,7 +12,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: var(--space-6) var(--space-4);
+  padding: var(--space-6) var(--space-4) calc(75px + var(--space-4));
   background-color: var(--color-bg-page); /* #fbf8f1 - Matches Dashboard exactly */
   color: var(--color-text-main);
   overflow-x: hidden;
@@ -29,14 +29,15 @@
     radial-gradient(circle at 50% 25%, #ffffff 0%, rgba(251, 248, 241, 0.95) 60%, #efe7d6 100%);
 }
 
-/* Ambient Bookshelf Banner Header (Matches Dashboard) */
+/* Ambient Bookshelf Banner (Pinned to bottom matching design) */
 .ambient-shelf-header {
   position: fixed;
-  top: 0;
+  bottom: 0;
+  top: auto;
   left: 0;
   width: 100%;
-  height: 85px;
-  opacity: 0.28;
+  height: 75px;
+  opacity: 1;
   z-index: 1;
   pointer-events: none;
   overflow: hidden;
@@ -1538,16 +1539,83 @@
    Responsive Adaptations
    ========================================================================== */
 
-@media (max-width: 860px) {
+/* ==========================================================================
+   Tablet Portrait Optimization (681px - 860px)
+   Maintains the full 2-page book spread with 3D WebGL page curl/flip engine
+   ========================================================================== */
+
+@media (min-width: 681px) and (max-width: 860px) {
+  .auth-page {
+    padding: var(--space-4) var(--space-3) calc(75px + var(--space-3));
+  }
+
+  .auth-container {
+    max-width: 740px;
+    width: 100%;
+  }
+
+  .auth-brand {
+    margin-bottom: var(--space-3);
+  }
+
+  .auth-brand-title {
+    font-size: 1.85rem;
+  }
+
+  .library-book {
+    padding: 10px 10px 14px 10px;
+  }
+
+  .book-top-header {
+    padding: 4px 8px 10px 8px;
+  }
+
+  .book-pages-spread {
+    min-height: 500px;
+  }
+
+  .book-page-left,
+  .book-page-right,
+  .leaf-face-front,
+  .leaf-face-back {
+    padding: var(--space-5) var(--space-4);
+  }
+
+  .auth-title {
+    font-size: 1.3rem;
+  }
+
+  .auth-subtitle {
+    font-size: 0.8rem;
+    margin-bottom: var(--space-3);
+  }
+
+  .ex-libris-title {
+    font-size: 1.25rem;
+  }
+
+  .archival-quote-box {
+    margin-bottom: var(--space-3);
+    font-size: 0.82rem;
+  }
+}
+
+/* ==========================================================================
+   Mobile Screens (Phone S 360px, Phone M 390px, Phone L 430px up to 680px)
+   ========================================================================== */
+
+@media (max-width: 680px) {
   /* Prevent flex centering scroll cut-off on small screens when content is taller than viewport */
   .auth-page {
     justify-content: flex-start;
-    padding: var(--space-4) var(--space-3) var(--space-8);
+    padding: var(--space-4) var(--space-3) calc(60px + var(--space-4));
   }
 
   .ambient-shelf-header {
     height: 60px;
-    opacity: 0.22;
+    opacity: 1;
+    bottom: 0;
+    top: auto;
   }
 
   .auth-brand {
