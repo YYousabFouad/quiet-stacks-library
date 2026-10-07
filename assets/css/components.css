@@ -771,12 +771,81 @@
     flex-direction: column;
     align-items: flex-start;
     padding: var(--space-4);
+    gap: var(--space-3);
   }
 
   .btn-refresh-quote {
-    align-self: flex-end;
+    align-self: flex-start;
   }
 }
+
+@media (max-width: 640px) {
+  .search-wrapper {
+    max-width: 100%;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .input-search,
+  .select-filter {
+    font-size: 16px; /* Prevents auto-zoom on mobile browsers */
+    width: 100%;
+  }
+
+  .book-card-footer {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .card-actions {
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+
+  .loans-table-wrapper {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .loans-table {
+    min-width: 520px;
+  }
+
+  .loans-table th,
+  .loans-table td {
+    padding: 0.65rem 0.75rem;
+  }
+
+  .modal-overlay {
+    padding: var(--space-3);
+    align-items: flex-start;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal-dialog {
+    padding: var(--space-4);
+    margin: var(--space-4) auto;
+    max-height: none;
+  }
+
+  .account-profile-summary {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+
+  .form-input,
+  .form-select {
+    font-size: 16px; /* iOS auto-zoom prevention */
+  }
+
+  .back-to-top-btn {
+    bottom: 1.25rem;
+    right: 1.25rem;
+    width: 44px;
+    height: 44px;
+  }
+}
+
 
 /* --------------------------------------------------------------------------
    Back to Top Button with Animated Power Circle

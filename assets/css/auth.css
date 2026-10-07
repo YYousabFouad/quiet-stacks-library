@@ -1539,76 +1539,240 @@
    ========================================================================== */
 
 @media (max-width: 860px) {
+  /* Prevent flex centering scroll cut-off on small screens when content is taller than viewport */
+  .auth-page {
+    justify-content: flex-start;
+    padding: var(--space-4) var(--space-3) var(--space-8);
+  }
+
+  .ambient-shelf-header {
+    height: 60px;
+    opacity: 0.22;
+  }
+
+  .auth-brand {
+    margin-bottom: var(--space-3);
+  }
+
+  .auth-brand-title {
+    font-size: 1.65rem;
+  }
+
+  .auth-brand-subtitle {
+    font-size: 0.82rem;
+  }
+
+  .library-book {
+    padding: 8px 8px 12px 8px;
+    border-radius: 14px;
+    box-shadow: 
+      0 16px 40px -8px rgba(10, 30, 20, 0.45),
+      0 8px 20px -4px rgba(0, 0, 0, 0.25),
+      0 0 0 1px rgba(212, 175, 55, 0.4) inset;
+  }
+
+  /* Spine markers and decorations on mobile single-column book */
+  .library-book::before,
+  .library-book::after,
+  .book-spine-gutter,
+  .book-ribbon-bookmark,
+  .book-curl-canvas,
+  .page-turn-corner {
+    display: none !important;
+  }
+
+  .book-cover-filigree {
+    inset: 3px;
+    border-radius: 11px;
+  }
+
   .book-top-header {
     flex-direction: column;
-    gap: 10px;
-    padding: 6px 4px 10px 4px;
+    align-items: center;
+    gap: 0;
+    padding: 4px 2px 10px 2px;
   }
 
   .book-header-foliomark {
-    display: none;
+    display: none !important;
   }
 
   .book-tabs-nav {
     width: 100%;
     max-width: 320px;
-  }
-
-  .book-pages-spread {
-    grid-template-columns: 1fr;
-    min-height: auto;
-    overflow: hidden;
-  }
-
-  .book-spine-gutter,
-  .book-ribbon-bookmark {
-    display: none;
-  }
-
-  .book-page-left {
-    border-right: none;
-    border-radius: 10px 10px 0 0;
-    padding: var(--space-5) var(--space-4);
-    box-shadow: none;
-  }
-
-  .book-page-right {
-    border-radius: 0 0 10px 10px;
-    padding: var(--space-5) var(--space-4);
-    box-shadow: none;
-    display: none;
-  }
-
-  .book-page-right.mobile-active {
     display: flex;
   }
 
+  .book-tab-btn {
+    flex: 1;
+    padding: 0.45rem 0.6rem;
+    font-size: 0.82rem;
+  }
+
+  /* Single-column book spread on mobile */
+  .book-pages-spread {
+    display: flex;
+    flex-direction: column;
+    min-height: auto;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+  }
+
+  /* Active Form is ORDER 1 (Always at top for immediate phone access) */
   .book-turning-leaf {
     position: relative;
     left: 0;
     width: 100%;
     height: auto;
+    order: 1;
     transform: none !important;
     animation: none !important;
+    z-index: 2;
+    pointer-events: auto;
+  }
+
+  .book-turning-leaf.leaf-turned-over {
+    display: none !important;
   }
 
   .leaf-face-front {
     position: relative;
     inset: auto;
-    border-radius: 0 0 10px 10px;
+    width: 100%;
+    border-radius: 0;
     padding: var(--space-5) var(--space-4);
     display: flex;
+    box-shadow: none;
+    background: #ffffff;
   }
 
   .leaf-face-back {
-    display: none;
+    display: none !important;
   }
 
-  .book-turning-leaf.leaf-turned-over .leaf-face-front {
+  /* Register under-page (ORDER 1 when Register is active) */
+  .book-page-right {
+    position: relative;
+    width: 100%;
+    order: 1;
+    border-radius: 0;
+    padding: var(--space-5) var(--space-4);
+    box-shadow: none;
+    background: #ffffff;
     display: none;
+    z-index: 2;
   }
 
-  .auth-brand-title {
-    font-size: 1.7rem;
+  .book-pages-spread.spread-turned-over .book-page-right,
+  .book-page-right.mobile-active {
+    display: flex;
+  }
+
+  /* Companion & Demo Reader Passports (ORDER 2 - sits neatly under form) */
+  .book-page-left {
+    position: relative;
+    width: 100%;
+    order: 2;
+    border-right: none;
+    border-top: 1px solid var(--color-border);
+    border-radius: 0;
+    padding: var(--space-4) var(--space-4) var(--space-5);
+    box-shadow: none;
+    background: var(--color-bg-subtle);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ex-libris-header {
+    padding-bottom: var(--space-2);
+    margin-bottom: var(--space-2);
+  }
+
+  .ex-libris-seal {
+    width: 36px;
+    height: 36px;
+    margin-bottom: var(--space-1);
+  }
+
+  .ex-libris-title {
+    font-size: 1.05rem;
+  }
+
+  .ex-libris-subtitle {
+    font-size: 0.74rem;
+  }
+
+  .archival-quote-box {
+    padding: var(--space-2) var(--space-3);
+    margin-bottom: var(--space-3);
+    font-size: 0.78rem;
+  }
+
+  .archival-quote-box cite {
+    font-size: 0.7rem;
+  }
+
+  .demo-accounts-box {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .auth-title {
+    font-size: 1.25rem;
+  }
+
+  .auth-subtitle {
+    font-size: 0.82rem;
+    margin-bottom: var(--space-4);
+  }
+
+  /* Inputs: 16px to prevent iOS auto-zoom on focus */
+  .auth-input,
+  .auth-select {
+    font-size: 16px;
+    padding-top: 0.58rem;
+    padding-bottom: 0.58rem;
+  }
+
+  .auth-btn-submit {
+    padding: 0.65rem 1rem;
+    font-size: 0.88rem;
   }
 }
+
+@media (max-width: 480px) {
+  .auth-brand-title {
+    font-size: 1.45rem;
+  }
+
+  .auth-crest-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .auth-crest-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .auth-brand-badge {
+    font-size: 10px;
+    padding: 2px 10px;
+  }
+
+  .book-tab-btn {
+    font-size: 0.76rem;
+    padding: 0.4rem 0.5rem;
+    gap: 5px;
+  }
+
+  .leaf-face-front,
+  .book-page-right {
+    padding: var(--space-4) var(--space-3);
+  }
+
+  .book-page-left {
+    padding: var(--space-3) var(--space-3) var(--space-4);
+  }
+}
+

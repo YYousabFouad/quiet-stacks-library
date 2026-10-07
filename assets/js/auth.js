@@ -141,6 +141,7 @@
     if (pagesSpread && currentMode === 'signup') {
       pagesSpread.classList.add('spread-turned-over');
       if (turningLeaf) turningLeaf.classList.add('leaf-turned-over');
+      if (underPage) underPage.classList.add('mobile-active');
     }
 
     // ------------------------------------------------------------------------
@@ -199,6 +200,13 @@
           turningLeaf.classList.toggle('leaf-turned-over', isSignup);
           turningLeaf.classList.toggle('leaf-at-rest', !isSignup);
           if (underPage) underPage.classList.toggle('mobile-active', isSignup);
+        }
+      }
+
+      if (window.matchMedia('(max-width: 860px)').matches) {
+        const bookStage = document.querySelector('.book-stage');
+        if (bookStage) {
+          bookStage.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       }
     }
