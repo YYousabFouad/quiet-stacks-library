@@ -1,180 +1,308 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Log In — Quiet Stacks Library</title>
-  <meta name="description" content="Sign in to your Quiet Stacks Library account to manage borrowed books and purchases in an ambient digital sanctuary.">
-  
-  <!-- Main Stylesheets -->
-  <link rel="stylesheet" href="assets/css/style.css">
-  <link rel="stylesheet" href="assets/css/auth.css">
-</head>
-<body class="auth-page">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Log In — Quiet Stacks Library</title>
+    <meta
+      name="description"
+      content="Sign in to your Quiet Stacks Library account to manage borrowed books and purchases in an ambient digital sanctuary."
+    />
 
-  <!-- Library Study Ambient Background (Matches Dashboard) -->
-  <div class="library-ambient-bg" aria-hidden="true"></div>
+    <!-- Main Stylesheets -->
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <link rel="stylesheet" href="assets/css/auth.css" />
+  </head>
+  <body class="auth-page">
+    <!-- Library Study Ambient Background (Matches Dashboard) -->
+    <div class="library-ambient-bg" aria-hidden="true"></div>
 
-  <!-- Ambient Bookshelf Silhouette Header -->
-  <div class="ambient-shelf-header" aria-hidden="true">
-    <img src="assets/images/book-banner.svg" alt="Library Bookshelf" class="ambient-shelf-img">
-  </div>
-
-  <!-- Zoom-Out Reveal Backdrop -->
-  <div id="dashboard-reveal-backdrop" class="dashboard-reveal-backdrop" aria-hidden="true">
-    <div class="dashboard-reveal-banner">
-      <img src="assets/images/book-banner.svg" alt="Dashboard Bookshelf Banner" style="width: 100%; height: 110px; object-fit: cover; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 14px rgba(0,0,0,0.08);">
-      <h2 style="font-family: var(--font-serif); font-size: 1.8rem; color: var(--color-primary); margin-bottom: 6px;">Entering Quiet Stacks Library...</h2>
-      <p style="color: var(--color-text-secondary); font-size: 0.95rem;">Retrieving your catalog and book loans...</p>
+    <!-- Ambient Bookshelf Silhouette Header -->
+    <div class="ambient-shelf-header" aria-hidden="true">
+      <img
+        src="assets/images/book-banner.svg"
+        alt="Library Bookshelf"
+        class="ambient-shelf-img"
+      />
     </div>
-  </div>
 
-  <div class="auth-container">
-
-    <!-- Brand Header -->
-    <header class="auth-brand">
-      <div class="auth-brand-badge">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2l2.4 7.4h7.6l-6.2 4.5 2.4 7.4-6.2-4.5-6.2 4.5 2.4-7.4-6.2-4.5h7.6z"/>
-        </svg>
-        <span>Archival Collection &bull; Est. 1894</span>
+    <!-- Zoom-Out Reveal Backdrop -->
+    <div
+      id="dashboard-reveal-backdrop"
+      class="dashboard-reveal-backdrop"
+      aria-hidden="true"
+    >
+      <div class="dashboard-reveal-banner">
+        <img
+          src="assets/images/book-banner.svg"
+          alt="Dashboard Bookshelf Banner"
+          style="
+            width: 100%;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+          "
+        />
+        <h2
+          style="
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            color: var(--color-primary);
+            margin-bottom: 6px;
+          "
+        >
+          Entering Quiet Stacks Library...
+        </h2>
+        <p style="color: var(--color-text-secondary); font-size: 0.95rem">
+          Retrieving your catalog and book loans...
+        </p>
       </div>
+    </div>
 
-      <a href="dashboard.html?guest=true" class="auth-brand-logo" title="Quiet Stacks Library Home">
-        <div class="auth-crest-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-            <path d="M9 7h6"/>
-            <path d="M9 11h6"/>
+    <div class="auth-container">
+      <!-- Brand Header -->
+      <header class="auth-brand">
+        <div class="auth-brand-badge">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 2l2.4 7.4h7.6l-6.2 4.5 2.4 7.4-6.2-4.5-6.2 4.5 2.4-7.4-6.2-4.5h7.6z"
+            />
           </svg>
-        </div>
-        <h1 class="auth-brand-title">Quiet Stacks Library</h1>
-      </a>
-      <p class="auth-brand-subtitle">One calm digital sanctuary for every book, scholar, and story.</p>
-    </header>
-
-    <!-- Active Session Banner -->
-    <div id="auth-active-session-banner" class="auth-session-banner" style="display: none;"></div>
-
-    <!-- The 3D Open Archival Tome -->
-    <div class="book-stage">
-      <div class="library-book">
-        <div class="book-cover-filigree" aria-hidden="true"></div>
-        <div class="book-ribbon-bookmark" aria-hidden="true"></div>
-
-        <!-- Book Top Header (Folio Marks & Navigation Ribbons) -->
-        <div class="book-top-header">
-          <div class="book-header-foliomark left-mark">
-            <span class="foliomark-num">FOLIO I</span>
-            <span class="foliomark-divider">&bull;</span>
-            <span>SANCTUARY OF LETTERS</span>
-          </div>
-
-          <!-- Folio Switcher Tabs -->
-          <nav class="book-tabs-nav" role="tablist" aria-label="Folio Selection">
-            <div class="book-tabs-slider" id="book-tabs-slider" aria-hidden="true"></div>
-            <button type="button" class="book-tab-btn active" id="tab-login" role="tab" aria-selected="true" aria-controls="panel-login">
-              <svg viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd" />
-              </svg>
-              <span>Sign In</span>
-            </button>
-            <button type="button" class="book-tab-btn" id="tab-signup" role="tab" aria-selected="false" aria-controls="panel-signup">
-              <svg viewBox="0 0 20 20" fill="currentColor">
-                <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
-              </svg>
-              <span>Register</span>
-            </button>
-          </nav>
-
-          <div class="book-header-foliomark right-mark">
-            <span class="foliomark-num">FOLIO II</span>
-            <span class="foliomark-divider">&bull;</span>
-            <span>MEMBER REGISTRY</span>
-          </div>
+          <span>Archival Collection &bull; Est. 1894</span>
         </div>
 
-        <!-- Shared Alert Notification Box -->
-        <div id="auth-alert" class="auth-alert" role="alert"></div>
+        <a
+          href="dashboard.html?guest=true"
+          class="auth-brand-logo"
+          title="Quiet Stacks Library Home"
+        >
+          <div class="auth-crest-icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path
+                d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+              />
+              <path d="M9 7h6" />
+              <path d="M9 11h6" />
+            </svg>
+          </div>
+          <h1 class="auth-brand-title">Quiet Stacks Library</h1>
+        </a>
+        <p class="auth-brand-subtitle">
+          One calm digital sanctuary for every book, scholar, and story.
+        </p>
+      </header>
 
-        <main class="book-pages-spread">
-          <div class="book-spine-gutter" aria-hidden="true"></div>
+      <!-- Active Session Banner -->
+      <div
+        id="auth-active-session-banner"
+        class="auth-session-banner"
+        style="display: none"
+      ></div>
 
-          <!-- LEFT PAGE: Ex Libris & Demo Accounts -->
-          <div class="book-page-left">
-            <div>
-              <div class="ex-libris-header">
-                <div class="ex-libris-seal">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 6v12M6 12h12"/>
-                  </svg>
-                </div>
-                <h3 class="ex-libris-title">Ex Libris Archivalis</h3>
-                <p class="ex-libris-subtitle">Sanctuary of Letters &bull; Volume I</p>
-              </div>
+      <!-- The 3D Open Archival Tome -->
+      <div class="book-stage">
+        <div class="library-book">
+          <div class="book-cover-filigree" aria-hidden="true"></div>
+          <div class="book-ribbon-bookmark" aria-hidden="true"></div>
 
-              <div class="archival-quote-box">
-                <p>"A room without books is like a body without a soul."</p>
-                <cite>&mdash; Marcus Tullius Cicero</cite>
-              </div>
+          <!-- Book Top Header (Folio Marks & Navigation Ribbons) -->
+          <div class="book-top-header">
+            <div class="book-header-foliomark left-mark">
+              <span class="foliomark-num">FOLIO I</span>
+              <span class="foliomark-divider">&bull;</span>
+              <span>SANCTUARY OF LETTERS</span>
+            </div>
 
-              <!-- Demo Reader Passports -->
-              <div class="demo-accounts-box">
-                <div class="demo-accounts-title">
-                  <span class="demo-accounts-title-icon">
-                    <svg viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z" clip-rule="evenodd" />
+            <!-- Folio Switcher Tabs -->
+            <nav
+              class="book-tabs-nav"
+              role="tablist"
+              aria-label="Folio Selection"
+            >
+              <div
+                class="book-tabs-slider"
+                id="book-tabs-slider"
+                aria-hidden="true"
+              ></div>
+              <button
+                type="button"
+                class="book-tab-btn active"
+                id="tab-login"
+                role="tab"
+                aria-selected="true"
+                aria-controls="panel-login"
+              >
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path
+                    fill-rule="evenodd"
+                    d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <span>Sign In</span>
+              </button>
+              <button
+                type="button"
+                class="book-tab-btn"
+                id="tab-signup"
+                role="tab"
+                aria-selected="false"
+                aria-controls="panel-signup"
+              >
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path
+                    d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"
+                  />
+                </svg>
+                <span>Register</span>
+              </button>
+            </nav>
+
+            <div class="book-header-foliomark right-mark">
+              <span class="foliomark-num">FOLIO II</span>
+              <span class="foliomark-divider">&bull;</span>
+              <span>MEMBER REGISTRY</span>
+            </div>
+          </div>
+
+          <!-- Shared Alert Notification Box -->
+          <div id="auth-alert" class="auth-alert" role="alert"></div>
+
+          <main class="book-pages-spread">
+            <div class="book-spine-gutter" aria-hidden="true"></div>
+
+            <!-- LEFT PAGE: Ex Libris & Demo Accounts -->
+            <div class="book-page-left">
+              <div>
+                <div class="ex-libris-header">
+                  <div class="ex-libris-seal">
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.7"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 6v12M6 12h12" />
                     </svg>
-                    <span>Instant Reader Cards</span>
-                  </span>
-                  <span class="demo-accounts-badge">1-Click Fill</span>
+                  </div>
+                  <h3 class="ex-libris-title">Ex Libris Archivalis</h3>
+                  <p class="ex-libris-subtitle">
+                    Sanctuary of Letters &bull; Volume I
+                  </p>
                 </div>
 
-                <div class="demo-accounts-grid">
-                  <div class="demo-account-card">
-                    <div class="demo-account-info">
-                      <div class="demo-account-avatar">JS</div>
-                      <div class="demo-account-details">
-                        <span class="demo-account-name">John Smith</span>
-                        <span class="demo-account-role">Standard &bull; 2 Borrowed</span>
-                      </div>
-                    </div>
-                    <button type="button" class="btn-fill-demo" data-email="john@example.com" data-pass="password123" data-name="John Smith">Fill</button>
+                <div class="archival-quote-box">
+                  <p>"A room without books is like a body without a soul."</p>
+                  <cite>&mdash; Marcus Tullius Cicero</cite>
+                </div>
+
+                <!-- Demo Reader Passports -->
+                <div class="demo-accounts-box">
+                  <div class="demo-accounts-title">
+                    <span class="demo-accounts-title-icon">
+                      <svg viewBox="0 0 20 20" fill="currentColor">
+                        <path
+                          fill-rule="evenodd"
+                          d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                      <span>Instant Reader Cards</span>
+                    </span>
+                    <span class="demo-accounts-badge">1-Click Fill</span>
                   </div>
 
-                  <div class="demo-account-card">
-                    <div class="demo-account-info">
-                      <div class="demo-account-avatar">SA</div>
-                      <div class="demo-account-details">
-                        <span class="demo-account-name">Sarah Ali</span>
-                        <span class="demo-account-role">Student &bull; 1 Borrowed</span>
+                  <div class="demo-accounts-grid">
+                    <div class="demo-account-card">
+                      <div class="demo-account-info">
+                        <div class="demo-account-avatar">JS</div>
+                        <div class="demo-account-details">
+                          <span class="demo-account-name">John Smith</span>
+                          <span class="demo-account-role"
+                            >Standard &bull; 2 Borrowed</span
+                          >
+                        </div>
                       </div>
+                      <button
+                        type="button"
+                        class="btn-fill-demo"
+                        data-email="john@example.com"
+                        data-pass="password123"
+                        data-name="John Smith"
+                      >
+                        Fill
+                      </button>
                     </div>
-                    <button type="button" class="btn-fill-demo" data-email="sarah@example.com" data-pass="password123" data-name="Sarah Ali">Fill</button>
-                  </div>
 
-                  <div class="demo-account-card">
-                    <div class="demo-account-info">
-                      <div class="demo-account-avatar" style="border-color: #d4af37; background: #fef7e6;">CL</div>
-                      <div class="demo-account-details">
-                        <span class="demo-account-name">Chief Librarian</span>
-                        <span class="demo-account-role">Admin &bull; Catalog Authority</span>
+                    <div class="demo-account-card">
+                      <div class="demo-account-info">
+                        <div class="demo-account-avatar">SA</div>
+                        <div class="demo-account-details">
+                          <span class="demo-account-name">Sarah Ali</span>
+                          <span class="demo-account-role"
+                            >Student &bull; 1 Borrowed</span
+                          >
+                        </div>
                       </div>
+                      <button
+                        type="button"
+                        class="btn-fill-demo"
+                        data-email="sarah@example.com"
+                        data-pass="password123"
+                        data-name="Sarah Ali"
+                      >
+                        Fill
+                      </button>
                     </div>
-                    <button type="button" class="btn-fill-demo" data-email="admin@quietstacks.com" data-pass="admin123" data-name="Chief Librarian">Fill</button>
+
+                    <div class="demo-account-card">
+                      <div class="demo-account-info">
+                        <div
+                          class="demo-account-avatar"
+                          style="border-color: #d4af37; background: #fef7e6"
+                        >
+                          CL
+                        </div>
+                        <div class="demo-account-details">
+                          <span class="demo-account-name">Chief Librarian</span>
+                          <span class="demo-account-role"
+                            >Admin &bull; Catalog Authority</span
+                          >
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        class="btn-fill-demo"
+                        data-email="admin@quietstacks.com"
+                        data-pass="admin123"
+                        data-name="Chief Librarian"
+                      >
+                        Fill
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div class="left-page-guest-footer">
-              <a href="dashboard.html?guest=true" class="auth-guest-link">
-                <span>Enter reading room as guest &rarr;</span>
-              </a>
+              <div class="left-page-guest-footer">
+                <a href="dashboard.html?guest=true" class="auth-guest-link">
+                  <span>Enter reading room as guest &rarr;</span>
+                </a>
+              </div>
             </div>
-          </div>
 
             <!-- ========================================================
                RIGHT PAGE: Static Under-Page Folio (Revealed on Register)
@@ -394,7 +522,10 @@
 
                 <div class="auth-footer">
                   Already registered?
-                  <a href="#login" id="link-to-login" class="auth-link back-to-login-link"
+                  <a
+                    href="#login"
+                    id="link-to-login"
+                    class="auth-link back-to-login-link"
                     >&larr; Turn back to Sign In</a
                   >
                 </div>
@@ -413,10 +544,7 @@
                Hinged at Center Spine (left: 50%, origin: left center)
                Swings 180° across the spine to cover the Left Page
                ======================================================== -->
-            <div
-              class="book-turning-leaf leaf-at-rest"
-              id="book-turning-leaf"
-            >
+            <div class="book-turning-leaf leaf-at-rest" id="book-turning-leaf">
               <div class="leaf-shadow-front" aria-hidden="true"></div>
               <div class="leaf-shadow-back" aria-hidden="true"></div>
 
@@ -429,17 +557,15 @@
                 >
                   <h2 class="auth-title">Welcome Back</h2>
                   <p class="auth-subtitle">
-                    Present your credentials to retrieve your borrowed stack
-                    and catalog desk.
+                    Present your credentials to retrieve your borrowed stack and
+                    catalog desk.
                   </p>
 
                   <form id="login-form" class="auth-form" novalidate>
                     <div class="auth-form-group">
                       <label for="login-email" class="auth-label">
                         <span>Email or Member ID</span>
-                        <span class="auth-label-hint"
-                          >e.g. M-001 or email</span
-                        >
+                        <span class="auth-label-hint">e.g. M-001 or email</span>
                       </label>
                       <div class="auth-input-wrapper">
                         <svg
@@ -520,7 +646,10 @@
 
                   <div class="auth-footer">
                     New scholar?
-                    <a href="#signup" id="link-to-signup" class="auth-link turn-to-signup-link"
+                    <a
+                      href="#signup"
+                      id="link-to-signup"
+                      class="auth-link turn-to-signup-link"
                       >Turn page to Register &rarr;</a
                     >
                   </div>
@@ -560,7 +689,10 @@
 
                   <!-- Guild Privileges Box -->
                   <div class="archival-quote-box">
-                    <p>"A sanctuary without letters is darkness; with books, it is eternal life."</p>
+                    <p>
+                      "A sanctuary without letters is darkness; with books, it
+                      is eternal life."
+                    </p>
                     <cite>&mdash; Archival Ledger Codex</cite>
                   </div>
 
@@ -586,7 +718,9 @@
                           <div class="demo-account-avatar">JS</div>
                           <div class="demo-account-details">
                             <span class="demo-account-name">John Smith</span>
-                            <span class="demo-account-role">Standard &bull; 2 Borrowed</span>
+                            <span class="demo-account-role"
+                              >Standard &bull; 2 Borrowed</span
+                            >
                           </div>
                         </div>
                         <button
@@ -606,7 +740,9 @@
                           <div class="demo-account-avatar">SA</div>
                           <div class="demo-account-details">
                             <span class="demo-account-name">Sarah Ali</span>
-                            <span class="demo-account-role">Student &bull; 1 Borrowed</span>
+                            <span class="demo-account-role"
+                              >Student &bull; 1 Borrowed</span
+                            >
                           </div>
                         </div>
                         <button
@@ -630,8 +766,12 @@
                             CL
                           </div>
                           <div class="demo-account-details">
-                            <span class="demo-account-name">Chief Librarian</span>
-                            <span class="demo-account-role">Admin &bull; Authority</span>
+                            <span class="demo-account-name"
+                              >Chief Librarian</span
+                            >
+                            <span class="demo-account-role"
+                              >Admin &bull; Authority</span
+                            >
                           </div>
                         </div>
                         <button
@@ -664,12 +804,12 @@
                 ></div>
               </div>
             </div>
-        </main>
+          </main>
+        </div>
       </div>
     </div>
-  </div>
 
-  <script src="assets/js/storage.js"></script>
-  <script src="assets/js/auth.js"></script>
-</body>
+    <script src="assets/js/storage.js"></script>
+    <script src="assets/js/auth.js"></script>
+  </body>
 </html>
