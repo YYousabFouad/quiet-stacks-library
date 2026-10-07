@@ -184,7 +184,8 @@
 .book-stage {
   position: relative;
   width: 100%;
-  perspective: 2600px;
+  perspective: 1800px;
+  perspective-origin: 50% 50%;
 }
 
 /* Leather Cover Base */
@@ -299,7 +300,7 @@
   background: #ffffff;
   border-radius: 26px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.45s cubic-bezier(0.35, 0, 0.15, 1);
   z-index: 0;
   pointer-events: none;
 }
@@ -611,6 +612,38 @@
   overflow: hidden;
 }
 
+.book-page-right::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.02) 25%, transparent 60%);
+  opacity: 1;
+  pointer-events: none;
+  transition: opacity 0.72s cubic-bezier(0.35, 0, 0.15, 1);
+  z-index: 1;
+}
+
+.book-pages-spread:has(.leaf-turned-over) .book-page-right::after,
+.spread-turned-over .book-page-right::after {
+  opacity: 0;
+}
+
+.book-page-left::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.07) 0%, transparent 40%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.72s cubic-bezier(0.35, 0, 0.15, 1);
+  z-index: 1;
+}
+
+.book-pages-spread:has(.leaf-turned-over) .book-page-left::after,
+.spread-turned-over .book-page-left::after {
+  opacity: 1;
+}
+
 /* ==========================================================================
    The Turning Leaf Across the Whole Book
    Hinged at the Center Spine (left: 50%, origin: left center)
@@ -629,12 +662,12 @@
   will-change: transform;
   z-index: 10;
   pointer-events: none;
-  transition: transform 0.85s cubic-bezier(0.42, 0, 0.25, 1);
+  transition: transform 0.72s cubic-bezier(0.35, 0, 0.15, 1);
 }
 
 /* State 1: At Rest on the Right (Sign In Active) */
 .book-turning-leaf.leaf-at-rest {
-  transform: rotateY(0deg) translateZ(1px);
+  transform: rotateY(0deg) translateZ(0.5px);
 }
 
 .book-turning-leaf.leaf-at-rest .leaf-face-front {
@@ -647,7 +680,7 @@
 
 /* State 2: Turned Over to the Left Page (Register Active) */
 .book-turning-leaf.leaf-turned-over {
-  transform: rotateY(-180deg) translateZ(1px);
+  transform: rotateY(-180deg) translateZ(0.5px);
 }
 
 .book-turning-leaf.leaf-turned-over .leaf-face-front {
@@ -658,55 +691,9 @@
   pointer-events: auto;
 }
 
-/* While Turning: Elevate in 3D Z-index */
+/* While Turning: Elevate in 3D Z-index so it smoothly glides above static pages */
 .book-turning-leaf.turning {
   z-index: 30;
-}
-
-/* 3D Realistic Paper Arching Flip Forward (Sign In -> Register) */
-.book-turning-leaf.flipping-to-signup {
-  animation: pageTurnForward 0.85s cubic-bezier(0.42, 0, 0.25, 1) forwards;
-}
-
-/* 3D Realistic Paper Arching Flip Backward (Register -> Sign In) */
-.book-turning-leaf.flipping-to-login {
-  animation: pageTurnBackward 0.85s cubic-bezier(0.42, 0, 0.25, 1) forwards;
-}
-
-@keyframes pageTurnForward {
-  0% {
-    transform: rotateY(0deg) translateZ(1px);
-  }
-  25% {
-    transform: rotateY(-42deg) rotateZ(-1.2deg) translateZ(32px);
-  }
-  50% {
-    transform: rotateY(-90deg) rotateZ(-2deg) translateZ(55px);
-  }
-  75% {
-    transform: rotateY(-138deg) rotateZ(-1deg) translateZ(32px);
-  }
-  100% {
-    transform: rotateY(-180deg) translateZ(1px);
-  }
-}
-
-@keyframes pageTurnBackward {
-  0% {
-    transform: rotateY(-180deg) translateZ(1px);
-  }
-  25% {
-    transform: rotateY(-138deg) rotateZ(1deg) translateZ(32px);
-  }
-  50% {
-    transform: rotateY(-90deg) rotateZ(2deg) translateZ(55px);
-  }
-  75% {
-    transform: rotateY(-42deg) rotateZ(1.2deg) translateZ(32px);
-  }
-  100% {
-    transform: rotateY(0deg) translateZ(1px);
-  }
 }
 
 /* Front Face of the Leaf: Sign In Folio */
@@ -721,11 +708,13 @@
   justify-content: space-between;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  transform: translateZ(0.5px);
   box-shadow: 
     inset 14px 0 24px -10px rgba(0, 0, 0, 0.06),
     inset -1px 0 0 #dfd4c0;
   z-index: 2;
   overflow: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* Back Face of the Leaf: Archival Scholar Charter & Companion Folio */
@@ -739,7 +728,7 @@
   box-shadow: 
     inset -14px 0 24px -10px rgba(0, 0, 0, 0.06),
     inset 1px 0 0 #dfd4c0;
-  transform: rotateY(180deg);
+  transform: rotateY(180deg) translateZ(0.5px);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   display: flex;
@@ -747,6 +736,7 @@
   justify-content: space-between;
   z-index: 1;
   overflow: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* Dynamic Paper Lighting Overlays */
@@ -756,49 +746,48 @@
   inset: 0;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.5s cubic-bezier(0.35, 0, 0.15, 1);
   z-index: 5;
 }
 
 .leaf-shadow-front {
   background: linear-gradient(
     to right,
-    rgba(0, 0, 0, 0.22) 0%,
-    rgba(0, 0, 0, 0.06) 35%,
-    rgba(255, 255, 255, 0.15) 65%,
+    rgba(27, 67, 50, 0.14) 0%,
+    rgba(0, 0, 0, 0.08) 14%,
+    rgba(255, 255, 255, 0.18) 35%,
+    rgba(0, 0, 0, 0.02) 65%,
     transparent 100%
   );
+  border-radius: 0 10px 10px 0;
 }
 
 .leaf-shadow-back {
   background: linear-gradient(
     to left,
-    rgba(0, 0, 0, 0.22) 0%,
-    rgba(0, 0, 0, 0.06) 35%,
-    rgba(255, 255, 255, 0.15) 65%,
+    rgba(27, 67, 50, 0.14) 0%,
+    rgba(0, 0, 0, 0.08) 14%,
+    rgba(255, 255, 255, 0.18) 35%,
+    rgba(0, 0, 0, 0.02) 65%,
     transparent 100%
   );
+  border-radius: 10px 0 0 10px;
 }
 
 .book-turning-leaf.turning .leaf-shadow-front,
 .book-turning-leaf.turning .leaf-shadow-back {
-  opacity: 0.9;
+  opacity: 0.65;
 }
 
 /* Interactive Page-Turn Corner Dog-Ears */
 .page-turn-corner {
   position: absolute;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   cursor: pointer;
   z-index: 15;
-  transition: transform 0.25s ease, opacity 0.25s ease;
-  opacity: 0.65;
-}
-
-.page-turn-corner:hover {
-  opacity: 1;
-  transform: scale(1.18);
+  transition: transform 0.28s cubic-bezier(0.35, 0, 0.15, 1), opacity 0.28s ease, box-shadow 0.28s ease;
+  opacity: 0.7;
 }
 
 .corner-bottom-right {
@@ -806,7 +795,7 @@
   right: 0;
   background: linear-gradient(135deg, transparent 50%, #d4af37 50%, #f7f1e3 65%);
   border-radius: 0 0 10px 0;
-  box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.12);
+  box-shadow: -2px -2px 6px rgba(0, 0, 0, 0.12);
 }
 
 .corner-bottom-left {
@@ -814,7 +803,19 @@
   left: 0;
   background: linear-gradient(225deg, transparent 50%, #d4af37 50%, #f7f1e3 65%);
   border-radius: 0 0 0 10px;
-  box-shadow: 2px -2px 5px rgba(0, 0, 0, 0.12);
+  box-shadow: 2px -2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.corner-bottom-right:hover {
+  opacity: 1;
+  transform: translate(-3px, -3px) scale(1.15);
+  box-shadow: -4px -4px 12px rgba(0, 0, 0, 0.22);
+}
+
+.corner-bottom-left:hover {
+  opacity: 1;
+  transform: translate(3px, -3px) scale(1.15);
+  box-shadow: 4px -4px 12px rgba(0, 0, 0, 0.22);
 }
 
 /* Typography on Right Page */

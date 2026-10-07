@@ -73,12 +73,16 @@
     // ------------------------------------------------------------------------
     // Smooth 180° Leaf Page-Turn Controller Across the Whole Book
     // ------------------------------------------------------------------------
+    const pagesSpread = document.querySelector('.book-pages-spread');
     let currentMode =
-      (tabSignup && tabSignup.classList.contains('active')) ||
-      window.location.hash === '#signup' ||
-      (window.location.pathname && window.location.pathname.includes('signup'))
+      (turningLeaf && turningLeaf.classList.contains('leaf-turned-over')) ||
+      (tabSignup && tabSignup.classList.contains('active'))
         ? 'signup'
         : 'login';
+
+    if (pagesSpread && currentMode === 'signup') {
+      pagesSpread.classList.add('spread-turned-over');
+    }
 
     function turnPageTo(mode) {
       if (mode === currentMode) return;
@@ -110,28 +114,39 @@
         }
       }
 
+      if (pagesSpread) {
+        if (isSignup) {
+          pagesSpread.classList.add('spread-turned-over');
+        } else {
+          pagesSpread.classList.remove('spread-turned-over');
+        }
+      }
+
       // Smooth 180° Leaf Turn around the Center Spine Axis
       if (turningLeaf) {
-        turningLeaf.classList.remove('flipping-to-signup', 'flipping-to-login');
-        void turningLeaf.offsetWidth; // Force reflow to restart animation reliably
-
         turningLeaf.classList.add('turning');
 
         if (isSignup) {
-          turningLeaf.classList.add('flipping-to-signup');
           turningLeaf.classList.remove('leaf-at-rest');
           turningLeaf.classList.add('leaf-turned-over');
           if (underPage) underPage.classList.add('mobile-active');
         } else {
-          turningLeaf.classList.add('flipping-to-login');
           turningLeaf.classList.remove('leaf-turned-over');
           turningLeaf.classList.add('leaf-at-rest');
           if (underPage) underPage.classList.remove('mobile-active');
         }
 
-        setTimeout(() => {
-          turningLeaf.classList.remove('turning', 'flipping-to-signup', 'flipping-to-login');
-        }, 850);
+        let transitionDone = false;
+        const cleanupTurning = (e) => {
+          if (e && e.target !== turningLeaf) return;
+          if (transitionDone) return;
+          transitionDone = true;
+          turningLeaf.classList.remove('turning');
+          turningLeaf.removeEventListener('transitionend', cleanupTurning);
+        };
+
+        turningLeaf.addEventListener('transitionend', cleanupTurning);
+        setTimeout(cleanupTurning, 760);
       }
     }
 
