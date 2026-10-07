@@ -184,45 +184,125 @@
 .book-stage {
   position: relative;
   width: 100%;
-  perspective: 1800px;
-  perspective-origin: 50% 50%;
+  perspective: 1500px;
+  perspective-origin: 50% 60%;
 }
 
 /* Leather Cover Base */
 .library-book {
   position: relative;
-  background: #173d2c; /* Forest Green Archival Leather */
+  background: 
+    radial-gradient(ellipse at 50% 15%, #1e4d38 0%, #153928 65%, #0d261b 100%);
   border-radius: 18px;
-  padding: 10px 12px 14px 12px;
+  padding: 12px 14px 16px 14px;
   box-shadow: 
-    0 22px 55px -10px rgba(27, 67, 50, 0.35),
-    0 10px 25px -5px rgba(0, 0, 0, 0.2),
-    0 0 0 1px rgba(212, 175, 55, 0.45) inset;
+    0 32px 75px -12px rgba(10, 30, 20, 0.55),
+    0 16px 35px -8px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(212, 175, 55, 0.5) inset,
+    0 0 0 3px rgba(12, 33, 23, 0.95) inset;
   transform-style: preserve-3d;
+}
+
+/* Embroidered Headband (Top Spine Cap) */
+.library-book::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 6px;
+  background: repeating-linear-gradient(
+    90deg,
+    #a82020 0px,
+    #a82020 4px,
+    #d4af37 4px,
+    #d4af37 8px
+  );
+  border-radius: 3px 3px 0 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  z-index: 28;
+  pointer-events: none;
+}
+
+/* Embroidered Tailband (Bottom Spine Cap) */
+.library-book::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 6px;
+  background: repeating-linear-gradient(
+    90deg,
+    #a82020 0px,
+    #a82020 4px,
+    #d4af37 4px,
+    #d4af37 8px
+  );
+  border-radius: 0 0 3px 3px;
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.45);
+  z-index: 28;
+  pointer-events: none;
 }
 
 /* Gold Embossed Filigree Perimeter */
 .book-cover-filigree {
   position: absolute;
   inset: 5px;
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  border: 1px solid rgba(212, 175, 55, 0.35);
   border-radius: 14px;
   pointer-events: none;
   z-index: 1;
 }
 
+.book-cover-filigree::before,
+.book-cover-filigree::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-color: rgba(212, 175, 55, 0.6);
+  pointer-events: none;
+}
+
+.book-cover-filigree::before {
+  top: 4px;
+  left: 4px;
+  border-top: 2px solid;
+  border-left: 2px solid;
+}
+
+.book-cover-filigree::after {
+  bottom: 4px;
+  right: 4px;
+  border-bottom: 2px solid;
+  border-right: 2px solid;
+}
+
 /* Silk Ribbon Bookmark Hanging Over Central Spine */
 .book-ribbon-bookmark {
   position: absolute;
-  top: -12px;
+  top: -14px;
   left: 50%;
   transform: translateX(-50%);
-  width: 22px;
-  height: 85px;
-  background: linear-gradient(135deg, #a82020 0%, #7e1212 100%);
+  width: 24px;
+  height: 90px;
+  background: 
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.05) 0px,
+      rgba(255, 255, 255, 0.05) 2px,
+      transparent 2px,
+      transparent 4px
+    ),
+    linear-gradient(135deg, #a82020 0%, #7e1212 100%);
   border-radius: 0 0 4px 4px;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);
-  z-index: 35;
+  box-shadow: 
+    0 5px 16px rgba(0, 0, 0, 0.45),
+    2px 2px 6px rgba(0, 0, 0, 0.25);
+  z-index: 40;
   pointer-events: none;
   clip-path: polygon(0% 0%, 100% 0%, 100% 88%, 50% 100%, 0% 88%);
 }
@@ -230,12 +310,13 @@
 .book-ribbon-bookmark::after {
   content: '';
   position: absolute;
-  bottom: 10px;
+  bottom: 11px;
   left: 0;
   width: 100%;
   height: 3px;
   background: #d4af37;
-  opacity: 0.85;
+  opacity: 0.9;
+  box-shadow: 0 0 4px rgba(212, 175, 55, 0.6);
 }
 
 /* Book Folio Top Header (Folio Marks & Navigation Ribbons) */
@@ -353,10 +434,24 @@
   width: 100%;
   min-height: 560px;
   background: #fdfbf7;
-  border-radius: 10px;
+  border-radius: 8px;
   box-shadow: 
     0 0 0 1px #e6decb inset,
-    0 10px 30px -10px rgba(0, 0, 0, 0.15);
+    /* Stacked Page Rim - Left edge (tangible 3D thickness of archival leaves) */
+    -3px 0 0 0 #f4eee1,
+    -6px 0 0 0 #ece4d2,
+    -9px 1px 0 0 #e4dac3,
+    -13px 2px 5px rgba(0, 0, 0, 0.18),
+    /* Stacked Page Rim - Right edge (tangible 3D thickness of archival leaves) */
+    3px 0 0 0 #f4eee1,
+    6px 0 0 0 #ece4d2,
+    9px 1px 0 0 #e4dac3,
+    13px 2px 5px rgba(0, 0, 0, 0.18),
+    /* Stacked Page Rim - Bottom book block edge */
+    0 3px 0 0 #f4eee1,
+    0 6px 0 0 #ece4d2,
+    0 9px 0 0 #e4dac3,
+    0 15px 24px -4px rgba(0, 0, 0, 0.32);
   z-index: 5;
   transform-style: preserve-3d;
   /* Crucial: overflow must NOT clip the 3D rotating leaf across the spine */
@@ -369,19 +464,19 @@
   top: 0;
   bottom: 0;
   left: 50%;
-  width: 32px;
+  width: 36px;
   transform: translateX(-50%);
   background: linear-gradient(
     to right,
-    rgba(0, 0, 0, 0.08) 0%,
-    rgba(0, 0, 0, 0.22) 42%,
-    rgba(212, 175, 55, 0.22) 50%,
-    rgba(0, 0, 0, 0.22) 58%,
-    rgba(0, 0, 0, 0.08) 100%
+    rgba(0, 0, 0, 0.06) 0%,
+    rgba(0, 0, 0, 0.28) 38%,
+    rgba(212, 175, 55, 0.35) 50%,
+    rgba(0, 0, 0, 0.28) 62%,
+    rgba(0, 0, 0, 0.06) 100%
   );
   box-shadow: 
-    inset 0 0 8px rgba(0, 0, 0, 0.15),
-    0 0 14px rgba(0, 0, 0, 0.18);
+    inset 0 0 10px rgba(0, 0, 0, 0.2),
+    0 0 16px rgba(0, 0, 0, 0.22);
   z-index: 25;
   pointer-events: none;
 }
@@ -394,7 +489,51 @@
   left: 50%;
   width: 1px;
   transform: translateX(-50%);
-  background: rgba(212, 175, 55, 0.45);
+  background: rgba(212, 175, 55, 0.6);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Realistic 3D Canvas Curl Layer (Physical Paper Bending Mesh) */
+.book-curl-canvas {
+  position: absolute;
+  pointer-events: none;
+  z-index: 35;
+  display: none;
+  overflow: visible;
+}
+
+.book-pages-spread.is-curling .book-curl-canvas {
+  display: block !important;
+}
+
+/* While Canvas 3D curl engine is actively rendering physical paper deformation */
+.book-pages-spread.is-curling .book-turning-leaf {
+  animation: none !important;
+  transition: none !important;
+  opacity: 1 !important;
+}
+
+.book-pages-spread.is-curling .book-page-right::after,
+.book-pages-spread.is-curling .book-page-left::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+.book-pages-spread.is-curling .book-turning-leaf .leaf-face-front,
+.book-pages-spread.is-curling .book-turning-leaf .leaf-face-back {
+  animation: none !important;
+  transition: none !important;
+}
+
+.page-turn-corner {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.page-turn-corner:active,
+.book-pages-spread.is-dragging-curl .page-turn-corner {
+  cursor: grabbing !important;
 }
 
 /* ==========================================================================
@@ -404,13 +543,15 @@
 .book-page-left {
   position: relative;
   padding: var(--space-6) var(--space-6);
-  background: linear-gradient(135deg, #faf6ed 0%, #fdfaf3 100%);
-  border-right: 1px solid #e8dfcc;
-  border-radius: 10px 0 0 10px;
+  background: linear-gradient(to right, #faf6ed 0%, #fdfaf3 82%, #ece4d1 96%, #dad0ba 100%);
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px 0 0 8px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: inset -14px 0 24px -10px rgba(0, 0, 0, 0.06);
+  box-shadow: 
+    inset -18px 0 28px -10px rgba(0, 0, 0, 0.12),
+    inset 0 2px 6px rgba(255, 255, 255, 0.7);
   z-index: 2;
   overflow: hidden;
 }
@@ -601,47 +742,38 @@
 
 .book-page-right {
   position: relative;
-  background: linear-gradient(225deg, #faf6ed 0%, #fdfaf3 100%);
-  border-radius: 0 10px 10px 0;
+  background: linear-gradient(to left, #faf6ed 0%, #fdfaf3 82%, #ece4d1 96%, #dad0ba 100%);
+  border-radius: 0 8px 8px 0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: var(--space-6) var(--space-6);
-  box-shadow: inset 14px 0 24px -10px rgba(0, 0, 0, 0.06);
+  box-shadow: 
+    inset 18px 0 28px -10px rgba(0, 0, 0, 0.12),
+    inset 0 2px 6px rgba(255, 255, 255, 0.7);
   z-index: 2;
   overflow: hidden;
 }
 
-.book-page-right::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.02) 25%, transparent 60%);
-  opacity: 1;
-  pointer-events: none;
-  transition: opacity 0.72s cubic-bezier(0.35, 0, 0.15, 1);
-  z-index: 1;
-}
-
-.book-pages-spread:has(.leaf-turned-over) .book-page-right::after,
-.spread-turned-over .book-page-right::after {
-  opacity: 0;
-}
-
+.book-page-right::after,
 .book-page-left::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to left, rgba(0, 0, 0, 0.07) 0%, transparent 40%);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.72s cubic-bezier(0.35, 0, 0.15, 1);
-  z-index: 1;
+  display: none !important;
+  content: none !important;
 }
 
-.book-pages-spread:has(.leaf-turned-over) .book-page-left::after,
-.spread-turned-over .book-page-left::after {
-  opacity: 1;
+/* Center spine gutter pulse during traveling cylinder cross */
+.book-pages-spread.turning-to-signup .book-spine-gutter,
+.book-pages-spread.turning-to-login .book-spine-gutter {
+  animation: spineGutterPulse 0.94s cubic-bezier(0.25, 1, 0.35, 1);
+}
+
+@keyframes spineGutterPulse {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(0.82);
+  }
 }
 
 /* ==========================================================================
@@ -662,7 +794,7 @@
   will-change: transform;
   z-index: 10;
   pointer-events: none;
-  transition: transform 0.72s cubic-bezier(0.35, 0, 0.15, 1);
+  transition: transform 0.94s cubic-bezier(0.25, 1, 0.35, 1);
 }
 
 /* State 1: At Rest on the Right (Sign In Active) */
@@ -693,15 +825,99 @@
 
 /* While Turning: Elevate in 3D Z-index so it smoothly glides above static pages */
 .book-turning-leaf.turning {
-  z-index: 30;
+  z-index: 35;
+}
+
+/* Real-Book Dynamic 3D Camber Paper Curl Arch (Forward: Sign In -> Register) */
+.book-turning-leaf.turning-forward {
+  animation: realBookPartByPartForward 0.94s cubic-bezier(0.25, 1, 0.35, 1) forwards;
+}
+
+/* Real-Book Dynamic 3D Camber Paper Curl Arch (Backward: Register -> Sign In) */
+.book-turning-leaf.turning-backward {
+  animation: realBookPartByPartBackward 0.94s cubic-bezier(0.25, 1, 0.35, 1) forwards;
+}
+
+@keyframes realBookPartByPartForward {
+  0% {
+    transform: rotateY(0deg) rotateX(0deg) rotateZ(0deg) translate3d(0, 0, 0.5px) scale(1);
+    transform-origin: 0% 50%;
+  }
+  14% {
+    /* Phase 1: Diagonal Corner Peel & Lift! Corner curls high in air */
+    transform: rotateY(-26deg) rotateX(24deg) rotateZ(-14deg) translate3d(-18px, -12px, 26px) scaleX(0.92);
+    transform-origin: 0% 65%;
+  }
+  32% {
+    /* Phase 2: Traveling Cylindrical Curl Roll arching across right page */
+    transform: rotateY(-68deg) rotateX(28deg) rotateZ(-16deg) translate3d(-46px, -20px, 50px) scaleX(0.82);
+    transform-origin: 0% 60%;
+  }
+  52% {
+    /* Phase 3: Apex Cylinder crossing spine meridian at maximum 3D elevation */
+    transform: rotateY(-108deg) rotateX(16deg) rotateZ(-8deg) translate3d(-62px, -14px, 58px) scaleX(0.84);
+    transform-origin: 0% 50%;
+  }
+  72% {
+    /* Phase 4: Inner spine edge lands on left page FIRST while outer edge curls floating high */
+    transform: rotateY(-152deg) rotateX(-14deg) rotateZ(10deg) translate3d(-26px, -8px, 28px) scaleX(0.92);
+    transform-origin: 0% 45%;
+  }
+  88% {
+    /* Phase 5: Floating curled edge softens and descends on air cushion */
+    transform: rotateY(-174deg) rotateX(-4deg) rotateZ(2deg) translate3d(-6px, -2px, 8px) scaleX(0.98);
+    transform-origin: 0% 50%;
+  }
+  100% {
+    /* Phase 6: Flush cushioned touchdown onto stacked archival leaves */
+    transform: rotateY(-180deg) rotateX(0deg) rotateZ(0deg) translate3d(0, 0, 0.5px) scale(1);
+    transform-origin: 0% 50%;
+  }
+}
+
+@keyframes realBookPartByPartBackward {
+  0% {
+    transform: rotateY(-180deg) rotateX(0deg) rotateZ(0deg) translate3d(0, 0, 0.5px) scale(1);
+    transform-origin: 0% 50%;
+  }
+  14% {
+    /* Phase 1: Left bottom corner curls up diagonally */
+    transform: rotateY(-154deg) rotateX(24deg) rotateZ(14deg) translate3d(18px, -12px, 26px) scaleX(0.92);
+    transform-origin: 0% 65%;
+  }
+  32% {
+    /* Phase 2: Traveling cylinder curl rolls toward right */
+    transform: rotateY(-112deg) rotateX(28deg) rotateZ(16deg) translate3d(46px, -20px, 50px) scaleX(0.82);
+    transform-origin: 0% 60%;
+  }
+  52% {
+    /* Phase 3: Apex cylinder crossing spine */
+    transform: rotateY(-72deg) rotateX(16deg) rotateZ(8deg) translate3d(62px, -14px, 58px) scaleX(0.84);
+    transform-origin: 0% 50%;
+  }
+  72% {
+    /* Phase 4: Right spine lands first, outer corner stays arched */
+    transform: rotateY(-28deg) rotateX(-14deg) rotateZ(-10deg) translate3d(26px, -8px, 28px) scaleX(0.92);
+    transform-origin: 0% 45%;
+  }
+  88% {
+    /* Phase 5: Outer corner unrolls */
+    transform: rotateY(-6deg) rotateX(-4deg) rotateZ(-2deg) translate3d(6px, -2px, 8px) scaleX(0.98);
+    transform-origin: 0% 50%;
+  }
+  100% {
+    /* Phase 6: Settled flush */
+    transform: rotateY(0deg) rotateX(0deg) rotateZ(0deg) translate3d(0, 0, 0.5px) scale(1);
+    transform-origin: 0% 50%;
+  }
 }
 
 /* Front Face of the Leaf: Sign In Folio */
 .leaf-face-front {
   position: absolute;
   inset: 0;
-  background: linear-gradient(225deg, #faf6ed 0%, #fdfaf3 100%);
-  border-radius: 0 10px 10px 0;
+  background: linear-gradient(to left, #faf6ed 0%, #fdfaf3 82%, #ece4d1 96%, #dad0ba 100%);
+  border-radius: 0 8px 8px 0;
   padding: var(--space-6) var(--space-6);
   display: flex;
   flex-direction: column;
@@ -710,8 +926,9 @@
   -webkit-backface-visibility: hidden;
   transform: translateZ(0.5px);
   box-shadow: 
-    inset 14px 0 24px -10px rgba(0, 0, 0, 0.06),
-    inset -1px 0 0 #dfd4c0;
+    inset 18px 0 28px -10px rgba(0, 0, 0, 0.12),
+    inset -2px 0 3px rgba(0, 0, 0, 0.08),
+    1px 0 2px rgba(0, 0, 0, 0.15);
   z-index: 2;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
@@ -721,13 +938,14 @@
 .leaf-face-back {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, #faf6ed 0%, #fdfaf3 100%);
-  border-radius: 10px 0 0 10px;
+  background: linear-gradient(to right, #faf6ed 0%, #fdfaf3 82%, #ece4d1 96%, #dad0ba 100%);
+  border-radius: 8px 0 0 8px;
   padding: var(--space-6) var(--space-6);
-  border-right: 1px solid #e8dfcc;
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 
-    inset -14px 0 24px -10px rgba(0, 0, 0, 0.06),
-    inset 1px 0 0 #dfd4c0;
+    inset -18px 0 28px -10px rgba(0, 0, 0, 0.12),
+    inset 2px 0 3px rgba(0, 0, 0, 0.08),
+    -1px 0 2px rgba(0, 0, 0, 0.15);
   transform: rotateY(180deg) translateZ(0.5px);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
@@ -739,83 +957,289 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* Dynamic Paper Lighting Overlays */
+/* Animated Corner Curl Silhouettes */
+.book-turning-leaf.turning-forward .leaf-face-front {
+  animation: leafCornerCurlFront 0.94s cubic-bezier(0.25, 1, 0.35, 1) forwards;
+}
+
+.book-turning-leaf.turning-backward .leaf-face-front {
+  animation: leafCornerUncurlFront 0.94s cubic-bezier(0.25, 1, 0.35, 1) forwards;
+}
+
+.book-turning-leaf.turning-forward .leaf-face-back {
+  animation: leafCornerUncurlBack 0.94s cubic-bezier(0.25, 1, 0.35, 1) forwards;
+}
+
+.book-turning-leaf.turning-backward .leaf-face-back {
+  animation: leafCornerCurlBack 0.94s cubic-bezier(0.25, 1, 0.35, 1) forwards;
+}
+
+@keyframes leafCornerCurlFront {
+  0% {
+    border-radius: 0 8px 8px 0;
+  }
+  16% {
+    border-radius: 0 8px 55px 0;
+  }
+  40% {
+    border-radius: 0 8px 30px 0;
+  }
+  100% {
+    border-radius: 0 8px 8px 0;
+  }
+}
+
+@keyframes leafCornerUncurlFront {
+  0% {
+    border-radius: 0 8px 8px 0;
+  }
+  65% {
+    border-radius: 0 8px 30px 0;
+  }
+  86% {
+    border-radius: 0 8px 55px 0;
+  }
+  100% {
+    border-radius: 0 8px 8px 0;
+  }
+}
+
+@keyframes leafCornerUncurlBack {
+  0% {
+    border-radius: 8px 0 0 8px;
+  }
+  55% {
+    border-radius: 30px 0 0 8px;
+  }
+  78% {
+    border-radius: 55px 0 0 8px;
+  }
+  100% {
+    border-radius: 8px 0 0 8px;
+  }
+}
+
+@keyframes leafCornerCurlBack {
+  0% {
+    border-radius: 8px 0 0 8px;
+  }
+  16% {
+    border-radius: 55px 0 0 8px;
+  }
+  40% {
+    border-radius: 30px 0 0 8px;
+  }
+  100% {
+    border-radius: 8px 0 0 8px;
+  }
+}
+
+/* Dynamic Diagonal Specular Ridge & Curl Crease Lighting */
 .leaf-shadow-front,
 .leaf-shadow-back {
   position: absolute;
   inset: 0;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.5s cubic-bezier(0.35, 0, 0.15, 1);
   z-index: 5;
+  transition: opacity 0.3s ease;
 }
 
 .leaf-shadow-front {
   background: linear-gradient(
-    to right,
-    rgba(27, 67, 50, 0.14) 0%,
-    rgba(0, 0, 0, 0.08) 14%,
+    135deg,
+    rgba(35, 22, 8, 0.6) 0%,
+    rgba(255, 255, 255, 0.72) 20%,
     rgba(255, 255, 255, 0.18) 35%,
-    rgba(0, 0, 0, 0.02) 65%,
+    rgba(32, 18, 5, 0.48) 50%,
+    rgba(0, 0, 0, 0.3) 72%,
     transparent 100%
   );
-  border-radius: 0 10px 10px 0;
+  background-size: 260% 260%;
+  border-radius: 0 8px 8px 0;
 }
 
 .leaf-shadow-back {
   background: linear-gradient(
-    to left,
-    rgba(27, 67, 50, 0.14) 0%,
-    rgba(0, 0, 0, 0.08) 14%,
+    225deg,
+    rgba(35, 22, 8, 0.6) 0%,
+    rgba(255, 255, 255, 0.72) 20%,
     rgba(255, 255, 255, 0.18) 35%,
-    rgba(0, 0, 0, 0.02) 65%,
+    rgba(32, 18, 5, 0.48) 50%,
+    rgba(0, 0, 0, 0.3) 72%,
     transparent 100%
   );
-  border-radius: 10px 0 0 10px;
+  background-size: 260% 260%;
+  border-radius: 8px 0 0 8px;
 }
 
-.book-turning-leaf.turning .leaf-shadow-front,
-.book-turning-leaf.turning .leaf-shadow-back {
-  opacity: 0.65;
+.book-turning-leaf.turning-forward .leaf-shadow-front {
+  animation: cylinderRollSweepForward 0.94s cubic-bezier(0.25, 1, 0.35, 1) forwards;
 }
 
-/* Interactive Page-Turn Corner Dog-Ears */
+.book-turning-leaf.turning-forward .leaf-shadow-back {
+  animation: cylinderRollSweepBackLand 0.94s cubic-bezier(0.25, 1, 0.35, 1) forwards;
+}
+
+.book-turning-leaf.turning-backward .leaf-shadow-back {
+  animation: cylinderRollSweepBackward 0.94s cubic-bezier(0.25, 1, 0.35, 1) forwards;
+}
+
+.book-turning-leaf.turning-backward .leaf-shadow-front {
+  animation: cylinderRollSweepFrontLand 0.94s cubic-bezier(0.25, 1, 0.35, 1) forwards;
+}
+
+@keyframes cylinderRollSweepForward {
+  0% {
+    background-position: 100% 100%;
+    opacity: 0;
+  }
+  14% {
+    background-position: 85% 85%;
+    opacity: 0.9;
+  }
+  35% {
+    background-position: 48% 48%;
+    opacity: 1;
+  }
+  52% {
+    background-position: 20% 20%;
+    opacity: 0.85;
+  }
+  68% {
+    background-position: 0% 0%;
+    opacity: 0.4;
+  }
+  80%, 100% {
+    background-position: 0% 0%;
+    opacity: 0;
+  }
+}
+
+@keyframes cylinderRollSweepBackLand {
+  0%, 45% {
+    background-position: 0% 0%;
+    opacity: 0;
+  }
+  60% {
+    background-position: 25% 25%;
+    opacity: 0.85;
+  }
+  78% {
+    background-position: 65% 65%;
+    opacity: 0.75;
+  }
+  92% {
+    background-position: 90% 90%;
+    opacity: 0.3;
+  }
+  100% {
+    background-position: 100% 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes cylinderRollSweepBackward {
+  0% {
+    background-position: 100% 100%;
+    opacity: 0;
+  }
+  14% {
+    background-position: 85% 85%;
+    opacity: 0.9;
+  }
+  35% {
+    background-position: 48% 48%;
+    opacity: 1;
+  }
+  52% {
+    background-position: 20% 20%;
+    opacity: 0.85;
+  }
+  68% {
+    background-position: 0% 0%;
+    opacity: 0.4;
+  }
+  80%, 100% {
+    background-position: 0% 0%;
+    opacity: 0;
+  }
+}
+
+@keyframes cylinderRollSweepFrontLand {
+  0%, 45% {
+    background-position: 0% 0%;
+    opacity: 0;
+  }
+  60% {
+    background-position: 25% 25%;
+    opacity: 0.85;
+  }
+  78% {
+    background-position: 65% 65%;
+    opacity: 0.75;
+  }
+  92% {
+    background-position: 90% 90%;
+    opacity: 0.3;
+  }
+  100% {
+    background-position: 100% 100%;
+    opacity: 0;
+  }
+}
+
+/* Interactive Page-Turn Corner Dog-Ears: Authentic 3D Paper Peel */
 .page-turn-corner {
   position: absolute;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   cursor: pointer;
-  z-index: 15;
-  transition: transform 0.28s cubic-bezier(0.35, 0, 0.15, 1), opacity 0.28s ease, box-shadow 0.28s ease;
-  opacity: 0.7;
+  z-index: 20;
+  transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease, filter 0.25s ease, width 0.25s ease, height 0.25s ease;
+  opacity: 0.78;
 }
 
 .corner-bottom-right {
   bottom: 0;
   right: 0;
-  background: linear-gradient(135deg, transparent 50%, #d4af37 50%, #f7f1e3 65%);
-  border-radius: 0 0 10px 0;
-  box-shadow: -2px -2px 6px rgba(0, 0, 0, 0.12);
+  background: linear-gradient(
+    135deg,
+    transparent 48%,
+    rgba(212, 175, 55, 0.7) 49%,
+    #e9dfcc 50%,
+    #faf5ea 72%,
+    #dfd4c0 100%
+  );
+  border-radius: 0 0 8px 0;
+  filter: drop-shadow(-2px -2px 4px rgba(0, 0, 0, 0.18));
 }
 
 .corner-bottom-left {
   bottom: 0;
   left: 0;
-  background: linear-gradient(225deg, transparent 50%, #d4af37 50%, #f7f1e3 65%);
-  border-radius: 0 0 0 10px;
-  box-shadow: 2px -2px 6px rgba(0, 0, 0, 0.12);
+  background: linear-gradient(
+    225deg,
+    transparent 48%,
+    rgba(212, 175, 55, 0.7) 49%,
+    #e9dfcc 50%,
+    #faf5ea 72%,
+    #dfd4c0 100%
+  );
+  border-radius: 0 0 0 8px;
+  filter: drop-shadow(2px -2px 4px rgba(0, 0, 0, 0.18));
 }
 
 .corner-bottom-right:hover {
   opacity: 1;
-  transform: translate(-3px, -3px) scale(1.15);
-  box-shadow: -4px -4px 12px rgba(0, 0, 0, 0.22);
+  transform: translate(-7px, -7px) rotate(-8deg) scale(1.18);
+  filter: drop-shadow(-8px -8px 14px rgba(0, 0, 0, 0.38));
 }
 
 .corner-bottom-left:hover {
   opacity: 1;
-  transform: translate(3px, -3px) scale(1.15);
-  box-shadow: 4px -4px 12px rgba(0, 0, 0, 0.22);
+  transform: translate(7px, -7px) rotate(8deg) scale(1.18);
+  filter: drop-shadow(8px -8px 14px rgba(0, 0, 0, 0.38));
 }
 
 /* Typography on Right Page */

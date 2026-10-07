@@ -95,8 +95,9 @@
         <!-- Shared Alert Notification Box -->
         <div id="auth-alert" class="auth-alert" role="alert"></div>
 
-        <main class="book-pages-spread">
+        <main class="book-pages-spread spread-turned-over">
           <div class="book-spine-gutter" aria-hidden="true"></div>
+          <canvas id="book-curl-canvas" class="book-curl-canvas" aria-hidden="true"></canvas>
 
           <!-- LEFT PAGE: Ex Libris & Demo Accounts -->
           <div class="book-page-left">
@@ -664,7 +665,9 @@
     </div>
   </div>
 
+  <script src="assets/vendor/three.min.js"></script>
   <script src="assets/js/storage.js"></script>
+  <script src="assets/js/page-curl.js"></script>
   <script src="assets/js/auth.js"></script>
 </body>
 </html>

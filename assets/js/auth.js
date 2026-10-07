@@ -71,27 +71,86 @@
     }
 
     // ------------------------------------------------------------------------
-    // Smooth 180° Leaf Page-Turn Controller Across the Whole Book
+    // Procedural Archival Paper Sound Synthesizer (Zero Assets, 100% Offline)
+    // ------------------------------------------------------------------------
+    let audioCtx = null;
+
+    function playPaperTurnSound() {
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+        if (!audioCtx) {
+          audioCtx = new AudioContextClass();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+
+        const duration = 0.42;
+        const bufferSize = Math.floor(audioCtx.sampleRate * duration);
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+
+        let b0 = 0, b1 = 0, b2 = 0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          b0 = 0.99886 * b0 + white * 0.0555;
+          b1 = 0.99332 * b1 + white * 0.075;
+          b2 = 0.96900 * b2 + white * 0.1538;
+          data[i] = (b0 + b1 + b2 + white * 0.5) * 0.08;
+        }
+
+        const noiseNode = audioCtx.createBufferSource();
+        noiseNode.buffer = buffer;
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(1100, audioCtx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(2100, audioCtx.currentTime + 0.14);
+        filter.frequency.exponentialRampToValueAtTime(750, audioCtx.currentTime + duration);
+        filter.Q.setValueAtTime(1.5, audioCtx.currentTime);
+
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.setValueAtTime(0.001, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.11, audioCtx.currentTime + 0.08);
+        gainNode.gain.exponentialRampToValueAtTime(0.03, audioCtx.currentTime + 0.22);
+        gainNode.gain.exponentialRampToValueAtTime(0.07, audioCtx.currentTime + 0.32);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+        noiseNode.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        noiseNode.start();
+      } catch (_) {
+        // Silently bypass if audio is restricted
+      }
+    }
+
+    // ------------------------------------------------------------------------
+    // Real-Book 180° Leaf Page-Turn Controller Across the Whole Book
     // ------------------------------------------------------------------------
     const pagesSpread = document.querySelector('.book-pages-spread');
     let currentMode =
       (turningLeaf && turningLeaf.classList.contains('leaf-turned-over')) ||
-      (tabSignup && tabSignup.classList.contains('active'))
+      (tabSignup && tabSignup.classList.contains('active')) ||
+      (pagesSpread && pagesSpread.classList.contains('spread-turned-over'))
         ? 'signup'
         : 'login';
 
     if (pagesSpread && currentMode === 'signup') {
       pagesSpread.classList.add('spread-turned-over');
+      if (turningLeaf) turningLeaf.classList.add('leaf-turned-over');
     }
 
-    function turnPageTo(mode) {
-      if (mode === currentMode) return;
-      hideAlert();
-
+    // ------------------------------------------------------------------------
+    // UI Navigation State Synchronizer
+    // ------------------------------------------------------------------------
+    function updateNavUI(mode) {
       const isSignup = mode === 'signup';
       currentMode = mode;
+      hideAlert();
 
-      // Update Tab Navigation Ribbons
       if (tabLogin && tabSignup) {
         if (isSignup) {
           tabSignup.classList.add('active');
@@ -113,42 +172,49 @@
           tabSlider.classList.remove('pos-signup');
         }
       }
+    }
 
-      if (pagesSpread) {
-        if (isSignup) {
-          pagesSpread.classList.add('spread-turned-over');
-        } else {
-          pagesSpread.classList.remove('spread-turned-over');
+    // ------------------------------------------------------------------------
+    // WebGL Page-Curl Engine Controller
+    // ------------------------------------------------------------------------
+    let curlEngine = null;
+    if (typeof window.PageCurlEngine !== 'undefined') {
+      curlEngine = new window.PageCurlEngine({
+        getMode: () => currentMode,
+        onNavigate: (mode) => updateNavUI(mode),
+        onSound: () => playPaperTurnSound(),
+      });
+    }
+
+    function turnPageTo(mode) {
+      if (curlEngine && curlEngine.canAnimate && curlEngine.canAnimate()) {
+        curlEngine.turnTo(mode);
+      } else if (curlEngine) {
+        curlEngine.turnTo(mode);
+      } else {
+        updateNavUI(mode);
+        if (turningLeaf && pagesSpread) {
+          const isSignup = mode === 'signup';
+          pagesSpread.classList.toggle('spread-turned-over', isSignup);
+          turningLeaf.classList.toggle('leaf-turned-over', isSignup);
+          turningLeaf.classList.toggle('leaf-at-rest', !isSignup);
+          if (underPage) underPage.classList.toggle('mobile-active', isSignup);
         }
-      }
-
-      // Smooth 180° Leaf Turn around the Center Spine Axis
-      if (turningLeaf) {
-        turningLeaf.classList.add('turning');
-
-        if (isSignup) {
-          turningLeaf.classList.remove('leaf-at-rest');
-          turningLeaf.classList.add('leaf-turned-over');
-          if (underPage) underPage.classList.add('mobile-active');
-        } else {
-          turningLeaf.classList.remove('leaf-turned-over');
-          turningLeaf.classList.add('leaf-at-rest');
-          if (underPage) underPage.classList.remove('mobile-active');
-        }
-
-        let transitionDone = false;
-        const cleanupTurning = (e) => {
-          if (e && e.target !== turningLeaf) return;
-          if (transitionDone) return;
-          transitionDone = true;
-          turningLeaf.classList.remove('turning');
-          turningLeaf.removeEventListener('transitionend', cleanupTurning);
-        };
-
-        turningLeaf.addEventListener('transitionend', cleanupTurning);
-        setTimeout(cleanupTurning, 760);
       }
     }
+
+    // Arrow Left / Arrow Right to turn pages like a real book
+    window.addEventListener('keydown', function (e) {
+      const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+      if (activeTag === 'input' || activeTag === 'select' || activeTag === 'textarea') {
+        return;
+      }
+      if (e.key === 'ArrowRight' && currentMode === 'login') {
+        turnPageTo('signup');
+      } else if (e.key === 'ArrowLeft' && currentMode === 'signup') {
+        turnPageTo('login');
+      }
+    });
 
     if (tabLogin) tabLogin.addEventListener('click', () => turnPageTo('login'));
     if (tabSignup) tabSignup.addEventListener('click', () => turnPageTo('signup'));
@@ -221,36 +287,59 @@
     if (signupPassInput && strengthBars.length) {
       signupPassInput.addEventListener('input', function () {
         const val = this.value;
-        let score = 0;
 
-        if (val.length >= 6) score++;
-        if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
-        if (val.length >= 10 || /[^A-Za-z0-9]/.test(val)) score++;
-
-        strengthBars.forEach((bar, idx) => {
+        // Reset all bars
+        strengthBars.forEach((bar) => {
           bar.className = 'password-strength-bar';
-          if (val.length === 0) return;
-
-          if (score === 1 && idx === 0) {
-            bar.classList.add('weak');
-          } else if (score === 2 && idx <= 1) {
-            bar.classList.add('medium');
-          } else if (score === 3) {
-            bar.classList.add('strong');
-          }
         });
 
-        if (strengthLabel) {
-          if (val.length === 0) {
+        if (val.length === 0) {
+          if (strengthLabel) {
             strengthLabel.textContent = 'Minimum 6 characters';
             strengthLabel.style.color = 'var(--color-text-muted)';
-          } else if (score === 1) {
-            strengthLabel.textContent = 'Weak (add numbers & capitals)';
+          }
+          return;
+        }
+
+        // If under minimum required length (6 chars), it is ALWAYS insufficient
+        if (val.length < 6) {
+          strengthBars[0].classList.add('weak');
+          if (strengthLabel) {
+            strengthLabel.textContent = `Too short (${val.length}/6 characters)`;
             strengthLabel.style.color = '#ef4444';
-          } else if (score === 2) {
+          }
+          return;
+        }
+
+        // Evaluate complexity for passwords with length >= 6
+        let criteriaMet = 0;
+        if (/[a-z]/.test(val)) criteriaMet++;
+        if (/[A-Z]/.test(val)) criteriaMet++;
+        if (/[0-9]/.test(val)) criteriaMet++;
+        if (/[^A-Za-z0-9]/.test(val)) criteriaMet++;
+        if (val.length >= 10) criteriaMet++;
+
+        if (criteriaMet <= 2) {
+          // Weak (meets minimum length of 6, but lacks complexity)
+          strengthBars[0].classList.add('weak');
+          if (strengthLabel) {
+            strengthLabel.textContent = 'Weak (mix numbers & uppercase)';
+            strengthLabel.style.color = '#ef4444';
+          }
+        } else if (criteriaMet <= 3) {
+          // Moderate (good mix of character types or length)
+          strengthBars[0].classList.add('medium');
+          strengthBars[1].classList.add('medium');
+          if (strengthLabel) {
             strengthLabel.textContent = 'Moderate security';
             strengthLabel.style.color = '#f59e0b';
-          } else {
+          }
+        } else {
+          // Strong (8+ chars with upper, lower, numbers, symbols)
+          strengthBars[0].classList.add('strong');
+          strengthBars[1].classList.add('strong');
+          strengthBars[2].classList.add('strong');
+          if (strengthLabel) {
             strengthLabel.textContent = 'Archival Strong';
             strengthLabel.style.color = '#10b981';
           }
