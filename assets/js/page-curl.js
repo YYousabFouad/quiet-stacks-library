@@ -45,7 +45,7 @@
         // Soft ambient occlusion where the paper leaves the page surface
         frag = frag.replace(
           '#include <dithering_fragment>',
-          'gl_FragColor.rgb *= mix(0.88, 1.0, smoothstep(0.0, 24.0, vS));\n#include <dithering_fragment>'
+          'gl_FragColor.rgb *= mix(0.88, 1.0, smoothstep(0.0, 24.0, abs(vS)));\n#include <dithering_fragment>'
         );
       }
       shader.fragmentShader = frag;
@@ -372,10 +372,6 @@
       const cosPhi = Math.cos(phi);
       const sinPhi = Math.sin(phi);
 
-      // Base sheet elevation camber: lifts the uncurled paper in 3D right from frame 1!
-      // This ensures all text moves organically with the paper and never sits frozen on the desk.
-      const maxCamber = W * 0.16 * sinPi;
-
       this.line = { c, s, d };
 
       const pos = this.frontMesh.geometry.attributes.position;
@@ -390,18 +386,11 @@
         aS[i] = sd;
 
         if (sd <= 0) {
-          // Uncurled base sheet (between spine x=0 and crease d):
-          // Arches smoothly in 3D and tilts toward the turn direction, carrying text actively!
-          const uBase = clamp(x / Math.max(1, d), 0, 1);
-          const camberZ = maxCamber * Math.sin(Math.PI * uBase);
-
-          // Progressive spine rotation toward the left
-          const rotAngle = -Math.PI * Math.pow(t, 1.2) * (1 - Math.cos(Math.PI * 0.5 * uBase));
-          const shiftX = - (x * (1 - Math.cos(rotAngle)));
-
-          arr[i * 3] = x + shiftX;
+          // Unpeeled portion of the page lies flat on the book until the crease reaches it.
+          // This ensures a single natural sheet turns smoothly without a double-hump or 2-page illusion.
+          arr[i * 3] = x;
           arr[i * 3 + 1] = y;
-          arr[i * 3 + 2] = camberZ;
+          arr[i * 3 + 2] = 0;
           continue;
         }
 
