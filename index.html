@@ -119,6 +119,69 @@
           <!-- Hanging Silk Ribbon Bookmark -->
           <div class="book-ribbon-bookmark" aria-hidden="true"></div>
 
+          <!-- Book Top Header (Folio Marks & Navigation Ribbons) -->
+          <div class="book-top-header">
+            <div class="book-header-foliomark left-mark">
+              <span class="foliomark-num">FOLIO I</span>
+              <span class="foliomark-divider">&bull;</span>
+              <span>SANCTUARY OF LETTERS</span>
+            </div>
+
+            <!-- Folio Switcher Tabs -->
+            <nav
+              class="book-tabs-nav"
+              role="tablist"
+              aria-label="Folio Selection"
+            >
+              <div
+                class="book-tabs-slider"
+                id="book-tabs-slider"
+                aria-hidden="true"
+              ></div>
+              <button
+                type="button"
+                class="book-tab-btn active"
+                id="tab-login"
+                role="tab"
+                aria-selected="true"
+                aria-controls="panel-login"
+              >
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path
+                    fill-rule="evenodd"
+                    d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <span>Sign In</span>
+              </button>
+              <button
+                type="button"
+                class="book-tab-btn"
+                id="tab-signup"
+                role="tab"
+                aria-selected="false"
+                aria-controls="panel-signup"
+              >
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path
+                    d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"
+                  />
+                </svg>
+                <span>Register</span>
+              </button>
+            </nav>
+
+            <div class="book-header-foliomark right-mark">
+              <span class="foliomark-num">FOLIO II</span>
+              <span class="foliomark-divider">&bull;</span>
+              <span>MEMBER REGISTRY</span>
+            </div>
+          </div>
+
+          <!-- Shared Alert Notification Box -->
+          <div id="auth-alert" class="auth-alert" role="alert"></div>
+
           <!-- Open Folio Spread -->
           <main class="book-pages-spread">
             <!-- Center Spine Gutter Crease & Shadow -->
@@ -256,61 +319,9 @@
             </div>
 
             <!-- ========================================================
-               RIGHT PAGE: Smooth 180° Leaf Page-Turn Folio
+               RIGHT PAGE: Static Under-Page Folio (Revealed on Register)
                ======================================================== -->
-            <div class="book-page-right">
-              <!-- Top Page-Turn Navigation Ribbons -->
-              <nav
-                class="book-tabs-nav"
-                role="tablist"
-                aria-label="Folio Selection"
-              >
-                <div
-                  class="book-tabs-slider"
-                  id="book-tabs-slider"
-                  aria-hidden="true"
-                ></div>
-                <button
-                  type="button"
-                  class="book-tab-btn active"
-                  id="tab-login"
-                  role="tab"
-                  aria-selected="true"
-                  aria-controls="panel-login"
-                >
-                  <svg viewBox="0 0 20 20" fill="currentColor">
-                    <path
-                      fill-rule="evenodd"
-                      d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                  <span>Sign In</span>
-                </button>
-                <button
-                  type="button"
-                  class="book-tab-btn"
-                  id="tab-signup"
-                  role="tab"
-                  aria-selected="false"
-                  aria-controls="panel-signup"
-                >
-                  <svg viewBox="0 0 20 20" fill="currentColor">
-                    <path
-                      d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"
-                    />
-                  </svg>
-                  <span>Register</span>
-                </button>
-              </nav>
-
-              <!-- Shared Alert Notification Box -->
-              <div id="auth-alert" class="auth-alert" role="alert"></div>
-
-              <!-- Folio Viewport with 180° Leaf Turn Mechanics -->
-              <div class="book-folio-viewport">
-                <!-- Static Under Page (Revealed when leaf is turned to Register) -->
-                <div class="book-under-page" id="book-under-page">
+            <div class="book-page-right" id="book-under-page">
                   <section
                     id="panel-signup"
                     role="tabpanel"
@@ -527,19 +538,31 @@
 
                     <div class="auth-footer">
                       Already registered?
-                      <a href="#login" id="link-to-login" class="auth-link"
+                      <a href="#login" id="link-to-login" class="auth-link back-to-login-link"
                         >&larr; Turn back to Sign In</a
                       >
                     </div>
                   </section>
+
+                  <!-- Page-Turn Dog-Ear Corner -->
+                  <div
+                    class="page-turn-corner corner-bottom-right back-to-login-link"
+                    title="Turn back to Sign In"
+                    aria-hidden="true"
+                  ></div>
                 </div>
 
-                <!-- The Flippable Leaf (Hinged at the Spine on the left edge: 0% 50%) -->
+                <!-- ========================================================
+                   THE FLIPPABLE LEAF ACROSS THE WHOLE BOOK
+                   Hinged at Center Spine (left: 50%, origin: left center)
+                   Swings 180° across the spine to cover the Left Page
+                   ======================================================== -->
                 <div
                   class="book-turning-leaf leaf-at-rest"
                   id="book-turning-leaf"
                 >
-                  <div class="leaf-shadow-overlay" aria-hidden="true"></div>
+                  <div class="leaf-shadow-front" aria-hidden="true"></div>
+                  <div class="leaf-shadow-back" aria-hidden="true"></div>
 
                   <!-- Front Face of Leaf (Sign In form) -->
                   <div class="leaf-face-front">
@@ -641,21 +664,151 @@
 
                       <div class="auth-footer">
                         New scholar?
-                        <a href="#signup" id="link-to-signup" class="auth-link"
+                        <a href="#signup" id="link-to-signup" class="auth-link turn-to-signup-link"
                           >Turn page to Register &rarr;</a
                         >
                       </div>
                     </section>
+
+                    <!-- Page-Turn Dog-Ear Corner -->
+                    <div
+                      class="page-turn-corner corner-bottom-right turn-to-signup-link"
+                      title="Turn page to Register"
+                      aria-hidden="true"
+                    ></div>
                   </div>
 
-                  <!-- Back Face of Leaf (Antique Paper Backing) -->
+                  <!-- BACK FACE: Scholar Guild Charter & Companion Folio (Lands on Left Page) -->
                   <div class="leaf-face-back" aria-hidden="true">
-                    <span class="leaf-back-watermark">Quiet Stacks</span>
+                    <div>
+                      <!-- Ex Libris Folio II Seal & Title -->
+                      <div class="ex-libris-header">
+                        <div class="ex-libris-seal">
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.7"
+                          >
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M12 6v12M6 12h12" />
+                          </svg>
+                        </div>
+                        <h3 class="ex-libris-title">Scholar Guild Charter</h3>
+                        <p class="ex-libris-subtitle">
+                          Sanctuary Registry &bull; Folio II
+                        </p>
+                      </div>
+
+                      <!-- Archival Privileges Quote Box -->
+                      <div class="archival-quote-box">
+                        <p>"A sanctuary without letters is darkness; with books, it is eternal life."</p>
+                        <cite>&mdash; Archival Ledger Codex</cite>
+                      </div>
+
+                      <!-- Instant Reader Passports (Quick Fill also accessible on Folio II!) -->
+                      <div class="demo-accounts-box">
+                        <div class="demo-accounts-title">
+                          <span class="demo-accounts-title-icon">
+                            <svg viewBox="0 0 20 20" fill="currentColor">
+                              <path
+                                fill-rule="evenodd"
+                                d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z"
+                                clip-rule="evenodd"
+                              />
+                            </svg>
+                            <span>Reader Passports</span>
+                          </span>
+                          <span class="demo-accounts-badge">1-Click Sign In</span>
+                        </div>
+
+                        <div class="demo-accounts-grid">
+                          <div class="demo-account-card">
+                            <div class="demo-account-info">
+                              <div class="demo-account-avatar">JS</div>
+                              <div class="demo-account-details">
+                                <span class="demo-account-name">John Smith</span>
+                                <span class="demo-account-role">Standard &bull; 2 Borrowed</span>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              class="btn-fill-demo"
+                              data-email="john@example.com"
+                              data-pass="password123"
+                              data-name="John Smith"
+                              title="Fill credentials for John Smith"
+                            >
+                              Fill
+                            </button>
+                          </div>
+
+                          <div class="demo-account-card">
+                            <div class="demo-account-info">
+                              <div class="demo-account-avatar">SA</div>
+                              <div class="demo-account-details">
+                                <span class="demo-account-name">Sarah Ali</span>
+                                <span class="demo-account-role">Student &bull; 1 Borrowed</span>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              class="btn-fill-demo"
+                              data-email="sarah@example.com"
+                              data-pass="password123"
+                              data-name="Sarah Ali"
+                              title="Fill credentials for Sarah Ali"
+                            >
+                              Fill
+                            </button>
+                          </div>
+
+                          <div class="demo-account-card">
+                            <div class="demo-account-info">
+                              <div
+                                class="demo-account-avatar"
+                                style="border-color: #d4af37; background: #fef7e6"
+                              >
+                                CL
+                              </div>
+                              <div class="demo-account-details">
+                                <span class="demo-account-name">Chief Librarian</span>
+                                <span class="demo-account-role">Admin &bull; Authority</span>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              class="btn-fill-demo"
+                              data-email="admin@quietstacks.com"
+                              data-pass="admin123"
+                              data-name="Chief Librarian"
+                              title="Fill credentials for Administrator"
+                            >
+                              Fill
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Companion Page Footer -->
+                    <div class="left-page-guest-footer">
+                      <a href="#login" class="auth-link back-to-login-link">
+                        <span>&larr; Turn page back to Sign In</span>
+                      </a>
+                    </div>
+
+                    <!-- Page-Turn Dog-Ear Corner -->
+                    <div
+                      class="page-turn-corner corner-bottom-left back-to-login-link"
+                      title="Turn back to Sign In"
+                      aria-hidden="true"
+                    ></div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </main>
+              </main>
         </div>
       </div>
     </div>

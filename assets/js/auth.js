@@ -71,9 +71,14 @@
     }
 
     // ------------------------------------------------------------------------
-    // Smooth 180° Leaf Page-Turn Controller (Turned, NOT Transformed)
+    // Smooth 180° Leaf Page-Turn Controller Across the Whole Book
     // ------------------------------------------------------------------------
-    let currentMode = 'login';
+    let currentMode =
+      (tabSignup && tabSignup.classList.contains('active')) ||
+      window.location.hash === '#signup' ||
+      (window.location.pathname && window.location.pathname.includes('signup'))
+        ? 'signup'
+        : 'login';
 
     function turnPageTo(mode) {
       if (mode === currentMode) return;
@@ -105,41 +110,47 @@
         }
       }
 
-      // Smooth 180° Leaf Turn around the Spine Hinge
+      // Smooth 180° Leaf Turn around the Center Spine Axis
       if (turningLeaf) {
+        turningLeaf.classList.remove('flipping-to-signup', 'flipping-to-login');
+        void turningLeaf.offsetWidth; // Force reflow to restart animation reliably
+
         turningLeaf.classList.add('turning');
 
         if (isSignup) {
+          turningLeaf.classList.add('flipping-to-signup');
           turningLeaf.classList.remove('leaf-at-rest');
           turningLeaf.classList.add('leaf-turned-over');
           if (underPage) underPage.classList.add('mobile-active');
         } else {
+          turningLeaf.classList.add('flipping-to-login');
           turningLeaf.classList.remove('leaf-turned-over');
           turningLeaf.classList.add('leaf-at-rest');
           if (underPage) underPage.classList.remove('mobile-active');
         }
 
         setTimeout(() => {
-          turningLeaf.classList.remove('turning');
-        }, 650);
+          turningLeaf.classList.remove('turning', 'flipping-to-signup', 'flipping-to-login');
+        }, 850);
       }
     }
 
     if (tabLogin) tabLogin.addEventListener('click', () => turnPageTo('login'));
     if (tabSignup) tabSignup.addEventListener('click', () => turnPageTo('signup'));
 
-    if (linkToSignup) {
-      linkToSignup.addEventListener('click', function (e) {
+    document.querySelectorAll('.turn-to-signup-link, #link-to-signup').forEach((el) => {
+      el.addEventListener('click', function (e) {
         e.preventDefault();
         turnPageTo('signup');
       });
-    }
-    if (linkToLogin) {
-      linkToLogin.addEventListener('click', function (e) {
+    });
+
+    document.querySelectorAll('.back-to-login-link, #link-to-login').forEach((el) => {
+      el.addEventListener('click', function (e) {
         e.preventDefault();
         turnPageTo('login');
       });
-    }
+    });
 
     // Hash & Query routing
     if (window.location.hash === '#signup') {

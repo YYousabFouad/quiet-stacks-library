@@ -60,6 +60,41 @@
         <div class="book-cover-filigree" aria-hidden="true"></div>
         <div class="book-ribbon-bookmark" aria-hidden="true"></div>
 
+        <!-- Book Top Header (Folio Marks & Navigation Ribbons) -->
+        <div class="book-top-header">
+          <div class="book-header-foliomark left-mark">
+            <span class="foliomark-num">FOLIO I</span>
+            <span class="foliomark-divider">&bull;</span>
+            <span>SANCTUARY OF LETTERS</span>
+          </div>
+
+          <!-- Folio Switcher Tabs (Register Active) -->
+          <nav class="book-tabs-nav" role="tablist" aria-label="Folio Selection">
+            <div class="book-tabs-slider pos-signup" id="book-tabs-slider" aria-hidden="true"></div>
+            <button type="button" class="book-tab-btn" id="tab-login" role="tab" aria-selected="false" aria-controls="panel-login">
+              <svg viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
+              <span>Sign In</span>
+            </button>
+            <button type="button" class="book-tab-btn active" id="tab-signup" role="tab" aria-selected="true" aria-controls="panel-signup">
+              <svg viewBox="0 0 20 20" fill="currentColor">
+                <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
+              </svg>
+              <span>Register</span>
+            </button>
+          </nav>
+
+          <div class="book-header-foliomark right-mark">
+            <span class="foliomark-num">FOLIO II</span>
+            <span class="foliomark-divider">&bull;</span>
+            <span>MEMBER REGISTRY</span>
+          </div>
+        </div>
+
+        <!-- Shared Alert Notification Box -->
+        <div id="auth-alert" class="auth-alert" role="alert"></div>
+
         <main class="book-pages-spread">
           <div class="book-spine-gutter" aria-hidden="true"></div>
 
@@ -136,153 +171,492 @@
                 <span>Enter reading room as guest &rarr;</span>
               </a>
             </div>
+          </div>          <!-- ========================================================
+             RIGHT PAGE: Static Under-Page Folio (Revealed on Register)
+             ======================================================== -->
+          <div class="book-page-right mobile-active" id="book-under-page">
+            <section
+              id="panel-signup"
+              role="tabpanel"
+              aria-labelledby="tab-signup"
+            >
+              <h2 class="auth-title">Inscribe Member Card</h2>
+              <p class="auth-subtitle">
+                Add your name to the library registry to borrow and buy
+                volumes.
+              </p>
+
+              <form id="signup-form" class="auth-form" novalidate>
+                <div class="auth-form-group">
+                  <label for="signup-name" class="auth-label">
+                    <span>Full Name</span>
+                  </label>
+                  <div class="auth-input-wrapper">
+                    <svg
+                      class="auth-input-icon"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                    <input
+                      type="text"
+                      id="signup-name"
+                      class="auth-input"
+                      placeholder="e.g. Jane Austen"
+                      required
+                      autocomplete="name"
+                    />
+                  </div>
+                </div>
+
+                <div class="auth-form-group">
+                  <label for="signup-email" class="auth-label">
+                    <span>Email Address</span>
+                  </label>
+                  <div class="auth-input-wrapper">
+                    <svg
+                      class="auth-input-icon"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"
+                      />
+                      <path
+                        d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"
+                      />
+                    </svg>
+                    <input
+                      type="email"
+                      id="signup-email"
+                      class="auth-input"
+                      placeholder="jane@university.edu"
+                      required
+                      autocomplete="email"
+                    />
+                  </div>
+                </div>
+
+                <div class="auth-form-group">
+                  <label for="signup-type" class="auth-label">
+                    <span>Membership Tier</span>
+                  </label>
+                  <div class="auth-input-wrapper">
+                    <svg
+                      class="auth-input-icon"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                    <select id="signup-type" class="auth-select" required>
+                      <option value="standard" selected>
+                        Standard Member (General Patron)
+                      </option>
+                      <option value="student">
+                        Student / Academic Scholar
+                      </option>
+                      <option value="faculty">
+                        Faculty Scholar &bull; Extended Loans
+                      </option>
+                      <option value="premium">
+                        Premium Patron &bull; Priority Desk
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="auth-form-group">
+                  <label for="signup-password" class="auth-label">
+                    <span>Secret Password</span>
+                  </label>
+                  <div class="auth-input-wrapper">
+                    <svg
+                      class="auth-input-icon"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                    <input
+                      type="password"
+                      id="signup-password"
+                      class="auth-input"
+                      placeholder="Minimum 6 characters"
+                      minlength="6"
+                      required
+                      autocomplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      class="btn-password-toggle"
+                      data-target="signup-password"
+                      aria-label="Toggle password visibility"
+                    >
+                      <svg viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                        <path
+                          fill-rule="evenodd"
+                          d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  <!-- Password Strength Meter -->
+                  <div class="password-strength-box">
+                    <div class="password-strength-bars">
+                      <div class="password-strength-bar"></div>
+                      <div class="password-strength-bar"></div>
+                      <div class="password-strength-bar"></div>
+                    </div>
+                    <div class="password-strength-label">
+                      <span id="password-strength-text"
+                        >Minimum 6 characters</span
+                      >
+                      <span>Archival Grade</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="auth-form-group">
+                  <label for="signup-confirm-password" class="auth-label">
+                    <span>Confirm Secret Password</span>
+                  </label>
+                  <div class="auth-input-wrapper">
+                    <svg
+                      class="auth-input-icon"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                    <input
+                      type="password"
+                      id="signup-confirm-password"
+                      class="auth-input"
+                      placeholder="Re-enter secret password"
+                      minlength="6"
+                      required
+                      autocomplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      class="btn-password-toggle"
+                      data-target="signup-confirm-password"
+                      aria-label="Toggle confirm password visibility"
+                    >
+                      <svg viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                        <path
+                          fill-rule="evenodd"
+                          d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <button type="submit" class="auth-btn-submit">
+                  <span>Inscribe Member Card</span>
+                  <svg viewBox="0 0 20 20" fill="currentColor">
+                    <path
+                      fill-rule="evenodd"
+                      d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </button>
+              </form>
+
+              <div class="auth-footer">
+                Already registered?
+                <a href="#login" id="link-to-login" class="auth-link back-to-login-link"
+                  >&larr; Turn back to Sign In</a
+                >
+              </div>
+            </section>
+
+            <!-- Page-Turn Dog-Ear Corner -->
+            <div
+              class="page-turn-corner corner-bottom-right back-to-login-link"
+              title="Turn back to Sign In"
+              aria-hidden="true"
+            ></div>
           </div>
 
-          <!-- RIGHT PAGE: Folio Viewport with Register Active -->
-          <div class="book-page-right">
-            <nav class="book-tabs-nav" role="tablist">
-              <div class="book-tabs-slider pos-signup" id="book-tabs-slider" aria-hidden="true"></div>
-              <button type="button" class="book-tab-btn" id="tab-login" role="tab" aria-selected="false">
-                <svg viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
-                <span>Sign In</span>
-              </button>
-              <button type="button" class="book-tab-btn active" id="tab-signup" role="tab" aria-selected="true">
-                <svg viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
-                </svg>
-                <span>Register</span>
-              </button>
-            </nav>
+          <!-- ========================================================
+             THE FLIPPABLE LEAF ACROSS THE WHOLE BOOK
+             Hinged at Center Spine (left: 50%, origin: left center)
+             Swings 180° across the spine to cover the Left Page
+             ======================================================== -->
+          <div
+            class="book-turning-leaf leaf-turned-over"
+            id="book-turning-leaf"
+          >
+            <div class="leaf-shadow-front" aria-hidden="true"></div>
+            <div class="leaf-shadow-back" aria-hidden="true"></div>
 
-            <div id="auth-alert" class="auth-alert" role="alert"></div>
+            <!-- FRONT FACE: Sign In Folio (Rests on Right Page) -->
+            <div class="leaf-face-front">
+              <section
+                id="panel-login"
+                role="tabpanel"
+                aria-labelledby="tab-login"
+              >
+                <h2 class="auth-title">Welcome Back</h2>
+                <p class="auth-subtitle">
+                  Present your credentials to retrieve your borrowed stack
+                  and catalog desk.
+                </p>
 
-            <div class="book-folio-viewport">
-              <!-- Under Page (Register Form Active) -->
-              <div class="book-under-page mobile-active" id="book-under-page">
-                <section id="panel-signup" role="tabpanel">
-                  <h2 class="auth-title">Inscribe Member Card</h2>
-                  <p class="auth-subtitle">Add your name to the library registry to borrow and buy volumes.</p>
-
-                  <form id="signup-form" class="auth-form" novalidate>
-                    <div class="auth-form-group">
-                      <label for="signup-name" class="auth-label">Full Name</label>
-                      <div class="auth-input-wrapper">
-                        <svg class="auth-input-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg>
-                        <input type="text" id="signup-name" class="auth-input" placeholder="e.g. Jane Austen" required autocomplete="name">
-                      </div>
+                <form id="login-form" class="auth-form" novalidate>
+                  <div class="auth-form-group">
+                    <label for="login-email" class="auth-label">
+                      <span>Email or Member ID</span>
+                      <span class="auth-label-hint"
+                        >e.g. M-001 or email</span
+                      >
+                    </label>
+                    <div class="auth-input-wrapper">
+                      <svg
+                        class="auth-input-icon"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                      <input
+                        type="text"
+                        id="login-email"
+                        class="auth-input"
+                        placeholder="john@example.com or M-001"
+                        required
+                        autocomplete="username"
+                      />
                     </div>
-
-                    <div class="auth-form-group">
-                      <label for="signup-email" class="auth-label">Email Address</label>
-                      <div class="auth-input-wrapper">
-                        <svg class="auth-input-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg>
-                        <input type="email" id="signup-email" class="auth-input" placeholder="jane@university.edu" required autocomplete="email">
-                      </div>
-                    </div>
-
-                    <div class="auth-form-group">
-                      <label for="signup-type" class="auth-label">Membership Tier</label>
-                      <div class="auth-input-wrapper">
-                        <svg class="auth-input-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>
-                        <select id="signup-type" class="auth-select" required>
-                          <option value="standard" selected>Standard Member</option>
-                          <option value="student">Student / Academic</option>
-                          <option value="faculty">Faculty Scholar</option>
-                          <option value="premium">Premium Patron</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div class="auth-form-group">
-                      <label for="signup-password" class="auth-label">Password</label>
-                      <div class="auth-input-wrapper">
-                        <svg class="auth-input-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" /></svg>
-                        <input type="password" id="signup-password" class="auth-input" placeholder="Minimum 6 characters" minlength="6" required autocomplete="new-password">
-                        <button type="button" class="btn-password-toggle" data-target="signup-password" aria-label="Toggle password visibility">
-                          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>
-                        </button>
-                      </div>
-                      <div class="password-strength-box">
-                        <div class="password-strength-bars">
-                          <div class="password-strength-bar"></div><div class="password-strength-bar"></div><div class="password-strength-bar"></div>
-                        </div>
-                        <div class="password-strength-label">
-                          <span id="password-strength-text">Minimum 6 characters</span><span>Archival Grade</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="auth-form-group">
-                      <label for="signup-confirm-password" class="auth-label">Confirm Password</label>
-                      <div class="auth-input-wrapper">
-                        <svg class="auth-input-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
-                        <input type="password" id="signup-confirm-password" class="auth-input" placeholder="Re-enter secret password" minlength="6" required autocomplete="new-password">
-                        <button type="button" class="btn-password-toggle" data-target="signup-confirm-password" aria-label="Toggle confirm password visibility">
-                          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>
-                        </button>
-                      </div>
-                    </div>
-
-                    <button type="submit" class="auth-btn-submit">
-                      <span>Inscribe Member Card</span>
-                      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                    </button>
-                  </form>
-
-                  <div class="auth-footer">
-                    Already registered? <a href="login.html" id="link-to-login" class="auth-link">&larr; Turn back to Sign In</a>
                   </div>
-                </section>
-              </div>
 
-              <!-- Turning Leaf (Starts turned over to reveal Register) -->
-              <div class="book-turning-leaf leaf-turned-over" id="book-turning-leaf">
-                <div class="leaf-shadow-overlay" aria-hidden="true"></div>
-
-                <div class="leaf-face-front">
-                  <section id="panel-login" role="tabpanel">
-                    <h2 class="auth-title">Welcome Back</h2>
-                    <p class="auth-subtitle">Present your credentials to retrieve your borrowed stack and catalog desk.</p>
-
-                    <form id="login-form" class="auth-form" novalidate>
-                      <div class="auth-form-group">
-                        <label for="login-email" class="auth-label">Email or Member ID</label>
-                        <div class="auth-input-wrapper">
-                          <svg class="auth-input-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg>
-                          <input type="text" id="login-email" class="auth-input" placeholder="john@example.com or M-001" required autocomplete="username">
-                        </div>
-                      </div>
-
-                      <div class="auth-form-group">
-                        <label for="login-password" class="auth-label">Secret Password</label>
-                        <div class="auth-input-wrapper">
-                          <svg class="auth-input-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" /></svg>
-                          <input type="password" id="login-password" class="auth-input" placeholder="Enter secret password" required autocomplete="current-password">
-                          <button type="button" class="btn-password-toggle" data-target="login-password" aria-label="Toggle password visibility">
-                            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>
-                          </button>
-                        </div>
-                      </div>
-
-                      <button type="submit" class="auth-btn-submit">
-                        <span>Open Reading Stack</span>
-                        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                  <div class="auth-form-group">
+                    <label for="login-password" class="auth-label">
+                      <span>Secret Password</span>
+                    </label>
+                    <div class="auth-input-wrapper">
+                      <svg
+                        class="auth-input-icon"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                      <input
+                        type="password"
+                        id="login-password"
+                        class="auth-input"
+                        placeholder="Enter secret password"
+                        required
+                        autocomplete="current-password"
+                      />
+                      <button
+                        type="button"
+                        class="btn-password-toggle"
+                        data-target="login-password"
+                        aria-label="Toggle password visibility"
+                      >
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                          <path
+                            fill-rule="evenodd"
+                            d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
                       </button>
-                    </form>
-
-                    <div class="auth-footer">
-                      New scholar? <a href="#signup" id="link-to-signup" class="auth-link">Turn page to Register &rarr;</a>
                     </div>
-                  </section>
+                  </div>
+
+                  <button type="submit" class="auth-btn-submit">
+                    <span>Open Reading Stack</span>
+                    <svg viewBox="0 0 20 20" fill="currentColor">
+                      <path
+                        fill-rule="evenodd"
+                        d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </form>
+
+                <div class="auth-footer">
+                  New scholar?
+                  <a href="#signup" id="link-to-signup" class="auth-link turn-to-signup-link"
+                    >Turn page to Register &rarr;</a
+                  >
+                </div>
+              </section>
+
+              <!-- Page-Turn Dog-Ear Corner -->
+              <div
+                class="page-turn-corner corner-bottom-right turn-to-signup-link"
+                title="Turn page to Register"
+                aria-hidden="true"
+              ></div>
+            </div>
+
+            <!-- BACK FACE: Scholar Guild Charter (Lands on Left Page) -->
+            <div class="leaf-face-back" aria-hidden="true">
+              <div>
+                <!-- Ex Libris Folio II Seal & Title -->
+                <div class="ex-libris-header">
+                  <div class="ex-libris-seal">
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.7"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 6v12M6 12h12" />
+                    </svg>
+                  </div>
+                  <h3 class="ex-libris-title">Scholar Guild Charter</h3>
+                  <p class="ex-libris-subtitle">
+                    Sanctuary Registry &bull; Folio II
+                  </p>
                 </div>
 
-                <div class="leaf-face-back" aria-hidden="true">
-                  <span class="leaf-back-watermark">Quiet Stacks</span>
+                <!-- Guild Privileges Box -->
+                <div class="archival-quote-box">
+                  <p>"A sanctuary without letters is darkness; with books, it is eternal life."</p>
+                  <cite>&mdash; Archival Ledger Codex</cite>
+                </div>
+
+                <!-- Instant Reader Passports (Quick Fill also accessible on Folio II!) -->
+                <div class="demo-accounts-box">
+                  <div class="demo-accounts-title">
+                    <span class="demo-accounts-title-icon">
+                      <svg viewBox="0 0 20 20" fill="currentColor">
+                        <path
+                          fill-rule="evenodd"
+                          d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                      <span>Reader Passports</span>
+                    </span>
+                    <span class="demo-accounts-badge">1-Click Sign In</span>
+                  </div>
+
+                  <div class="demo-accounts-grid">
+                    <div class="demo-account-card">
+                      <div class="demo-account-info">
+                        <div class="demo-account-avatar">JS</div>
+                        <div class="demo-account-details">
+                          <span class="demo-account-name">John Smith</span>
+                          <span class="demo-account-role">Standard &bull; 2 Borrowed</span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        class="btn-fill-demo"
+                        data-email="john@example.com"
+                        data-pass="password123"
+                        data-name="John Smith"
+                        title="Fill credentials for John Smith"
+                      >
+                        Fill
+                      </button>
+                    </div>
+
+                    <div class="demo-account-card">
+                      <div class="demo-account-info">
+                        <div class="demo-account-avatar">SA</div>
+                        <div class="demo-account-details">
+                          <span class="demo-account-name">Sarah Ali</span>
+                          <span class="demo-account-role">Student &bull; 1 Borrowed</span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        class="btn-fill-demo"
+                        data-email="sarah@example.com"
+                        data-pass="password123"
+                        data-name="Sarah Ali"
+                        title="Fill credentials for Sarah Ali"
+                      >
+                        Fill
+                      </button>
+                    </div>
+
+                    <div class="demo-account-card">
+                      <div class="demo-account-info">
+                        <div
+                          class="demo-account-avatar"
+                          style="border-color: #d4af37; background: #fef7e6"
+                        >
+                          CL
+                        </div>
+                        <div class="demo-account-details">
+                          <span class="demo-account-name">Chief Librarian</span>
+                          <span class="demo-account-role">Admin &bull; Authority</span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        class="btn-fill-demo"
+                        data-email="admin@quietstacks.com"
+                        data-pass="admin123"
+                        data-name="Chief Librarian"
+                        title="Fill credentials for Administrator"
+                      >
+                        Fill
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
 
+              <!-- Companion Page Footer -->
+              <div class="left-page-guest-footer">
+                <a href="#login" class="auth-link back-to-login-link">
+                  <span>&larr; Turn page back to Sign In</span>
+                </a>
+              </div>
+
+              <!-- Page-Turn Dog-Ear Corner -->
+              <div
+                class="page-turn-corner corner-bottom-left back-to-login-link"
+                title="Turn back to Sign In"
+                aria-hidden="true"
+              ></div>
             </div>
           </div>
         </main>

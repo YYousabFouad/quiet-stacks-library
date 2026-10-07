@@ -184,18 +184,20 @@
 .book-stage {
   position: relative;
   width: 100%;
+  perspective: 2600px;
 }
 
 /* Leather Cover Base */
 .library-book {
   position: relative;
   background: #173d2c; /* Forest Green Archival Leather */
-  border-radius: 16px;
-  padding: 10px;
+  border-radius: 18px;
+  padding: 10px 12px 14px 12px;
   box-shadow: 
-    0 18px 45px -10px rgba(27, 67, 50, 0.25),
-    0 8px 20px -6px rgba(0, 0, 0, 0.15),
-    0 0 0 1px rgba(212, 175, 55, 0.4) inset;
+    0 22px 55px -10px rgba(27, 67, 50, 0.35),
+    0 10px 25px -5px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(212, 175, 55, 0.45) inset;
+  transform-style: preserve-3d;
 }
 
 /* Gold Embossed Filigree Perimeter */
@@ -203,23 +205,23 @@
   position: absolute;
   inset: 5px;
   border: 1px solid rgba(212, 175, 55, 0.3);
-  border-radius: 12px;
+  border-radius: 14px;
   pointer-events: none;
   z-index: 1;
 }
 
-/* Silk Ribbon Bookmark */
+/* Silk Ribbon Bookmark Hanging Over Central Spine */
 .book-ribbon-bookmark {
   position: absolute;
   top: -12px;
   left: 50%;
   transform: translateX(-50%);
-  width: 20px;
+  width: 22px;
   height: 85px;
   background: linear-gradient(135deg, #a82020 0%, #7e1212 100%);
   border-radius: 0 0 4px 4px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-  z-index: 25;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);
+  z-index: 35;
   pointer-events: none;
   clip-path: polygon(0% 0%, 100% 0%, 100% 88%, 50% 100%, 0% 88%);
 }
@@ -235,18 +237,129 @@
   opacity: 0.85;
 }
 
-/* The Open Folio Spread */
+/* Book Folio Top Header (Folio Marks & Navigation Ribbons) */
+.book-top-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 14px 10px 14px;
+  z-index: 30;
+}
+
+.book-header-foliomark {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-serif);
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  color: #d4af37;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.book-header-foliomark.left-mark {
+  justify-content: flex-start;
+  flex: 1;
+}
+
+.book-header-foliomark.right-mark {
+  justify-content: flex-end;
+  flex: 1;
+}
+
+.foliomark-num {
+  font-weight: 700;
+  color: #fef7e6;
+}
+
+.foliomark-divider {
+  opacity: 0.5;
+}
+
+/* Book Tab Ribbons Header */
+.book-tabs-nav {
+  position: relative;
+  display: inline-flex;
+  background: rgba(237, 230, 216, 0.95);
+  border-radius: 30px;
+  padding: 3px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  z-index: 10;
+}
+
+.book-tabs-slider {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc(50% - 3px);
+  background: #ffffff;
+  border-radius: 26px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.book-tabs-slider.pos-signup {
+  transform: translateX(100%);
+}
+
+.book-tab-btn {
+  position: relative;
+  padding: 0.42rem 1.15rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.825rem;
+  font-weight: 600;
+  border-radius: 26px;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+  text-align: center;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  z-index: 1;
+}
+
+.book-tab-btn svg {
+  width: 14px;
+  height: 14px;
+  opacity: 0.7;
+}
+
+.book-tab-btn.active {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.book-tab-btn.active svg {
+  opacity: 1;
+  color: var(--color-accent-amber);
+}
+
+/* The Open Folio Spread Across the Entire Book */
 .book-pages-spread {
   position: relative;
   display: grid;
   grid-template-columns: 1fr 1fr;
   width: 100%;
-  min-height: 540px;
+  min-height: 560px;
   background: #fdfbf7;
   border-radius: 10px;
-  box-shadow: 0 0 0 1px #e6decb inset;
+  box-shadow: 
+    0 0 0 1px #e6decb inset,
+    0 10px 30px -10px rgba(0, 0, 0, 0.15);
   z-index: 5;
-  overflow: hidden;
+  transform-style: preserve-3d;
+  /* Crucial: overflow must NOT clip the 3D rotating leaf across the spine */
+  overflow: visible;
 }
 
 /* Center Spine Gutter Crease & Shadow */
@@ -255,21 +368,36 @@
   top: 0;
   bottom: 0;
   left: 50%;
-  width: 28px;
+  width: 32px;
   transform: translateX(-50%);
   background: linear-gradient(
     to right,
-    rgba(0, 0, 0, 0.12) 0%,
-    rgba(0, 0, 0, 0.24) 50%,
-    rgba(0, 0, 0, 0.12) 100%
+    rgba(0, 0, 0, 0.08) 0%,
+    rgba(0, 0, 0, 0.22) 42%,
+    rgba(212, 175, 55, 0.22) 50%,
+    rgba(0, 0, 0, 0.22) 58%,
+    rgba(0, 0, 0, 0.08) 100%
   );
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.18);
-  z-index: 20;
+  box-shadow: 
+    inset 0 0 8px rgba(0, 0, 0, 0.15),
+    0 0 14px rgba(0, 0, 0, 0.18);
+  z-index: 25;
   pointer-events: none;
 }
 
+.book-spine-gutter::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+  background: rgba(212, 175, 55, 0.45);
+}
+
 /* ==========================================================================
-   Left Page: Ex Libris & Demo Accounts
+   Left Page: Ex Libris & Demo Accounts (Fixed Under-Page on the Left)
    ========================================================================== */
 
 .book-page-left {
@@ -277,10 +405,13 @@
   padding: var(--space-6) var(--space-6);
   background: linear-gradient(135deg, #faf6ed 0%, #fdfaf3 100%);
   border-right: 1px solid #e8dfcc;
+  border-radius: 10px 0 0 10px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: inset -12px 0 20px -8px rgba(0, 0, 0, 0.05);
+  box-shadow: inset -14px 0 24px -10px rgba(0, 0, 0, 0.06);
+  z-index: 2;
+  overflow: hidden;
 }
 
 .ex-libris-header {
@@ -464,185 +595,226 @@
 }
 
 /* ==========================================================================
-   Right Page: Smooth 180° Leaf Page Turning Architecture
+   Right Page: Under-Page Folio (Revealed on Register)
    ========================================================================== */
 
 .book-page-right {
   position: relative;
   background: linear-gradient(225deg, #faf6ed 0%, #fdfaf3 100%);
-  display: flex;
-  flex-direction: column;
-  padding: var(--space-6) var(--space-6);
-  perspective: 1600px; /* 3D Perspective for the turning leaf */
-  box-shadow: inset 12px 0 20px -8px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-}
-
-/* Book Tab Ribbons Header */
-.book-tabs-nav {
-  position: relative;
-  display: flex;
-  background: #ede6d8;
-  border-radius: 8px;
-  padding: 3px;
-  margin-bottom: var(--space-4);
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
-  z-index: 10;
-}
-
-.book-tabs-slider {
-  position: absolute;
-  top: 3px;
-  bottom: 3px;
-  left: 3px;
-  width: calc(50% - 3px);
-  background: #ffffff;
-  border-radius: 6px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 0;
-  pointer-events: none;
-}
-
-.book-tabs-slider.pos-signup {
-  transform: translateX(100%);
-}
-
-.book-tab-btn {
-  position: relative;
-  flex: 1;
-  padding: 0.5rem 0.75rem;
-  border: none;
-  background: transparent;
-  color: var(--color-text-secondary);
-  font-size: 0.825rem;
-  font-weight: 600;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: color var(--transition-fast);
-  text-align: center;
-  font-family: inherit;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  z-index: 1;
-}
-
-.book-tab-btn svg {
-  width: 14px;
-  height: 14px;
-  opacity: 0.7;
-}
-
-.book-tab-btn.active {
-  color: var(--color-primary);
-  font-weight: 700;
-}
-
-.book-tab-btn.active svg {
-  opacity: 1;
-  color: var(--color-accent-amber);
-}
-
-/* ==========================================================================
-   Smooth Authentic Leaf Page-Turn
-   A realistic paper leaf attached to the spine that turns 180° around the hinge
-   ========================================================================== */
-
-.book-folio-viewport {
-  position: relative;
-  width: 100%;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Under Page: The static underlying folio containing the Register form */
-.book-under-page {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
+  border-radius: 0 10px 10px 0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  opacity: 1;
-  pointer-events: auto;
+  padding: var(--space-6) var(--space-6);
+  box-shadow: inset 14px 0 24px -10px rgba(0, 0, 0, 0.06);
+  z-index: 2;
+  overflow: hidden;
 }
 
-/* The Turning Leaf (Attached to the spine on the left edge: 0% 50%) */
+/* ==========================================================================
+   The Turning Leaf Across the Whole Book
+   Hinged at the Center Spine (left: 50%, origin: left center)
+   Swings 180° across the central gutter to cover the Left Page
+   ========================================================================== */
+
 .book-turning-leaf {
   position: absolute;
-  inset: 0;
-  z-index: 5;
-  transform-origin: 0% 50%; /* The Spine Hinge! */
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  transform-origin: 0% 50%; /* The Spine Axis */
   transform-style: preserve-3d;
-  transition: transform 0.62s cubic-bezier(0.45, 0.05, 0.25, 1);
   will-change: transform;
+  z-index: 10;
+  pointer-events: none;
+  transition: transform 0.85s cubic-bezier(0.42, 0, 0.25, 1);
 }
 
-/* State 1: On Login (Leaf is flat on the right side) */
+/* State 1: At Rest on the Right (Sign In Active) */
 .book-turning-leaf.leaf-at-rest {
-  transform: rotateY(0deg);
+  transform: rotateY(0deg) translateZ(1px);
+}
+
+.book-turning-leaf.leaf-at-rest .leaf-face-front {
   pointer-events: auto;
 }
 
-/* State 2: On Register (Leaf turns 180° smoothly over to the left side) */
-.book-turning-leaf.leaf-turned-over {
-  transform: rotateY(-180deg);
+.book-turning-leaf.leaf-at-rest .leaf-face-back {
   pointer-events: none;
 }
 
-/* Front Face of the Turning Leaf: Sign In Folio */
+/* State 2: Turned Over to the Left Page (Register Active) */
+.book-turning-leaf.leaf-turned-over {
+  transform: rotateY(-180deg) translateZ(1px);
+}
+
+.book-turning-leaf.leaf-turned-over .leaf-face-front {
+  pointer-events: none;
+}
+
+.book-turning-leaf.leaf-turned-over .leaf-face-back {
+  pointer-events: auto;
+}
+
+/* While Turning: Elevate in 3D Z-index */
+.book-turning-leaf.turning {
+  z-index: 30;
+}
+
+/* 3D Realistic Paper Arching Flip Forward (Sign In -> Register) */
+.book-turning-leaf.flipping-to-signup {
+  animation: pageTurnForward 0.85s cubic-bezier(0.42, 0, 0.25, 1) forwards;
+}
+
+/* 3D Realistic Paper Arching Flip Backward (Register -> Sign In) */
+.book-turning-leaf.flipping-to-login {
+  animation: pageTurnBackward 0.85s cubic-bezier(0.42, 0, 0.25, 1) forwards;
+}
+
+@keyframes pageTurnForward {
+  0% {
+    transform: rotateY(0deg) translateZ(1px);
+  }
+  25% {
+    transform: rotateY(-42deg) rotateZ(-1.2deg) translateZ(32px);
+  }
+  50% {
+    transform: rotateY(-90deg) rotateZ(-2deg) translateZ(55px);
+  }
+  75% {
+    transform: rotateY(-138deg) rotateZ(-1deg) translateZ(32px);
+  }
+  100% {
+    transform: rotateY(-180deg) translateZ(1px);
+  }
+}
+
+@keyframes pageTurnBackward {
+  0% {
+    transform: rotateY(-180deg) translateZ(1px);
+  }
+  25% {
+    transform: rotateY(-138deg) rotateZ(1deg) translateZ(32px);
+  }
+  50% {
+    transform: rotateY(-90deg) rotateZ(2deg) translateZ(55px);
+  }
+  75% {
+    transform: rotateY(-42deg) rotateZ(1.2deg) translateZ(32px);
+  }
+  100% {
+    transform: rotateY(0deg) translateZ(1px);
+  }
+}
+
+/* Front Face of the Leaf: Sign In Folio */
 .leaf-face-front {
   position: absolute;
   inset: 0;
   background: linear-gradient(225deg, #faf6ed 0%, #fdfaf3 100%);
+  border-radius: 0 10px 10px 0;
+  padding: var(--space-6) var(--space-6);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  box-shadow: 
+    inset 14px 0 24px -10px rgba(0, 0, 0, 0.06),
+    inset -1px 0 0 #dfd4c0;
   z-index: 2;
+  overflow: hidden;
 }
 
-/* Back Face of the Turning Leaf (antique paper backing as it turns) */
+/* Back Face of the Leaf: Archival Scholar Charter & Companion Folio */
 .leaf-face-back {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, #f7f1e3 0%, #f2eae0 100%);
-  border-left: 1px solid #dfd4c0;
-  box-shadow: inset 8px 0 15px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(135deg, #faf6ed 0%, #fdfaf3 100%);
+  border-radius: 10px 0 0 10px;
+  padding: var(--space-6) var(--space-6);
+  border-right: 1px solid #e8dfcc;
+  box-shadow: 
+    inset -14px 0 24px -10px rgba(0, 0, 0, 0.06),
+    inset 1px 0 0 #dfd4c0;
   transform: rotateY(180deg);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: space-between;
   z-index: 1;
+  overflow: hidden;
 }
 
-.leaf-back-watermark {
-  opacity: 0.15;
-  color: var(--color-primary);
-  font-family: var(--font-serif);
-  font-size: 1.2rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-/* Dynamic Paper Shadow that sweeps across the turn */
-.leaf-shadow-overlay {
+/* Dynamic Paper Lighting Overlays */
+.leaf-shadow-front,
+.leaf-shadow-back {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(to right, rgba(0,0,0,0.18) 0%, transparent 60%);
   opacity: 0;
   transition: opacity 0.3s ease;
+  z-index: 5;
 }
 
-.book-turning-leaf.turning .leaf-shadow-overlay {
+.leaf-shadow-front {
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.22) 0%,
+    rgba(0, 0, 0, 0.06) 35%,
+    rgba(255, 255, 255, 0.15) 65%,
+    transparent 100%
+  );
+}
+
+.leaf-shadow-back {
+  background: linear-gradient(
+    to left,
+    rgba(0, 0, 0, 0.22) 0%,
+    rgba(0, 0, 0, 0.06) 35%,
+    rgba(255, 255, 255, 0.15) 65%,
+    transparent 100%
+  );
+}
+
+.book-turning-leaf.turning .leaf-shadow-front,
+.book-turning-leaf.turning .leaf-shadow-back {
+  opacity: 0.9;
+}
+
+/* Interactive Page-Turn Corner Dog-Ears */
+.page-turn-corner {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  z-index: 15;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  opacity: 0.65;
+}
+
+.page-turn-corner:hover {
   opacity: 1;
+  transform: scale(1.18);
+}
+
+.corner-bottom-right {
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(135deg, transparent 50%, #d4af37 50%, #f7f1e3 65%);
+  border-radius: 0 0 10px 0;
+  box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.12);
+}
+
+.corner-bottom-left {
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(225deg, transparent 50%, #d4af37 50%, #f7f1e3 65%);
+  border-radius: 0 0 0 10px;
+  box-shadow: 2px -2px 5px rgba(0, 0, 0, 0.12);
 }
 
 /* Typography on Right Page */
@@ -942,9 +1114,25 @@
    ========================================================================== */
 
 @media (max-width: 860px) {
+  .book-top-header {
+    flex-direction: column;
+    gap: 10px;
+    padding: 6px 4px 10px 4px;
+  }
+
+  .book-header-foliomark {
+    display: none;
+  }
+
+  .book-tabs-nav {
+    width: 100%;
+    max-width: 320px;
+  }
+
   .book-pages-spread {
     grid-template-columns: 1fr;
     min-height: auto;
+    overflow: hidden;
   }
 
   .book-spine-gutter,
@@ -954,35 +1142,45 @@
 
   .book-page-left {
     border-right: none;
-    border-bottom: 2px dashed #e6decb;
+    border-radius: 10px 10px 0 0;
     padding: var(--space-5) var(--space-4);
     box-shadow: none;
   }
 
   .book-page-right {
+    border-radius: 0 0 10px 10px;
     padding: var(--space-5) var(--space-4);
     box-shadow: none;
+    display: none;
+  }
+
+  .book-page-right.mobile-active {
+    display: flex;
   }
 
   .book-turning-leaf {
     position: relative;
-    inset: auto;
+    left: 0;
+    width: 100%;
+    height: auto;
+    transform: none !important;
+    animation: none !important;
   }
 
-  .leaf-face-front,
+  .leaf-face-front {
+    position: relative;
+    inset: auto;
+    border-radius: 0 0 10px 10px;
+    padding: var(--space-5) var(--space-4);
+    display: flex;
+  }
+
   .leaf-face-back {
-    position: relative;
-    inset: auto;
-  }
-
-  .book-under-page {
-    position: relative;
-    inset: auto;
     display: none;
   }
 
-  .book-under-page.mobile-active {
-    display: flex;
+  .book-turning-leaf.leaf-turned-over .leaf-face-front {
+    display: none;
   }
 
   .auth-brand-title {
