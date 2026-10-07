@@ -1,7 +1,7 @@
 /**
- * Quiet Stacks Library — Archival Book Authentication Controller
- * Orchestrates 3D open book page-turning physics, interactive folio tabs,
- * instant credential stamps, and the cinematic zoom-out transition to the dashboard.
+ * Quiet Stacks Library — High-Performance Archival Book Auth Controller
+ * Hardware-accelerated 180° leaf turning physics, instant credential auto-fill,
+ * and seamless cinematic zoom-out to the dashboard.
  */
 
 (function () {
@@ -14,82 +14,15 @@
     return div.innerHTML;
   }
 
-  // --------------------------------------------------------------------------
-  // 1. Ambient Sunlight & Floating Paper Motes Particles
-  // --------------------------------------------------------------------------
-  function initAmbientParticles() {
-    const canvas = document.getElementById('particles-canvas');
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
-
-    window.addEventListener('resize', () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    });
-
-    const particleCount = 22;
-    const particles = [];
-
-    for (let i = 0; i < particleCount; i++) {
-      particles.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        radius: Math.random() * 1.8 + 0.6,
-        alpha: Math.random() * 0.35 + 0.1,
-        speedY: Math.random() * 0.25 + 0.08,
-        speedX: (Math.random() - 0.5) * 0.2,
-        pulseSpeed: Math.random() * 0.02 + 0.01,
-        color: Math.random() > 0.5 ? '176, 125, 26' : '100, 120, 110' // Amber or Sage
-      });
-    }
-
-    function animateParticles() {
-      ctx.clearRect(0, 0, width, height);
-
-      particles.forEach((p) => {
-        p.y -= p.speedY;
-        p.x += p.speedX;
-        p.alpha += Math.sin(Date.now() * p.pulseSpeed * 0.05) * 0.005;
-
-        if (p.y < -10) {
-          p.y = height + 10;
-          p.x = Math.random() * width;
-        }
-        if (p.x < -10) p.x = width + 10;
-        if (p.x > width + 10) p.x = -10;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${p.color}, ${Math.max(0.08, Math.min(0.45, p.alpha))})`;
-        ctx.fill();
-      });
-
-      requestAnimationFrame(animateParticles);
-    }
-
-    animateParticles();
-  }
-
-  // --------------------------------------------------------------------------
-  // 2. Main Authentication Orchestrator
-  // --------------------------------------------------------------------------
   document.addEventListener('DOMContentLoaded', function () {
-    initAmbientParticles();
-
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
     const alertBox = document.getElementById('auth-alert');
     const tabLogin = document.getElementById('tab-login');
     const tabSignup = document.getElementById('tab-signup');
     const tabSlider = document.getElementById('book-tabs-slider');
-    const panelLogin = document.getElementById('panel-login');
-    const panelSignup = document.getElementById('panel-signup');
-    const pageWrapper = document.getElementById('page-turn-wrapper');
+    const turningLeaf = document.getElementById('book-turning-leaf');
+    const underPage = document.getElementById('book-under-page');
     const linkToSignup = document.getElementById('link-to-signup');
     const linkToLogin = document.getElementById('link-to-login');
     const sessionBanner = document.getElementById('auth-active-session-banner');
@@ -97,42 +30,7 @@
     const revealBackdrop = document.getElementById('dashboard-reveal-backdrop');
 
     // ------------------------------------------------------------------------
-    // Initial Page Entrance Orchestration
-    // ------------------------------------------------------------------------
-    if (window.anime) {
-      window.anime.timeline({ easing: 'easeOutCubic' })
-        .add({
-          targets: '.auth-brand-badge',
-          opacity: [0, 1],
-          translateY: [-10, 0],
-          duration: 500
-        })
-        .add({
-          targets: ['.auth-crest-icon', '.auth-brand-title', '.auth-brand-subtitle'],
-          opacity: [0, 1],
-          translateY: [15, 0],
-          duration: 600,
-          delay: window.anime.stagger(70)
-        }, '-=350')
-        .add({
-          targets: '.library-book',
-          opacity: [0, 1],
-          scale: [0.96, 1],
-          translateY: [20, 0],
-          duration: 750,
-          easing: 'easeOutBack'
-        }, '-=300')
-        .add({
-          targets: '.book-ribbon-bookmark',
-          translateY: [-20, 0],
-          opacity: [0, 1],
-          duration: 600,
-          easing: 'easeOutElastic(1, .8)'
-        }, '-=400');
-    }
-
-    // ------------------------------------------------------------------------
-    // Alerts (with icons and animated slide)
+    // Alerts
     // ------------------------------------------------------------------------
     function showAlert(message, type = 'error') {
       if (!alertBox) return;
@@ -148,16 +46,6 @@
 
       alertBox.innerHTML = `${iconSvg}<span>${escapeHtml(message)}</span>`;
       alertBox.className = 'auth-alert visible ' + (isSuccess ? 'auth-alert-success' : 'auth-alert-error');
-
-      if (window.anime) {
-        window.anime({
-          targets: alertBox,
-          opacity: [0, 1],
-          translateY: [-6, 0],
-          duration: 300,
-          easing: 'easeOutQuad'
-        });
-      }
     }
 
     function hideAlert() {
@@ -166,30 +54,35 @@
       alertBox.textContent = '';
     }
 
-    function shakeCard() {
+    function shakeBook() {
       const target = document.querySelector('.library-book');
-      if (!target || !window.anime) return;
-      window.anime({
-        targets: target,
-        translateX: [-8, 8, -6, 6, -3, 3, 0],
-        duration: 450,
-        easing: 'easeInOutSine'
+      if (!target) return;
+      target.animate([
+        { transform: 'translateX(0)' },
+        { transform: 'translateX(-7px)' },
+        { transform: 'translateX(7px)' },
+        { transform: 'translateX(-5px)' },
+        { transform: 'translateX(5px)' },
+        { transform: 'translateX(0)' }
+      ], {
+        duration: 400,
+        easing: 'ease-in-out'
       });
     }
 
     // ------------------------------------------------------------------------
-    // 3D Animated Book Page-Turn Logic
+    // Smooth 180° Leaf Page-Turn Controller (Turned, NOT Transformed)
     // ------------------------------------------------------------------------
     let currentMode = 'login';
 
-    function switchPage(mode) {
+    function turnPageTo(mode) {
       if (mode === currentMode) return;
       hideAlert();
 
       const isSignup = mode === 'signup';
       currentMode = mode;
 
-      // Update Tab Buttons
+      // Update Tab Navigation Ribbons
       if (tabLogin && tabSignup) {
         if (isSignup) {
           tabSignup.classList.add('active');
@@ -204,7 +97,6 @@
         }
       }
 
-      // Move slider
       if (tabSlider) {
         if (isSignup) {
           tabSlider.classList.add('pos-signup');
@@ -213,76 +105,55 @@
         }
       }
 
-      const outgoingPanel = isSignup ? panelLogin : panelSignup;
-      const incomingPanel = isSignup ? panelSignup : panelLogin;
+      // Smooth 180° Leaf Turn around the Spine Hinge
+      if (turningLeaf) {
+        turningLeaf.classList.add('turning');
 
-      if (!outgoingPanel || !incomingPanel) return;
+        if (isSignup) {
+          turningLeaf.classList.remove('leaf-at-rest');
+          turningLeaf.classList.add('leaf-turned-over');
+          if (underPage) underPage.classList.add('mobile-active');
+        } else {
+          turningLeaf.classList.remove('leaf-turned-over');
+          turningLeaf.classList.add('leaf-at-rest');
+          if (underPage) underPage.classList.remove('mobile-active');
+        }
 
-      if (window.anime && pageWrapper) {
-        // 3D Leaf Turn Sequence with Paper Lighting
-        window.anime.timeline({ easing: 'easeInOutQuad' })
-          .add({
-            targets: outgoingPanel,
-            opacity: [1, 0],
-            rotateY: isSignup ? [0, -35] : [0, 35],
-            translateX: isSignup ? [0, -20] : [0, 20],
-            duration: 220,
-            complete: () => {
-              outgoingPanel.classList.remove('active');
-              incomingPanel.classList.add('active');
-            }
-          })
-          .add({
-            targets: incomingPanel,
-            opacity: [0, 1],
-            rotateY: isSignup ? [35, 0] : [-35, 0],
-            translateX: isSignup ? [20, 0] : [-20, 0],
-            duration: 350,
-            easing: 'easeOutCubic'
-          })
-          .add({
-            targets: incomingPanel.querySelectorAll('.auth-form-group, .auth-btn-submit'),
-            opacity: [0, 1],
-            translateY: [10, 0],
-            delay: window.anime.stagger(35),
-            duration: 300
-          }, '-=200');
-      } else {
-        outgoingPanel.classList.remove('active');
-        incomingPanel.classList.add('active');
+        setTimeout(() => {
+          turningLeaf.classList.remove('turning');
+        }, 650);
       }
     }
 
-    if (tabLogin) tabLogin.addEventListener('click', () => switchPage('login'));
-    if (tabSignup) tabSignup.addEventListener('click', () => switchPage('signup'));
+    if (tabLogin) tabLogin.addEventListener('click', () => turnPageTo('login'));
+    if (tabSignup) tabSignup.addEventListener('click', () => turnPageTo('signup'));
 
     if (linkToSignup) {
       linkToSignup.addEventListener('click', function (e) {
         e.preventDefault();
-        switchPage('signup');
+        turnPageTo('signup');
       });
     }
     if (linkToLogin) {
       linkToLogin.addEventListener('click', function (e) {
         e.preventDefault();
-        switchPage('login');
+        turnPageTo('login');
       });
     }
 
-    // Initial query/hash routing
+    // Hash & Query routing
     if (window.location.hash === '#signup') {
-      switchPage('signup');
+      turnPageTo('signup');
     }
 
     window.addEventListener('hashchange', function () {
       if (window.location.hash === '#signup') {
-        switchPage('signup');
+        turnPageTo('signup');
       } else if (window.location.hash === '#login') {
-        switchPage('login');
+        turnPageTo('login');
       }
     });
 
-    // Check query params for messages
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('msg') === 'auth_required') {
       showAlert('Please sign in or register to access library stacks, or proceed as guest.', 'error');
@@ -301,15 +172,6 @@
 
         const isPassword = input.type === 'password';
         input.type = isPassword ? 'text' : 'password';
-
-        if (window.anime) {
-          window.anime({
-            targets: this,
-            scale: [0.8, 1.15, 1],
-            duration: 280,
-            easing: 'easeOutElastic(1, .8)'
-          });
-        }
 
         this.innerHTML = isPassword
           ? `<svg viewBox="0 0 20 20" fill="currentColor">
@@ -357,7 +219,7 @@
             strengthLabel.textContent = 'Minimum 6 characters';
             strengthLabel.style.color = 'var(--color-text-muted)';
           } else if (score === 1) {
-            strengthLabel.textContent = 'Weak (mix numbers & uppercase)';
+            strengthLabel.textContent = 'Weak (add numbers & capitals)';
             strengthLabel.style.color = '#ef4444';
           } else if (score === 2) {
             strengthLabel.textContent = 'Moderate security';
@@ -371,13 +233,12 @@
     }
 
     // ------------------------------------------------------------------------
-    // Instant Demo Account Auto-Fill with Ink-Stamp Pulse
+    // Instant Demo Account Auto-Fill
     // ------------------------------------------------------------------------
     document.querySelectorAll('.btn-fill-demo').forEach((btn) => {
       btn.addEventListener('click', function () {
-        // If on signup page, switch to login first!
         if (currentMode !== 'login') {
-          switchPage('login');
+          turnPageTo('login');
         }
 
         const email = this.getAttribute('data-email');
@@ -391,23 +252,11 @@
           hideAlert();
 
           const card = this.closest('.demo-account-card');
-          if (card && window.anime) {
-            window.anime({
-              targets: card,
-              backgroundColor: ['#fef3c7', '#faf6ed'],
-              scale: [0.98, 1],
-              duration: 500,
-              easing: 'easeOutQuad'
-            });
-          }
-
-          const submitBtn = document.querySelector('#login-form .auth-btn-submit');
-          if (submitBtn && window.anime) {
-            window.anime({
-              targets: submitBtn,
-              scale: [1, 1.03, 1],
-              duration: 350
-            });
+          if (card) {
+            card.animate([
+              { backgroundColor: '#fef3c7' },
+              { backgroundColor: '#faf6ed' }
+            ], { duration: 400 });
           }
 
           showAlert(`Loaded credentials for ${this.getAttribute('data-name') || 'Patron'}. Click "Open Reading Stack" to enter!`, 'success');
@@ -438,19 +287,18 @@
           bannerLogout.addEventListener('click', function () {
             window.LibraryStorage.logout();
             sessionBanner.style.display = 'none';
-            showAlert('Signed out successfully. Choose a new card or register.', 'success');
+            showAlert('Signed out successfully.', 'success');
           });
         }
       }
     }
 
-    // Destination target
     const destinationUrl = urlParams.get('returnUrl') || 'dashboard.html';
 
     // ------------------------------------------------------------------------
-    // Cinematic Zoom-Out to Dashboard Orchestrator
+    // Seamless Dashboard Zoom-Out
     // ------------------------------------------------------------------------
-    function triggerDashboardZoomOut(welcomeName, cardId) {
+    function triggerDashboardZoomOut() {
       if (revealBackdrop) {
         revealBackdrop.classList.add('active');
       }
@@ -459,33 +307,14 @@
         authContainer.classList.add('zoom-out-active');
       }
 
-      if (window.anime) {
-        window.anime.timeline({ easing: 'easeInOutQuad' })
-          .add({
-            targets: '.library-book',
-            scale: [1, 0.88],
-            rotateX: [0, 8],
-            boxShadow: '0 40px 80px rgba(27,67,50,0.4)',
-            duration: 500
-          })
-          .add({
-            targets: authContainer,
-            scale: [1, 0.65],
-            translateY: [0, 60],
-            opacity: [1, 0],
-            duration: 650
-          }, '-=300')
-          .add({
-            targets: '.ambient-shelf-header',
-            opacity: [0.22, 1],
-            scale: [1, 1.05],
-            duration: 600
-          }, '-=500');
+      const shelfHeader = document.querySelector('.ambient-shelf-header');
+      if (shelfHeader) {
+        shelfHeader.style.opacity = '1';
       }
 
       setTimeout(() => {
         window.location.href = destinationUrl;
-      }, 750);
+      }, 550);
     }
 
     // ------------------------------------------------------------------------
@@ -504,7 +333,7 @@
         const password = passInput ? passInput.value : '';
 
         if (!emailOrId || !password) {
-          shakeCard();
+          shakeBook();
           showAlert('Please enter both your email / Member ID and password.', 'error');
           return;
         }
@@ -519,16 +348,16 @@
 
           if (result.success) {
             showAlert(`Access Granted. Welcome back, ${result.account.name}! Opening stacks...`, 'success');
-            triggerDashboardZoomOut(result.account.name, result.account.id);
+            triggerDashboardZoomOut();
           } else {
             if (submitBtn) {
               submitBtn.classList.remove('loading');
               submitBtn.innerHTML = `<span>Open Reading Stack</span><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>`;
             }
-            shakeCard();
+            shakeBook();
             showAlert(result.error || 'Authentication failed. Please verify credentials.', 'error');
           }
-        }, 320);
+        }, 250);
       });
     }
 
@@ -554,19 +383,19 @@
         const membershipType = typeSelect ? typeSelect.value : 'standard';
 
         if (!name || !email) {
-          shakeCard();
+          shakeBook();
           showAlert('Please provide your name and email address.', 'error');
           return;
         }
 
         if (password.length < 6) {
-          shakeCard();
+          shakeBook();
           showAlert('Password must contain at least 6 characters.', 'error');
           return;
         }
 
         if (password !== confirmPassword) {
-          shakeCard();
+          shakeBook();
           showAlert('Passwords do not match. Please re-enter.', 'error');
           return;
         }
@@ -586,17 +415,17 @@
           });
 
           if (result.success) {
-            showAlert(`Card #${result.account.id} Inscribed! Welcome to Quiet Stacks, ${result.account.name}.`, 'success');
-            triggerDashboardZoomOut(result.account.name, result.account.id);
+            showAlert(`Card #${result.account.id} Inscribed! Welcome, ${result.account.name}.`, 'success');
+            triggerDashboardZoomOut();
           } else {
             if (submitBtn) {
               submitBtn.classList.remove('loading');
               submitBtn.innerHTML = `<span>Inscribe Member Card</span><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>`;
             }
-            shakeCard();
+            shakeBook();
             showAlert(result.error || 'Registration failed.', 'error');
           }
-        }, 360);
+        }, 280);
       });
     }
   });
