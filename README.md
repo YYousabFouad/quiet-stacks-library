@@ -20,11 +20,15 @@ Libaray-system/
     │   ├── reset.css            # Modern CSS reset and baseline defaults
     │   ├── layout.css           # Grid layouts, header, banners, responsive breakpoints
     │   ├── components.css       # Cards, badges, buttons, tables, filters, user session, modals
-    │   └── auth.css             # Authentication card & form styles for login/signup
+    │   └── auth.css             # Elevated glassmorphism & animated auth styles
     ├── js/
     │   ├── storage.js           # LocalStorage service: accounts, auth, books, members, loans, stats
-    │   ├── auth.js              # Authentication controller for login and registration
+    │   ├── auth.js              # Auth controller: Vanta 3D canvas, Anime.js motion, tabs, validation
     │   └── app.js               # Dashboard controller: live rendering, search, buy/borrow, modal flows
+    ├── vendor/
+    │   ├── three.min.js         # Three.js 3D engine for WebGL Vanta canvas
+    │   ├── vanta.net.min.js     # Vanta.NET interactive constellation library background
+    │   └── anime.min.js         # Anime.js micro-interactions, timelines, and spring physics
     └── images/
         ├── book-banner.svg      # Vector SVG illustration for the header bookshelf
         └── icons/               # Icon assets
