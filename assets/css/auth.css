@@ -507,22 +507,14 @@
 }
 
 /* While Canvas 3D curl engine is actively rendering physical paper deformation */
-.book-pages-spread.is-curling .book-turning-leaf {
+.book-pages-spread.is-curling .book-turning-leaf,
+.book-pages-spread.is-curling .leaf-face-front,
+.book-pages-spread.is-curling .leaf-face-back {
   animation: none !important;
   transition: none !important;
-  opacity: 1 !important;
-}
-
-.book-pages-spread.is-curling .book-page-right::after,
-.book-pages-spread.is-curling .book-page-left::after {
-  animation: none !important;
-  transition: none !important;
-}
-
-.book-pages-spread.is-curling .book-turning-leaf .leaf-face-front,
-.book-pages-spread.is-curling .book-turning-leaf .leaf-face-back {
-  animation: none !important;
-  transition: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 .page-turn-corner {
@@ -804,10 +796,14 @@
 
 .book-turning-leaf.leaf-at-rest .leaf-face-front {
   pointer-events: auto;
+  opacity: 1;
+  visibility: visible;
 }
 
 .book-turning-leaf.leaf-at-rest .leaf-face-back {
   pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
 }
 
 /* State 2: Turned Over to the Left Page (Register Active) */
@@ -817,10 +813,14 @@
 
 .book-turning-leaf.leaf-turned-over .leaf-face-front {
   pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
 }
 
 .book-turning-leaf.leaf-turned-over .leaf-face-back {
   pointer-events: auto;
+  opacity: 1;
+  visibility: visible;
 }
 
 /* While Turning: Elevate in 3D Z-index so it smoothly glides above static pages */

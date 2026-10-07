@@ -22,9 +22,9 @@
   const MARGIN = 90;                       // px of canvas bleed so the lifted flap isn't cropped
   const SEGMENTS = 56;                     // mesh density
   const FOV = 30;                          // camera field of view (deg)
-  const DURATION = 850;                    // click/keyboard turn duration (ms)
-  const THETA0 = (26 * Math.PI) / 180;     // initial crease slant (corner-first peel)
-  const PHI0 = (15 * Math.PI) / 180;       // max lift of the folded-over flap
+  const DURATION = 760;                    // natural physical paper turn duration (ms)
+  const THETA0 = (9 * Math.PI) / 180;      // natural corner peel tilt (deg)
+  const PHI0 = (16 * Math.PI) / 180;       // max lift angle of the folded flap
   const MOBILE_QUERY = '(max-width: 860px)';
 
   const easeInOutSine = (t) => 0.5 - 0.5 * Math.cos(Math.PI * t);
@@ -32,8 +32,7 @@
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
   // --------------------------------------------------------------------------
-  // Shader patch: per-vertex signed distance to the crease (aS). Fragments on
-  // the flat side (aS < 0) are discarded because the real DOM shows them.
+  // Shader patch: per-vertex signed distance to the crease (aS) for crease lighting
   // --------------------------------------------------------------------------
   function patchCurlMaterial(material, withCreaseShade) {
     material.onBeforeCompile = (shader) => {
@@ -41,13 +40,12 @@
         .replace('#include <common>', '#include <common>\nattribute float aS;\nvarying float vS;')
         .replace('#include <begin_vertex>', '#include <begin_vertex>\nvS = aS;');
       let frag = shader.fragmentShader
-        .replace('#include <common>', '#include <common>\nvarying float vS;')
-        .replace('#include <clipping_planes_fragment>', 'if (vS < 0.0) discard;\n#include <clipping_planes_fragment>');
+        .replace('#include <common>', '#include <common>\nvarying float vS;');
       if (withCreaseShade) {
         // Soft ambient occlusion where the paper leaves the page surface
         frag = frag.replace(
           '#include <dithering_fragment>',
-          'gl_FragColor.rgb *= mix(0.84, 1.0, smoothstep(0.0, 24.0, vS));\n#include <dithering_fragment>'
+          'gl_FragColor.rgb *= mix(0.88, 1.0, smoothstep(0.0, 24.0, vS));\n#include <dithering_fragment>'
         );
       }
       shader.fragmentShader = frag;
@@ -84,6 +82,7 @@
 
   class PageCurlEngine {
     constructor(opts) {
+      window.__curlEngine = this;
       this.opts = opts;
       this.spread = document.querySelector('.book-pages-spread');
       this.canvas = document.getElementById('book-curl-canvas');
@@ -348,6 +347,7 @@
     }
 
     // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     // The curl. Coordinates: x from spine (0) to fore-edge (pageW), y up.
     // A backward turn is the same motion with the sheet group mirrored.
     // ------------------------------------------------------------------------
@@ -356,24 +356,25 @@
       const H = this.pageH;
       const halfH = H / 2;
 
-      // Crease direction: slanted so the bottom corner peels first, then straightens
-      const theta = -THETA0 * Math.pow(1 - t, 1.25);
+      // Natural corner peel that gently straightens as the sheet sweeps across
+      const theta = -THETA0 * Math.pow(1 - t, 1.4);
       const c = Math.cos(theta);
       const s = Math.sin(theta);
 
-      // Crease travels from just past the corner to the spine. dMin keeps the
-      // bound edge attached to the spine the whole way.
-      const dStart = W * c + halfH * Math.abs(s) + 2;
-      const dMin = halfH * Math.abs(s);
-      const d = dStart + (dMin - dStart) * t;
+      // Crease travels smoothly across the sheet from right edge to spine (0)
+      const dStart = W * c + halfH * Math.abs(s);
+      const d = dStart * (1 - t);
 
-      // Curl radius and flap lift both swell mid-turn and go to 0 at the end,
-      // so the final frame is exactly the sheet lying flat on the other page.
+      // Roll radius swells gracefully mid-turn and converges to 0 at landing
       const sinPi = Math.sin(Math.PI * t);
-      const R = W * 0.14 * Math.pow(sinPi, 0.55);
+      const R = W * 0.15 * Math.pow(sinPi, 0.65);
       const phi = PHI0 * sinPi;
       const cosPhi = Math.cos(phi);
       const sinPhi = Math.sin(phi);
+
+      // Base sheet elevation camber: lifts the uncurled paper in 3D right from frame 1!
+      // This ensures all text moves organically with the paper and never sits frozen on the desk.
+      const maxCamber = W * 0.16 * sinPi;
 
       this.line = { c, s, d };
 
@@ -385,18 +386,27 @@
       for (let i = 0, n = aS.length; i < n; i++) {
         const x = orig[i * 3];
         const y = orig[i * 3 + 1];
-        const sd = x * c + y * s - d; // signed distance past the crease
+        const sd = x * c + y * s - d; // signed distance past the crease line
         aS[i] = sd;
 
         if (sd <= 0) {
-          arr[i * 3] = x;
+          // Uncurled base sheet (between spine x=0 and crease d):
+          // Arches smoothly in 3D and tilts toward the turn direction, carrying text actively!
+          const uBase = clamp(x / Math.max(1, d), 0, 1);
+          const camberZ = maxCamber * Math.sin(Math.PI * uBase);
+
+          // Progressive spine rotation toward the left
+          const rotAngle = -Math.PI * Math.pow(t, 1.2) * (1 - Math.cos(Math.PI * 0.5 * uBase));
+          const shiftX = - (x * (1 - Math.cos(rotAngle)));
+
+          arr[i * 3] = x + shiftX;
           arr[i * 3 + 1] = y;
-          arr[i * 3 + 2] = 0;
+          arr[i * 3 + 2] = camberZ;
           continue;
         }
 
-        // Slightly conical: a tighter roll at the top, a looser one at the peeled corner
-        const Rl = R * (1.15 - 0.3 * ((y + halfH) / H));
+        // Curled sheet past the crease line: wraps around dynamic 3D cylinder
+        const Rl = R * (1.12 - 0.24 * ((y + halfH) / H));
         const arc = Math.PI * Rl;
         let nCoord;
         let z;
@@ -456,7 +466,6 @@
 
     frame(t) {
       this.deform(t);
-      this.clipFace(this.forward);
       this.render();
     }
 
