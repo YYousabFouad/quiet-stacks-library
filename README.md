@@ -23,15 +23,15 @@ Libaray-system/
     │   └── auth.css             # Elevated glassmorphism & animated auth styles
     ├── js/
     │   ├── storage.js           # LocalStorage service: accounts, auth, books, members, loans, stats
-    │   ├── auth.js              # Auth controller: Vanta 3D canvas, Anime.js motion, tabs, validation
+    │   ├── auth.js              # Auth controller: page turns, tabs, and form validation
+    │   ├── page-curl.js         # Three.js page curl interaction
     │   └── app.js               # Dashboard controller: live rendering, search, buy/borrow, modal flows
     ├── vendor/
-    │   ├── three.min.js         # Three.js 3D engine for WebGL Vanta canvas
-    │   ├── vanta.net.min.js     # Vanta.NET interactive constellation library background
-    │   └── anime.min.js         # Anime.js micro-interactions, timelines, and spring physics
+    │   ├── three.min.js         # Three.js engine used by the page curl
+    │   ├── vanta.net.min.js     # Bundled visual effect library (not currently used)
+    │   └── anime.min.js         # Bundled animation library (not currently used)
     └── images/
-        ├── book-banner.svg      # Vector SVG illustration for the header bookshelf
-        └── icons/               # Icon assets
+        └── book-banner.svg      # Vector SVG illustration for the header bookshelf
 ```
 
 ---
@@ -43,17 +43,17 @@ User accounts are stored persistently in `quiet_stacks_accounts`, linked directl
 - **Chief Librarian (Admin):**
   - Email: `admin@quietstacks.com` | Password: `admin123`
 - **John Smith (Standard Member):**
-  - Email: `john@example.com` | Password: `password123` (2 borrowed titles, 1 purchased title)
+  - Email: `john@example.com` | Password: `password123` (3 borrowed titles, 1 purchased title)
 - **Sarah Ali (Student Member):**
-  - Email: `sarah@example.com` | Password: `password123` (1 borrowed title, 1 purchased title)
+  - Email: `sarah@example.com` | Password: `password123` (3 borrowed titles, 1 purchased title)
 
-Quick "Fill" demo buttons are available on [index.html](file:///home/soupa-fedora/Projects/Libaray-system/index.html) and [login.html](file:///home/soupa-fedora/Projects/Libaray-system/login.html) for instantaneous testing.
+Quick "Fill" demo buttons are available on [index.html](index.html) and [login.html](login.html).
 
 ---
 
 ## 💾 LocalStorage Data Schema & Sample Dataset
 
-The data layer in [storage.js](file:///home/soupa-fedora/Projects/Libaray-system/assets/js/storage.js) handles persistent client-side storage across five primary keys:
+The data layer in [storage.js](assets/js/storage.js) handles persistent client-side storage across six primary keys:
 
 1. **`quiet_stacks_accounts`**
    - User account records containing `id`, `name`, `email`, `password`, `role`, `membershipType`, `borrowedBooks`, and `purchasedBooks` (with invoices, price paid, and timestamps).
@@ -89,7 +89,7 @@ The data layer in [storage.js](file:///home/soupa-fedora/Projects/Libaray-system
 
 ## 🚀 How to Run
 
-Launch the starter file [index.html](file:///home/soupa-fedora/Projects/Libaray-system/index.html) directly in any modern browser, or run a local static server:
+Launch the starter file [index.html](index.html) directly in any modern browser, or run a local static server:
 
 ```bash
 # Python 3

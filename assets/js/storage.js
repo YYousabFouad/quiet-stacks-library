@@ -282,7 +282,7 @@
       email: 'marcus.v@example.com',
       membershipType: 'standard',
       status: 'active',
-      borrowedCount: 3
+      borrowedCount: 2
     },
     {
       id: 'M-006',
@@ -564,6 +564,17 @@
     }
   }
 
+  function nextMemberId() {
+    const usedIds = new Set(
+      [...StorageService.getMembers(), ...StorageService.getAccounts()]
+        .map((record) => Number(String(record.id || '').replace(/^M-/i, '')))
+        .filter(Number.isInteger)
+    );
+    let nextNum = 1;
+    while (usedIds.has(nextNum)) nextNum += 1;
+    return 'M-' + String(nextNum).padStart(3, '0');
+  }
+
   // Storage Service API Object
   const StorageService = {
     /**
@@ -634,10 +645,8 @@
         return { success: false, error: 'An account with this email already exists.' };
       }
 
-      // Generate member ID
-      const members = this.getMembers();
-      const nextNum = members.length + 1;
-      const memberId = 'M-' + String(nextNum).padStart(3, '0');
+      // Reuse the first free ID so deleting a member cannot cause ID collisions.
+      const memberId = nextMemberId();
 
       const newAccount = {
         id: memberId,
@@ -747,19 +756,19 @@
     },
 
     deleteBook(id) {
-      let books = this.getBooks();
-      books = books.filter((b) => b.id !== id);
-      write(STORAGE_KEYS.BOOKS, books);
+      // Close associated loans first so member counts and account stacks stay in sync.
+      this.getLoans()
+        .filter((loan) => loan.bookId === id)
+        .forEach((loan) => this.returnLoan(loan.id));
 
-      // Remove related loans if any
-      let loans = this.getLoans();
-      const loan = loans.find((l) => l.bookId === id);
-      if (loan) {
-        this.returnLoan(loan.id);
-      } else {
-        this.recalculateStatistics();
-      }
-
+      write(STORAGE_KEYS.BOOKS, this.getBooks().filter((book) => book.id !== id));
+      // Remove stale account entries too, in case older data has no matching loan.
+      const accounts = this.getAccounts();
+      accounts.forEach((account) => {
+        account.borrowedBooks = (account.borrowedBooks || []).filter((book) => book.bookId !== id);
+      });
+      write(STORAGE_KEYS.ACCOUNTS, accounts);
+      this.recalculateStatistics();
       return true;
     },
 
@@ -895,8 +904,7 @@
 
     addMember(memberData) {
       const members = this.getMembers();
-      const nextNum = members.length + 1;
-      const id = memberData.id || 'M-' + String(nextNum).padStart(3, '0');
+      const id = memberData.id || nextMemberId();
 
       const newMember = {
         id: id,
@@ -926,9 +934,15 @@
     },
 
     deleteMember(id) {
-      let members = this.getMembers();
-      members = members.filter((m) => m.id !== id);
-      write(STORAGE_KEYS.MEMBERS, members);
+      // Return active loans before removing the member to restore book availability.
+      this.getLoans()
+        .filter((loan) => loan.memberId === id)
+        .forEach((loan) => this.returnLoan(loan.id));
+
+      write(STORAGE_KEYS.MEMBERS, this.getMembers().filter((member) => member.id !== id));
+      write(STORAGE_KEYS.ACCOUNTS, this.getAccounts().filter((account) => account.id !== id));
+      const currentUser = this.getCurrentUser();
+      if (currentUser && currentUser.id === id) this.clearCurrentUser();
       this.recalculateStatistics();
       return true;
     },
@@ -984,6 +998,19 @@
           this.updateMember(loan.memberId, { borrowedCount: member.borrowedCount - 1 });
         }
 
+        // A loan may be returned from the staff table. Keep the member account in sync.
+        const accounts = this.getAccounts();
+        let accountsChanged = false;
+        accounts.forEach((account) => {
+          const borrowedBooks = account.borrowedBooks || [];
+          const updatedBorrowedBooks = borrowedBooks.filter((book) => book.bookId !== loan.bookId);
+          if (updatedBorrowedBooks.length !== borrowedBooks.length) {
+            account.borrowedBooks = updatedBorrowedBooks;
+            accountsChanged = true;
+          }
+        });
+        if (accountsChanged) write(STORAGE_KEYS.ACCOUNTS, accounts);
+
         this.recalculateStatistics();
         return true;
       }
@@ -995,8 +1022,23 @@
     // ------------------------------------------------------------------------
     recalculateStatistics() {
       const books = this.getBooks();
-      const members = this.getMembers();
       const loans = this.getLoans();
+
+      // Loan records are the source of truth for each member's current count.
+      const borrowedByMember = new Map();
+      loans.forEach((loan) => {
+        borrowedByMember.set(loan.memberId, (borrowedByMember.get(loan.memberId) || 0) + 1);
+      });
+      const members = this.getMembers();
+      let membersChanged = false;
+      members.forEach((member) => {
+        const borrowedCount = borrowedByMember.get(member.id) || 0;
+        if (member.borrowedCount !== borrowedCount) {
+          member.borrowedCount = borrowedCount;
+          membersChanged = true;
+        }
+      });
+      if (membersChanged) write(STORAGE_KEYS.MEMBERS, members);
 
       const borrowedCount = loans.filter((l) => l.status === 'borrowed').length;
       const overdueCount = loans.filter((l) => l.status === 'overdue').length;
