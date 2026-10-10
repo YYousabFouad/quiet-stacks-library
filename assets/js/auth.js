@@ -224,6 +224,43 @@
       }
     });
 
+    // Apple Books Touch Swipe Gestures for Mobile & Tablets
+    const bookStageEl = document.querySelector('.book-stage');
+    if (bookStageEl) {
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchStartTime = 0;
+
+      bookStageEl.addEventListener('touchstart', function (e) {
+        if (e.touches.length === 1) {
+          touchStartX = e.touches[0].clientX;
+          touchStartY = e.touches[0].clientY;
+          touchStartTime = performance.now();
+        }
+      }, { passive: true });
+
+      bookStageEl.addEventListener('touchend', function (e) {
+        if (e.changedTouches.length === 1) {
+          const dx = e.changedTouches[0].clientX - touchStartX;
+          const dy = e.changedTouches[0].clientY - touchStartY;
+          const dt = performance.now() - touchStartTime;
+
+          // Check if swipe is horizontal and deliberate, avoiding vertical scroll confusion
+          if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4 && dt < 500) {
+            const activeEl = document.activeElement;
+            const isInput = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'SELECT' || activeEl.tagName === 'TEXTAREA');
+            if (!isInput) {
+              if (dx < 0 && currentMode === 'login') {
+                turnPageTo('signup');
+              } else if (dx > 0 && currentMode === 'signup') {
+                turnPageTo('login');
+              }
+            }
+          }
+        }
+      }, { passive: true });
+    }
+
     if (tabLogin) tabLogin.addEventListener('click', () => turnPageTo('login'));
     if (tabSignup) tabSignup.addEventListener('click', () => turnPageTo('signup'));
 
@@ -416,7 +453,21 @@
       }
     }
 
-    const destinationUrl = urlParams.get('returnUrl') || 'dashboard.html';
+    // Only accept a same-origin dashboard destination. A crafted returnUrl must
+    // never send a user away from the library after authentication.
+    const requestedDestination = urlParams.get('returnUrl');
+    let destinationUrl = 'dashboard.html';
+    if (requestedDestination) {
+      try {
+        const parsedDestination = new URL(requestedDestination, window.location.href);
+        if (parsedDestination.origin === window.location.origin &&
+            /(?:^|\/)dashboard\.html$/.test(parsedDestination.pathname)) {
+          destinationUrl = parsedDestination.href;
+        }
+      } catch (_) {
+        // Keep the safe default for malformed URLs.
+      }
+    }
 
     // ------------------------------------------------------------------------
     // Seamless Dashboard Zoom-Out

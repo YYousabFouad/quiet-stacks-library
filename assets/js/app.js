@@ -124,6 +124,8 @@
     const selectedCategory = (elements.bookCategorySelect ? elements.bookCategorySelect.value : '').toLowerCase().trim();
 
     const allBooks = window.LibraryStorage.getBooks();
+    const activeLoans = window.LibraryStorage.getLoans();
+    const currentUser = window.LibraryStorage.getCurrentUser();
 
     const filtered = allBooks.filter((book) => {
       const matchesSearch =
@@ -152,6 +154,10 @@
         const isAvailable = book.status === 'available';
         const isBorrowed = book.status === 'borrowed';
         const isOverdue = book.status === 'overdue';
+        const activeLoan = (isBorrowed || isOverdue)
+          ? activeLoans.find((loan) => loan.bookId === book.id)
+          : null;
+        const canReturn = Boolean(currentUser && activeLoan && activeLoan.memberId === currentUser.id);
 
         let badgeClass = 'badge-available';
         let actionBtnText = 'Borrow';
@@ -161,7 +167,9 @@
           actionBtnText = 'Return';
         } else if (isOverdue) {
           badgeClass = 'badge-overdue';
-          actionBtnText = 'Return';
+          actionBtnText = canReturn ? 'Return' : 'Unavailable';
+        } else if (isBorrowed) {
+          actionBtnText = canReturn ? 'Return' : 'Unavailable';
         }
 
         const priceDisplay = (book.price || 19.99).toFixed(2);
@@ -182,13 +190,13 @@
             <div class="book-card-footer">
               <span class="badge ${badgeClass}">${capitalize(book.status)}</span>
               <div class="card-actions">
-                <button type="button" class="btn btn-sm btn-action-primary btn-book-action" data-action="${isAvailable ? 'borrow' : 'return'}" data-id="${book.id}">
+                <button type="button" class="btn btn-sm btn-action-primary btn-book-action" data-action="${isAvailable ? 'borrow' : (canReturn ? 'return' : 'unavailable')}" data-id="${escapeHtml(book.id)}" ${!isAvailable && !canReturn ? 'disabled aria-disabled="true"' : ''}>
                   ${actionBtnText}
                 </button>
-                <button type="button" class="btn btn-sm btn-action-buy btn-buy-book" data-id="${book.id}" title="Purchase a permanent personal copy">
+                <button type="button" class="btn btn-sm btn-action-buy btn-buy-book" data-id="${escapeHtml(book.id)}" title="Purchase a permanent personal copy">
                   Buy
                 </button>
-                <button type="button" class="btn btn-sm btn-action-danger btn-delete-book" data-id="${book.id}">
+                <button type="button" class="btn btn-sm btn-action-danger btn-delete-book" data-id="${escapeHtml(book.id)}">
                   Delete
                 </button>
               </div>
@@ -627,17 +635,12 @@
             }
             renderAll();
           } else if (action === 'return') {
-            if (currentUser) {
-              window.LibraryStorage.returnBookForAccount(bookId, currentUser.id);
-            } else {
-              const loans = window.LibraryStorage.getLoans();
-              const loan = loans.find((l) => l.bookId === bookId);
-              if (loan) {
-                window.LibraryStorage.returnLoan(loan.id);
-              } else {
-                window.LibraryStorage.updateBook(bookId, { status: 'available' });
-              }
+            const loan = window.LibraryStorage.getLoans().find((item) => item.bookId === bookId);
+            if (!currentUser || !loan || loan.memberId !== currentUser.id) {
+              alert('Only the member who borrowed this book can return it from their book card.');
+              return;
             }
+            window.LibraryStorage.returnBookForAccount(bookId, currentUser.id);
             alert(`"${book.title}" was returned to shelves.`);
             renderAll();
           }

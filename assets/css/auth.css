@@ -1686,7 +1686,8 @@
     flex-direction: column;
     min-height: auto;
     border-radius: var(--radius-md);
-    overflow: hidden;
+    overflow: visible;
+    position: relative;
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
   }
 
@@ -1695,12 +1696,14 @@
     position: relative;
     left: 0;
     width: 100%;
+    min-height: 520px;
     height: auto;
     order: 1;
     transform: none !important;
     animation: none !important;
     z-index: 2;
     pointer-events: auto;
+    box-sizing: border-box;
   }
 
   .book-turning-leaf.leaf-turned-over {
@@ -1711,11 +1714,15 @@
     position: relative;
     inset: auto;
     width: 100%;
+    min-height: 520px;
     border-radius: 0;
     padding: var(--space-5) var(--space-4);
     display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     box-shadow: none;
     background: #ffffff;
+    box-sizing: border-box;
   }
 
   .leaf-face-back {
@@ -1726,13 +1733,17 @@
   .book-page-right {
     position: relative;
     width: 100%;
+    min-height: 520px;
     order: 1;
     border-radius: 0;
     padding: var(--space-5) var(--space-4);
     box-shadow: none;
     background: #ffffff;
     display: none;
+    flex-direction: column;
+    justify-content: space-between;
     z-index: 2;
+    box-sizing: border-box;
   }
 
   .book-pages-spread.spread-turned-over .book-page-right,
@@ -1744,12 +1755,24 @@
     position: absolute;
     inset: 0;
     width: 100%;
+    min-height: 520px;
     z-index: 2;
   }
 
   /* Companion & Demo Reader Passports (ORDER 2 - sits neatly under form) */
   .book-page-left {
-    display: none;
+    position: relative;
+    width: 100%;
+    order: 2;
+    border-right: none;
+    border-top: 1px solid var(--color-border);
+    border-radius: 0;
+    padding: var(--space-4) var(--space-4) var(--space-5);
+    box-shadow: none;
+    background: var(--color-bg-subtle);
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
   }
 
   .ex-libris-header {

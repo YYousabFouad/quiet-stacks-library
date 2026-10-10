@@ -167,7 +167,15 @@
 
       const forward = mode === 'signup';
       this.begin(forward);
-      this.tween(0, 1, DURATION, easeInOutSine, () => this.finish(forward, true));
+      if (this.mobileLayout) {
+        if (forward) {
+          this.tween(0, 1, DURATION, easeInOutSine, () => this.finish(forward, true));
+        } else {
+          this.tween(1, 0, DURATION, easeInOutSine, () => this.finish(forward, true));
+        }
+      } else {
+        this.tween(0, 1, DURATION, easeInOutSine, () => this.finish(forward, true));
+      }
     }
 
     canAnimate() {
@@ -256,11 +264,15 @@
     layout() {
       const THREE = this.THREE;
       const W = this.spread.offsetWidth;
-      const H = this.spread.offsetHeight;
+      this.mobileLayout = window.matchMedia(MOBILE_QUERY).matches;
+      const isSignup = this.opts.getMode() === 'signup';
+      const activePage = this.mobileLayout
+        ? (isSignup ? this.underPage : this.leafFront)
+        : null;
+      const H = (this.mobileLayout && activePage && activePage.offsetHeight) || this.spread.offsetHeight;
       if (!W || !H) return;
       this.W = W;
       this.H = H;
-      this.mobileLayout = window.matchMedia(MOBILE_QUERY).matches;
       this.pageW = this.mobileLayout ? W : W / 2;
       this.pageH = H;
       this.texScale = this.mobileLayout
@@ -477,15 +489,26 @@
         this.texReady = true;
       }
 
-      // Forward: login face up, charter on the reverse.
-      // Backward: mirrored sheet, charter face up, login on the reverse.
-      this.sheet.scale.x = forward ? 1 : -1;
-      this.frontMat.map = forward ? this.tex.front : this.tex.back;
-      this.backMat.map = forward ? this.tex.back : this.tex.front;
-      this.frontMat.needsUpdate = true;
-      this.backMat.needsUpdate = true;
-      this.frontMesh.geometry.setAttribute('uv', forward ? this.uvNormal : this.uvFlipped);
-      this.backMesh.geometry.setAttribute('uv', forward ? this.uvFlipped : this.uvNormal);
+      if (this.mobileLayout) {
+        this.sheet.scale.x = 1;
+        this.sheet.position.x = -this.W / 2;
+        this.frontMat.map = this.tex.front;
+        this.backMat.map = this.tex.back;
+        this.frontMat.needsUpdate = true;
+        this.backMat.needsUpdate = true;
+        this.frontMesh.geometry.setAttribute('uv', this.uvNormal);
+        this.backMesh.geometry.setAttribute('uv', this.uvFlipped);
+      } else {
+        // Desktop / Tablet spread: hinged across center spine
+        this.sheet.scale.x = forward ? 1 : -1;
+        this.sheet.position.x = 0;
+        this.frontMat.map = forward ? this.tex.front : this.tex.back;
+        this.backMat.map = forward ? this.tex.back : this.tex.front;
+        this.frontMat.needsUpdate = true;
+        this.backMat.needsUpdate = true;
+        this.frontMesh.geometry.setAttribute('uv', forward ? this.uvNormal : this.uvFlipped);
+        this.backMesh.geometry.setAttribute('uv', forward ? this.uvFlipped : this.uvNormal);
+      }
 
       this.canvas.style.display = 'block';
       this.canvas.style.transition = 'none';
@@ -493,7 +516,10 @@
       this.sheet.visible = true;
       this.spread.classList.add('is-curling');
       if (this.mobileLayout && this.underPage) this.underPage.classList.add('mobile-active');
-      this.frame(0);
+
+      // On mobile, backward unrolls from left to right starting at t = 1
+      const initialT = this.mobileLayout && !forward ? 1 : 0;
+      this.frame(initialT);
       if (this.opts.onSound) this.opts.onSound();
     }
 
@@ -589,8 +615,13 @@
         d.v = (e.clientX - d.lastX) / Math.max(1, now - d.lastT);
         d.lastX = e.clientX;
         d.lastT = now;
-        const span = this.spread.getBoundingClientRect().width * 0.8;
-        d.t = clamp((d.forward ? -dx : dx) / span, 0.001, 0.995);
+        const span = this.spread.getBoundingClientRect().width * (this.mobileLayout ? 1.0 : 0.8);
+        if (this.mobileLayout && !d.forward) {
+          // On mobile backward, dragging right pulls t from 1 towards 0
+          d.t = clamp(1 - dx / span, 0.001, 0.995);
+        } else {
+          d.t = clamp((d.forward ? -dx : dx) / span, 0.001, 0.995);
+        }
         this.frame(d.t);
         e.preventDefault();
       };
@@ -601,9 +632,19 @@
         this.drag = null;
         if (!d.active) return; // plain click: the existing click handler turns the page
         this.suppressClick = true;
-        const towards = d.forward ? -d.v : d.v;
-        const complete = d.t > 0.3 || towards > 0.45;
-        const target = complete ? 1 : 0;
+
+        let complete;
+        let target;
+        if (this.mobileLayout && !d.forward) {
+          const towards = d.v; // dragging right towards 0
+          complete = d.t < 0.7 || towards > 0.45;
+          target = complete ? 0 : 1;
+        } else {
+          const towards = d.forward ? -d.v : d.v;
+          complete = d.t > 0.3 || towards > 0.45;
+          target = complete ? 1 : 0;
+        }
+
         const duration = 180 + 560 * Math.abs(target - d.t);
         this.tween(d.t, target, duration, easeOutCubic, () => this.finish(d.forward, complete));
       };
