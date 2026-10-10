@@ -507,6 +507,10 @@
   display: block !important;
 }
 
+.book-pages-spread.is-curling {
+  overflow: visible;
+}
+
 /* While Canvas 3D curl engine is actively rendering physical paper deformation */
 .book-pages-spread.is-curling .book-turning-leaf,
 .book-pages-spread.is-curling .leaf-face-front,
@@ -1644,7 +1648,6 @@
   .library-book::after,
   .book-spine-gutter,
   .book-ribbon-bookmark,
-  .book-curl-canvas,
   .page-turn-corner {
     display: none !important;
   }
@@ -1716,7 +1719,7 @@
   }
 
   .leaf-face-back {
-    display: none !important;
+    display: flex;
   }
 
   /* Register under-page (ORDER 1 when Register is active) */
@@ -1737,19 +1740,16 @@
     display: flex;
   }
 
+  .book-pages-spread.is-curling .book-page-right.mobile-active {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    z-index: 2;
+  }
+
   /* Companion & Demo Reader Passports (ORDER 2 - sits neatly under form) */
   .book-page-left {
-    position: relative;
-    width: 100%;
-    order: 2;
-    border-right: none;
-    border-top: 1px solid var(--color-border);
-    border-radius: 0;
-    padding: var(--space-4) var(--space-4) var(--space-5);
-    box-shadow: none;
-    background: var(--color-bg-subtle);
-    display: flex;
-    flex-direction: column;
+    display: none;
   }
 
   .ex-libris-header {

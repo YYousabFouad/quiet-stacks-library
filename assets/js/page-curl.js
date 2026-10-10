@@ -174,8 +174,7 @@
       return (
         this.webgl &&
         this.W > 0 &&
-        !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
-        !window.matchMedia(MOBILE_QUERY).matches
+        !window.matchMedia('(prefers-reduced-motion: reduce)').matches
       );
     }
 
@@ -261,7 +260,8 @@
       if (!W || !H) return;
       this.W = W;
       this.H = H;
-      this.pageW = W / 2;
+      this.mobileLayout = window.matchMedia(MOBILE_QUERY).matches;
+      this.pageW = this.mobileLayout ? W : W / 2;
       this.pageH = H;
       this.texScale = clamp(window.devicePixelRatio || 1, 1.5, 2);
 
@@ -297,6 +297,7 @@
       this.shadowCatcher.geometry = new THREE.PlaneGeometry(cw, ch);
 
       this.buildSheet();
+      this.sheet.position.x = this.mobileLayout ? -W / 2 : 0;
       this.render();
     }
 
@@ -482,6 +483,7 @@
       this.canvas.style.opacity = '1';
       this.sheet.visible = true;
       this.spread.classList.add('is-curling');
+      if (this.mobileLayout && this.underPage) this.underPage.classList.add('mobile-active');
       this.frame(0);
       if (this.opts.onSound) this.opts.onSound();
     }
@@ -680,7 +682,7 @@
       const host = document.createElement('div');
       host.setAttribute('aria-hidden', 'true');
       host.style.cssText =
-        `position:absolute;left:50%;top:0;width:${w}px;height:${h}px;` +
+        `position:absolute;left:${this.mobileLayout ? 0 : '50%'};top:0;width:${w}px;height:${h}px;` +
         'visibility:hidden;pointer-events:none;z-index:-1;transform:none;';
 
       const clone = face.cloneNode(true);
