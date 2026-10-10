@@ -263,17 +263,24 @@
       this.mobileLayout = window.matchMedia(MOBILE_QUERY).matches;
       this.pageW = this.mobileLayout ? W : W / 2;
       this.pageH = H;
-      this.texScale = clamp(window.devicePixelRatio || 1, 1.5, 2);
+      this.texScale = this.mobileLayout
+        ? clamp(window.devicePixelRatio || 1, 1, 1.5)
+        : clamp(window.devicePixelRatio || 1, 1.5, 2);
 
-      const cw = W + MARGIN * 2;
-      const ch = H + MARGIN * 2;
+      // Keep the transparent WebGL surface close to a narrow phone page.
+      this.canvasMargin = this.mobileLayout ? clamp(W * 0.12, 36, 56) : MARGIN;
+      const margin = this.canvasMargin;
+      const cw = W + margin * 2;
+      const ch = H + margin * 2;
       Object.assign(this.canvas.style, {
-        left: -MARGIN + 'px',
-        top: -MARGIN + 'px',
+        left: -margin + 'px',
+        top: -margin + 'px',
         width: cw + 'px',
         height: ch + 'px'
       });
-      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      this.renderer.setPixelRatio(
+        Math.min(window.devicePixelRatio || 1, this.mobileLayout ? 1.5 : 2)
+      );
       this.renderer.setSize(cw, ch, false);
 
       // Camera distance chosen so the z = 0 plane maps 1:1 onto CSS pixels
@@ -358,7 +365,9 @@
       const halfH = H / 2;
 
       // Natural corner peel that gently straightens as the sheet sweeps across
-      const theta = -THETA0 * Math.pow(1 - t, 1.4);
+      const theta0 = this.mobileLayout ? (13 * Math.PI) / 180 : THETA0;
+      const phi0 = this.mobileLayout ? (25 * Math.PI) / 180 : PHI0;
+      const theta = -theta0 * Math.pow(1 - t, 1.4);
       const c = Math.cos(theta);
       const s = Math.sin(theta);
 
@@ -368,8 +377,8 @@
 
       // Roll radius swells gracefully mid-turn and converges to 0 at landing
       const sinPi = Math.sin(Math.PI * t);
-      const R = W * 0.15 * Math.pow(sinPi, 0.65);
-      const phi = PHI0 * sinPi;
+      const R = W * (this.mobileLayout ? 0.2 : 0.15) * Math.pow(sinPi, 0.65);
+      const phi = phi0 * sinPi;
       const cosPhi = Math.cos(phi);
       const sinPhi = Math.sin(phi);
 
