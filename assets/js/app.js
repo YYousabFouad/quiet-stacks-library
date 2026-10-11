@@ -52,13 +52,16 @@
   }
 
   /**
-   * Helper to escape HTML characters in dynamic text
+   * Helper to escape HTML characters in dynamic text (delegates to shared LibraryStorage)
    */
-  function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str || '';
-    return div.innerHTML;
-  }
+  const escapeHtml = (window.LibraryStorage && window.LibraryStorage.escapeHtml)
+    ? window.LibraryStorage.escapeHtml.bind(window.LibraryStorage)
+    : function (str) {
+        if (!str) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+      };
 
   // --------------------------------------------------------------------------
   // Render Functions
@@ -142,7 +145,7 @@
 
     if (filtered.length === 0) {
       elements.booksGrid.innerHTML = `
-        <div style="grid-column: 1 / -1; padding: 2.5rem; text-align: center; color: var(--color-text-secondary); background: var(--color-bg-surface); border: 1px dashed var(--color-border); border-radius: var(--radius-md);">
+        <div class="empty-state-card">
           No books found matching your criteria.
         </div>
       `;
@@ -227,7 +230,7 @@
 
     if (filtered.length === 0) {
       elements.membersGrid.innerHTML = `
-        <div style="grid-column: 1 / -1; padding: 2rem; text-align: center; color: var(--color-text-secondary); background: var(--color-bg-surface); border: 1px dashed var(--color-border); border-radius: var(--radius-md);">
+        <div class="empty-state-card">
           No members found matching your search.
         </div>
       `;
@@ -614,13 +617,14 @@
                 return;
               }
               const borrower = members[0];
+              const { borrowedDate, dueDate } = window.LibraryStorage.getLoanDates(14);
               window.LibraryStorage.addLoan({
                 bookId: book.id,
                 bookTitle: book.title,
                 memberId: borrower.id,
                 memberName: borrower.name,
-                borrowedDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                borrowedDate,
+                dueDate,
                 status: 'borrowed'
               });
               alert(`"${book.title}" borrowed by sample member ${borrower.name}.`);
@@ -774,6 +778,8 @@
       threshold: [0, 0.25, 0.5, 0.75, 1.0]
     };
 
+    const checkIsAtBottom = () => (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 50);
+
     function updateActiveSection() {
       if (isClickScrolling) return;
 
@@ -784,8 +790,7 @@
       }
 
       // Scrolled near absolute bottom: activate the last section
-      const isAtBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 50);
-      if (isAtBottom && sections.length > 0) {
+      if (checkIsAtBottom() && sections.length > 0) {
         setActiveTab(sections[sections.length - 1].id);
         return;
       }
@@ -818,7 +823,7 @@
     // Handle top and bottom boundary scroll checks
     window.addEventListener('scroll', () => {
       if (isClickScrolling) return;
-      const isAtBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 50);
+      const isAtBottom = checkIsAtBottom();
       const isAtTop = window.scrollY < 80;
       if (isAtBottom || isAtTop) {
         updateActiveSection();

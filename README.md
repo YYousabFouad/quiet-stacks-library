@@ -10,8 +10,8 @@ A clean, responsive library management web interface designed faithfully from th
 Libaray-system/
 ├── index.html                   # Starter file: unified Log In & Sign Up auth portal
 ├── dashboard.html               # Main library dashboard & catalog
-├── login.html                   # Dedicated login page
-├── signup.html                  # Dedicated new member registration page
+├── login.html                   # Dedicated login entry point (canonical redirect to index.html#login)
+├── signup.html                  # Dedicated registration entry point (canonical redirect to index.html#signup)
 ├── README.md                    # Project documentation & structure
 └── assets/
     ├── css/

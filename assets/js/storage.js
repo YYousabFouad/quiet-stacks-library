@@ -564,6 +564,17 @@
     }
   }
 
+  function updateCollectionItem(key, id, updates) {
+    const items = read(key, []);
+    const index = items.findIndex((item) => item.id === id);
+    if (index !== -1) {
+      items[index] = { ...items[index], ...updates };
+      write(key, items);
+      return items[index];
+    }
+    return null;
+  }
+
   function nextMemberId() {
     const usedIds = new Set(
       [...StorageService.getMembers(), ...StorageService.getAccounts()]
@@ -632,6 +643,47 @@
 
     clearCurrentUser() {
       localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+    },
+
+    /**
+     * Updates an account and synchronizes active session if the account matches the current user.
+     */
+    updateAccount(accountId, mutateFn) {
+      const accounts = this.getAccounts();
+      const index = accounts.findIndex((a) => a.id === accountId);
+      if (index === -1) return null;
+
+      mutateFn(accounts[index]);
+      write(STORAGE_KEYS.ACCOUNTS, accounts);
+
+      const currentUser = this.getCurrentUser();
+      if (currentUser && currentUser.id === accountId) {
+        this.setCurrentUser(accounts[index]);
+      }
+      return accounts[index];
+    },
+
+    /**
+     * Centralized loan duration and date formatting helper
+     */
+    getLoanDates(durationDays = 14) {
+      const options = { month: 'short', day: 'numeric' };
+      const borrowedDate = new Date().toLocaleDateString('en-US', options);
+      const dueDate = new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', options);
+      return { borrowedDate, dueDate };
+    },
+
+    /**
+     * Helper to escape HTML characters in dynamic text across the application
+     */
+    escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
     },
 
     /**
@@ -744,15 +796,9 @@
     },
 
     updateBook(id, updates) {
-      const books = this.getBooks();
-      const index = books.findIndex((b) => b.id === id);
-      if (index !== -1) {
-        books[index] = { ...books[index], ...updates };
-        write(STORAGE_KEYS.BOOKS, books);
-        this.recalculateStatistics();
-        return books[index];
-      }
-      return null;
+      const updated = updateCollectionItem(STORAGE_KEYS.BOOKS, id, updates);
+      if (updated) this.recalculateStatistics();
+      return updated;
     },
 
     deleteBook(id) {
@@ -787,8 +833,7 @@
       const account = this.getAccountById(accountId);
       if (!account) return { success: false, error: 'Account not found' };
 
-      const borrowDateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      const dueDateStr = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const { borrowedDate, dueDate } = this.getLoanDates(14);
 
       // Create loan
       this.addLoan({
@@ -796,34 +841,25 @@
         bookTitle: book.title,
         memberId: account.id,
         memberName: account.name,
-        borrowedDate: borrowDateStr,
-        dueDate: dueDateStr,
+        borrowedDate,
+        dueDate,
         status: 'borrowed'
       });
 
-      // Update account's borrowedBooks list
-      const accounts = this.getAccounts();
-      const accIndex = accounts.findIndex((a) => a.id === accountId);
-      if (accIndex !== -1) {
-        accounts[accIndex].borrowedBooks = accounts[accIndex].borrowedBooks || [];
-        accounts[accIndex].borrowedBooks.push({
+      // Update account's borrowedBooks list & sync session
+      const updatedAccount = this.updateAccount(accountId, (acc) => {
+        acc.borrowedBooks = acc.borrowedBooks || [];
+        acc.borrowedBooks.push({
           bookId: book.id,
           title: book.title,
           author: book.author,
-          borrowedDate: borrowDateStr,
-          dueDate: dueDateStr,
+          borrowedDate,
+          dueDate,
           status: 'borrowed'
         });
-        write(STORAGE_KEYS.ACCOUNTS, accounts);
+      });
 
-        // Update active session if it matches
-        const curr = this.getCurrentUser();
-        if (curr && curr.id === accountId) {
-          this.setCurrentUser(accounts[accIndex]);
-        }
-      }
-
-      return { success: true, book, account };
+      return { success: true, book, account: updatedAccount || account };
     },
 
     /**
@@ -839,18 +875,11 @@
         this.updateBook(bookId, { status: 'available' });
       }
 
-      // Update account's borrowed list
-      const accounts = this.getAccounts();
-      const accIndex = accounts.findIndex((a) => a.id === accountId);
-      if (accIndex !== -1 && accounts[accIndex].borrowedBooks) {
-        accounts[accIndex].borrowedBooks = accounts[accIndex].borrowedBooks.filter((b) => b.bookId !== bookId);
-        write(STORAGE_KEYS.ACCOUNTS, accounts);
-
-        const curr = this.getCurrentUser();
-        if (curr && curr.id === accountId) {
-          this.setCurrentUser(accounts[accIndex]);
+      this.updateAccount(accountId, (acc) => {
+        if (acc.borrowedBooks) {
+          acc.borrowedBooks = acc.borrowedBooks.filter((b) => b.bookId !== bookId);
         }
-      }
+      });
 
       return { success: true };
     },
@@ -875,20 +904,12 @@
         invoiceNumber: 'INV-' + Math.floor(1000 + Math.random() * 9000)
       };
 
-      const accounts = this.getAccounts();
-      const accIndex = accounts.findIndex((a) => a.id === accountId);
-      if (accIndex !== -1) {
-        accounts[accIndex].purchasedBooks = accounts[accIndex].purchasedBooks || [];
-        accounts[accIndex].purchasedBooks.push(purchaseRecord);
-        write(STORAGE_KEYS.ACCOUNTS, accounts);
+      const updatedAccount = this.updateAccount(accountId, (acc) => {
+        acc.purchasedBooks = acc.purchasedBooks || [];
+        acc.purchasedBooks.push(purchaseRecord);
+      });
 
-        const curr = this.getCurrentUser();
-        if (curr && curr.id === accountId) {
-          this.setCurrentUser(accounts[accIndex]);
-        }
-      }
-
-      return { success: true, purchase: purchaseRecord, book, account };
+      return { success: true, purchase: purchaseRecord, book, account: updatedAccount || account };
     },
 
     // ------------------------------------------------------------------------
@@ -922,15 +943,9 @@
     },
 
     updateMember(id, updates) {
-      const members = this.getMembers();
-      const index = members.findIndex((m) => m.id === id);
-      if (index !== -1) {
-        members[index] = { ...members[index], ...updates };
-        write(STORAGE_KEYS.MEMBERS, members);
-        this.recalculateStatistics();
-        return members[index];
-      }
-      return null;
+      const updated = updateCollectionItem(STORAGE_KEYS.MEMBERS, id, updates);
+      if (updated) this.recalculateStatistics();
+      return updated;
     },
 
     deleteMember(id) {

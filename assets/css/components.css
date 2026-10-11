@@ -942,5 +942,13 @@
   }
 }
 
-
-
+/* Reusable Empty State Card for Grids */
+.empty-state-card {
+  grid-column: 1 / -1;
+  padding: 2.25rem;
+  text-align: center;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+}

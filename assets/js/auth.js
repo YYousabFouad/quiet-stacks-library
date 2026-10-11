@@ -7,11 +7,32 @@
 (function () {
   'use strict';
 
-  function escapeHtml(str) {
-    if (!str) return '';
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
+  const escapeHtml = (window.LibraryStorage && window.LibraryStorage.escapeHtml)
+    ? window.LibraryStorage.escapeHtml.bind(window.LibraryStorage)
+    : function (str) {
+        if (!str) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+      };
+
+  const ALERT_ICONS = {
+    success: '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />',
+    error: '<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />'
+  };
+
+  const ARROW_SVG = '<svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>';
+
+  function setSubmitLoading(btn, text) {
+    if (!btn) return;
+    btn.classList.add('loading');
+    btn.innerHTML = `<span class="auth-btn-spinner"></span> <span>${text}</span>`;
+  }
+
+  function resetSubmitButton(btn, text) {
+    if (!btn) return;
+    btn.classList.remove('loading');
+    btn.innerHTML = `<span>${text}</span>${ARROW_SVG}`;
   }
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -35,14 +56,8 @@
     function showAlert(message, type = 'error') {
       if (!alertBox) return;
       const isSuccess = type === 'success';
-
-      const iconSvg = isSuccess
-        ? `<svg class="auth-alert-icon" viewBox="0 0 20 20" fill="currentColor">
-             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-           </svg>`
-        : `<svg class="auth-alert-icon" viewBox="0 0 20 20" fill="currentColor">
-             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-           </svg>`;
+      const iconPath = isSuccess ? ALERT_ICONS.success : ALERT_ICONS.error;
+      const iconSvg = `<svg class="auth-alert-icon" viewBox="0 0 20 20" fill="currentColor">${iconPath}</svg>`;
 
       alertBox.innerHTML = `${iconSvg}<span>${escapeHtml(message)}</span>`;
       alertBox.className = 'auth-alert visible ' + (isSuccess ? 'auth-alert-success' : 'auth-alert-error');
@@ -264,19 +279,17 @@
     if (tabLogin) tabLogin.addEventListener('click', () => turnPageTo('login'));
     if (tabSignup) tabSignup.addEventListener('click', () => turnPageTo('signup'));
 
-    document.querySelectorAll('.turn-to-signup-link, #link-to-signup').forEach((el) => {
-      el.addEventListener('click', function (e) {
-        e.preventDefault();
-        turnPageTo('signup');
+    const bindNavClick = (selector, mode) => {
+      document.querySelectorAll(selector).forEach((el) => {
+        el.addEventListener('click', function (e) {
+          e.preventDefault();
+          turnPageTo(mode);
+        });
       });
-    });
+    };
 
-    document.querySelectorAll('.back-to-login-link, #link-to-login').forEach((el) => {
-      el.addEventListener('click', function (e) {
-        e.preventDefault();
-        turnPageTo('login');
-      });
-    });
+    bindNavClick('.turn-to-signup-link, #link-to-signup', 'signup');
+    bindNavClick('.back-to-login-link, #link-to-login', 'login');
 
     // Hash & Query routing
     if (window.location.hash === '#signup') {
@@ -512,10 +525,7 @@
           return;
         }
 
-        if (submitBtn) {
-          submitBtn.classList.add('loading');
-          submitBtn.innerHTML = `<span class="auth-btn-spinner"></span> <span>Locating Volume...</span>`;
-        }
+        setSubmitLoading(submitBtn, 'Locating Volume...');
 
         setTimeout(() => {
           const result = window.LibraryStorage.login(emailOrId, password);
@@ -524,10 +534,7 @@
             showAlert(`Access Granted. Welcome back, ${result.account.name}! Opening stacks...`, 'success');
             triggerDashboardZoomOut();
           } else {
-            if (submitBtn) {
-              submitBtn.classList.remove('loading');
-              submitBtn.innerHTML = `<span>Open Reading Stack</span><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>`;
-            }
+            resetSubmitButton(submitBtn, 'Open Reading Stack');
             shakeBook();
             showAlert(result.error || 'Authentication failed. Please verify credentials.', 'error');
           }
@@ -574,10 +581,7 @@
           return;
         }
 
-        if (submitBtn) {
-          submitBtn.classList.add('loading');
-          submitBtn.innerHTML = `<span class="auth-btn-spinner"></span> <span>Inscribing Ledger...</span>`;
-        }
+        setSubmitLoading(submitBtn, 'Inscribing Ledger...');
 
         setTimeout(() => {
           const result = window.LibraryStorage.register({
@@ -592,10 +596,7 @@
             showAlert(`Card #${result.account.id} Inscribed! Welcome, ${result.account.name}.`, 'success');
             triggerDashboardZoomOut();
           } else {
-            if (submitBtn) {
-              submitBtn.classList.remove('loading');
-              submitBtn.innerHTML = `<span>Inscribe Member Card</span><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>`;
-            }
+            resetSubmitButton(submitBtn, 'Inscribe Member Card');
             shakeBook();
             showAlert(result.error || 'Registration failed.', 'error');
           }
