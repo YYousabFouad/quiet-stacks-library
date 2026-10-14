@@ -137,38 +137,77 @@ import { playPaperTurnSound } from '../effects/audio-synthesizer.js';
     }
 
     // ------------------------------------------------------------------------
-    // WebGL Page-Curl Engine Controller
+    // High-Fidelity 3D Camber Book Page-Turn Controller
     // ------------------------------------------------------------------------
-    let curlEngine = null;
-    import('../effects/page-curl-controller.js').then(({ PageCurlEngine }) => {
-      curlEngine = new PageCurlEngine({
-        getMode: () => currentMode,
-        onNavigate: (mode) => updateNavUI(mode),
-        onSound: () => playPaperTurnSound(),
-      });
-    }).catch((error) => console.warn('[Auth] Page-turn effect unavailable.', error));
+    const curlCanvas = document.getElementById('book-curl-canvas');
+    if (curlCanvas) {
+      curlCanvas.dataset.pageCurlReady = 'true';
+      curlCanvas.style.display = 'none';
+    }
+
+    let isTurning = false;
 
     function turnPageTo(mode) {
-      if (curlEngine && curlEngine.canAnimate && curlEngine.canAnimate()) {
-        curlEngine.turnTo(mode);
-      } else if (curlEngine) {
-        curlEngine.turnTo(mode);
-      } else {
-        updateNavUI(mode);
-        if (turningLeaf && pagesSpread) {
-          const isSignup = mode === 'signup';
-          pagesSpread.classList.toggle('spread-turned-over', isSignup);
-          turningLeaf.classList.toggle('leaf-turned-over', isSignup);
-          turningLeaf.classList.toggle('leaf-at-rest', !isSignup);
-          if (underPage) underPage.classList.toggle('mobile-active', isSignup);
-        }
-      }
+      if (currentMode === mode || isTurning) return;
+      isTurning = true;
+      const forward = mode === 'signup';
+      currentMode = mode;
+      updateNavUI(mode);
+      playPaperTurnSound();
 
       if (window.matchMedia('(max-width: 680px)').matches) {
+        if (pagesSpread) pagesSpread.classList.toggle('spread-turned-over', forward);
+        if (turningLeaf) {
+          turningLeaf.classList.toggle('leaf-turned-over', forward);
+          turningLeaf.classList.toggle('leaf-at-rest', !forward);
+        }
+        if (underPage) underPage.classList.toggle('mobile-active', forward);
+        isTurning = false;
         const bookStage = document.querySelector('.book-stage');
         if (bookStage) {
           bookStage.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
+        return;
+      }
+
+      if (turningLeaf && pagesSpread) {
+        turningLeaf.classList.remove('turning-forward', 'turning-backward', 'leaf-at-rest', 'leaf-turned-over');
+        void turningLeaf.offsetWidth;
+        turningLeaf.classList.add('turning', forward ? 'turning-forward' : 'turning-backward');
+
+        if (forward) {
+          pagesSpread.classList.add('spread-turned-over');
+          if (underPage) underPage.classList.add('mobile-active');
+        }
+
+        const handleAnimationEnd = (e) => {
+          if (e.target !== turningLeaf) return;
+          turningLeaf.classList.remove('turning', 'turning-forward', 'turning-backward');
+          turningLeaf.classList.toggle('leaf-turned-over', forward);
+          turningLeaf.classList.toggle('leaf-at-rest', !forward);
+          if (!forward) {
+            pagesSpread.classList.remove('spread-turned-over');
+            if (underPage) underPage.classList.remove('mobile-active');
+          }
+          turningLeaf.removeEventListener('animationend', handleAnimationEnd);
+          isTurning = false;
+        };
+
+        turningLeaf.addEventListener('animationend', handleAnimationEnd);
+        setTimeout(() => {
+          if (isTurning) {
+            turningLeaf.classList.remove('turning', 'turning-forward', 'turning-backward');
+            turningLeaf.classList.toggle('leaf-turned-over', forward);
+            turningLeaf.classList.toggle('leaf-at-rest', !forward);
+            if (!forward) {
+              pagesSpread.classList.remove('spread-turned-over');
+              if (underPage) underPage.classList.remove('mobile-active');
+            }
+            isTurning = false;
+          }
+        }, 800);
+      } else {
+        isTurning = false;
       }
     }
 

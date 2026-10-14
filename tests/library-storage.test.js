@@ -62,4 +62,34 @@ describe('lending rules', () => {
     expect(Number.isNaN(Date.parse(result.purchase.purchaseDate))).toBe(false);
     expect(library.accounts.byId('M-001').purchasedBooks).toContainEqual(result.purchase);
   });
+
+  it('restores borrowed books when deleting a member', () => {
+    const member = library.catalog.addMember({ name: 'Test Member', email: 'test-member@example.com' });
+    const borrowed = library.lending.borrow('book-8', member.id);
+
+    expect(borrowed.success).toBe(true);
+    expect(library.catalog.bookById('book-8').status).toBe('borrowed');
+
+    expect(library.catalog.deleteMember(member.id)).toBe(true);
+    expect(library.catalog.bookById('book-8').status).toBe('available');
+    expect(library.lending.loans().some((loan) => loan.memberId === member.id)).toBe(false);
+    expect(library.accounts.byId(member.id)).toBeNull();
+  });
+
+  it('assigns the next sequential member ID and provisions an account', () => {
+    const member = library.catalog.addMember({
+      name: 'New Member', email: 'new-member@example.com', membershipType: 'student'
+    });
+
+    expect(member.id).toBe('M-009');
+    expect(library.accounts.byId('M-009')).toMatchObject({
+      id: 'M-009',
+      name: 'New Member',
+      email: 'new-member@example.com',
+      membershipType: 'student',
+      role: 'member',
+      borrowedBooks: [],
+      purchasedBooks: []
+    });
+  });
 });

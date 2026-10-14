@@ -157,6 +157,7 @@ import { eventBus } from '../core/event-bus.js';
 
     const searchTerm = (elements.memberSearchInput ? elements.memberSearchInput.value : '').toLowerCase().trim();
     const allMembers = services.catalog.members();
+    const currentUser = services.auth.currentUser();
 
     const filtered = allMembers.filter((member) => {
       return (
@@ -177,7 +178,7 @@ import { eventBus } from '../core/event-bus.js';
     }
 
     elements.membersGrid.innerHTML = filtered
-      .map((member) => renderMemberCard(member, { escapeHtml, capitalize }))
+      .map((member) => renderMemberCard(member, { escapeHtml, capitalize, currentUser }))
       .join('');
   }
 
@@ -259,7 +260,9 @@ import { eventBus } from '../core/event-bus.js';
       } else {
         borrowedListContainer.innerHTML = borrowedList
           .map((b) => {
-            const isOverdue = b.status === 'overdue';
+            const loan = services.lending.loans().find((item) => item.bookId === b.bookId);
+            const dueTimestamp = Date.parse(b.dueDateISO || loan?.dueDateISO || '');
+            const isOverdue = Number.isFinite(dueTimestamp) && dueTimestamp < Date.now();
             const badgeClass = isOverdue ? 'badge-overdue' : 'badge-borrowed';
 
             return `
@@ -271,7 +274,7 @@ import { eventBus } from '../core/event-bus.js';
                   </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                  <span class="badge ${badgeClass}">${capitalize(b.status)}</span>
+                  <span class="badge ${badgeClass}">${capitalize(isOverdue ? 'overdue' : b.status)}</span>
                   <button type="button" class="btn btn-sm btn-action-primary btn-account-return" data-id="${b.bookId}">
                     Return
                   </button>
@@ -353,6 +356,11 @@ import { eventBus } from '../core/event-bus.js';
     if (elements.addBookForm) {
       elements.addBookForm.addEventListener('submit', function (e) {
         e.preventDefault();
+        if (services.auth.currentUser()?.role !== 'admin') {
+          alert('Unauthorized: administrator access is required to add books.');
+          elements.addBookForm.reset();
+          return;
+        }
 
         const title = document.getElementById('book-title-input').value;
         const author = document.getElementById('book-author-input').value;
@@ -390,6 +398,11 @@ import { eventBus } from '../core/event-bus.js';
     if (elements.addMemberForm) {
       elements.addMemberForm.addEventListener('submit', function (e) {
         e.preventDefault();
+        if (services.auth.currentUser()?.role !== 'admin') {
+          alert('Unauthorized: administrator access is required to add members.');
+          elements.addMemberForm.reset();
+          return;
+        }
 
         const name = document.getElementById('member-name-input').value;
         const email = document.getElementById('member-email-input').value;
@@ -470,6 +483,11 @@ import { eventBus } from '../core/event-bus.js';
 
         // Delete Book
         if (target.classList.contains('btn-delete-book')) {
+          const currentUser = services.auth.currentUser();
+          if (currentUser?.role !== 'admin') {
+            alert('Unauthorized: administrator access is required to delete books.');
+            return;
+          }
           if (confirm(`Are you sure you want to remove "${book.title}" from shelves?`)) {
             services.catalog.deleteBook(bookId);
             renderAll();
@@ -507,30 +525,10 @@ import { eventBus } from '../core/event-bus.js';
 
           if (action === 'borrow') {
             if (!currentUser) {
-              if (confirm(`You are not logged in. Sign in to borrow "${book.title}", or borrow as a sample member? Click OK to Sign In, or Cancel to borrow as a sample member.`)) {
+              if (confirm(`Sign in or create an account to borrow "${book.title}". Go to the login portal now?`)) {
                 window.location.href = 'index.html#login';
-                return;
               }
-
-              // Guest fallback: pick first active member
-              const members = services.catalog.members().filter((m) => m.status === 'active');
-              if (members.length === 0) {
-                alert('No active members available.');
-                return;
-              }
-              const borrower = members[0];
-              const { borrowedDate, dueDate, dueDateISO } = services.lending.dates(14);
-              services.lending.addLoan({
-                bookId: book.id,
-                bookTitle: book.title,
-                memberId: borrower.id,
-                memberName: borrower.name,
-                borrowedDate,
-                dueDate,
-                dueDateISO,
-                status: 'borrowed'
-              });
-              alert(`"${book.title}" borrowed by sample member ${borrower.name}.`);
+              return;
             } else {
               // Borrow for logged-in user
               const res = services.lending.borrow(bookId, currentUser.id);
@@ -564,6 +562,11 @@ import { eventBus } from '../core/event-bus.js';
         const memberId = target.getAttribute('data-id');
 
         if (target.classList.contains('btn-delete-member')) {
+          const currentUser = services.auth.currentUser();
+          if (currentUser?.role !== 'admin') {
+            alert('Unauthorized: administrator access is required to delete members.');
+            return;
+          }
           const member = services.catalog.memberById(memberId);
           if (confirm(`Remove member "${member?.name || memberId}"?`)) {
             services.catalog.deleteMember(memberId);
@@ -587,6 +590,13 @@ import { eventBus } from '../core/event-bus.js';
         if (!target) return;
 
         const loanId = target.getAttribute('data-id');
+        const loan = services.lending.loans().find((item) => item.id === loanId);
+        const currentUser = services.auth.currentUser();
+        if (!loan || (currentUser?.role !== 'admin' && loan.memberId !== currentUser?.id)) {
+          alert('Access denied: you may only return your own loans.');
+          return;
+        }
+        if (!confirm(`Return "${loan.bookTitle}" borrowed by ${loan.memberName}?`)) return;
         services.lending.returnLoan(loanId);
         renderAll();
       });
@@ -803,6 +813,16 @@ import { eventBus } from '../core/event-bus.js';
       window.location.replace('index.html?msg=auth_required');
       return;
     }
+
+    if (currentUser?.role !== 'admin') {
+      document.getElementById('btn-add-book')?.setAttribute('hidden', '');
+      document.getElementById('btn-add-member')?.setAttribute('hidden', '');
+    }
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && /^#modal-/.test(window.location.hash)) {
+        window.location.hash = '';
+      }
+    });
 
     eventBus.on('library:updated', renderAll);
     renderAll();

@@ -24,7 +24,7 @@ export function renderBookCard(book, { activeLoan, currentUser, escapeHtml, capi
         <div class="card-actions">
           <button type="button" class="btn btn-sm btn-action-primary btn-book-action" data-action="${action}" data-id="${escapeHtml(book.id)}" ${!available && !canReturn ? 'disabled aria-disabled="true"' : ''}>${actionLabel}</button>
           <button type="button" class="btn btn-sm btn-action-buy btn-buy-book" data-id="${escapeHtml(book.id)}" title="Purchase a permanent personal copy">Buy</button>
-          <button type="button" class="btn btn-sm btn-action-danger btn-delete-book" data-id="${escapeHtml(book.id)}">Delete</button>
+          ${currentUser?.role === 'admin' ? `<button type="button" class="btn btn-sm btn-action-danger btn-delete-book" data-id="${escapeHtml(book.id)}">Delete</button>` : ''}
         </div>
       </div>
     </article>

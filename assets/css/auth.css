@@ -185,8 +185,8 @@
 .book-stage {
   position: relative;
   width: 100%;
-  perspective: 1500px;
-  perspective-origin: 50% 60%;
+  perspective: 2600px;
+  perspective-origin: 50% 50%;
 }
 
 /* Leather Cover Base */
@@ -511,16 +511,11 @@
   overflow: visible;
 }
 
-/* While Canvas 3D curl engine is actively rendering physical paper deformation */
-.book-pages-spread.is-curling .book-turning-leaf,
-.book-pages-spread.is-curling .leaf-face-front,
-.book-pages-spread.is-curling .leaf-face-back {
-  animation: none !important;
-  transition: none !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
+/* Keep real DOM visible and sharp during smooth page turns */
+.book-pages-spread.is-curling .book-turning-leaf {
+  z-index: 35;
 }
+
 
 .page-turn-corner {
   cursor: grab;
@@ -831,88 +826,51 @@
 /* While Turning: Elevate in 3D Z-index so it smoothly glides above static pages */
 .book-turning-leaf.turning {
   z-index: 35;
+  pointer-events: none;
 }
 
-/* Real-Book Dynamic 3D Camber Paper Curl Arch (Forward: Sign In -> Register) */
+.book-turning-leaf.turning .leaf-face-front,
+.book-turning-leaf.turning .leaf-face-back {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Archival 3D Book Page-Turn (Forward: Sign In -> Register) */
 .book-turning-leaf.turning-forward {
-  animation: realBookPartByPartForward 0.94s cubic-bezier(0.25, 1, 0.35, 1) forwards;
+  animation: archivalPageTurnForward 0.72s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
 }
 
-/* Real-Book Dynamic 3D Camber Paper Curl Arch (Backward: Register -> Sign In) */
+/* Archival 3D Book Page-Turn (Backward: Register -> Sign In) */
 .book-turning-leaf.turning-backward {
-  animation: realBookPartByPartBackward 0.94s cubic-bezier(0.25, 1, 0.35, 1) forwards;
+  animation: archivalPageTurnBackward 0.72s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
 }
 
-@keyframes realBookPartByPartForward {
+@keyframes archivalPageTurnForward {
   0% {
-    transform: rotateY(0deg) rotateX(0deg) rotateZ(0deg) translate3d(0, 0, 0.5px) scale(1);
+    transform: rotateY(0deg) scale(1);
     transform-origin: 0% 50%;
   }
-  14% {
-    /* Phase 1: Diagonal Corner Peel & Lift! Corner curls high in air */
-    transform: rotateY(-26deg) rotateX(24deg) rotateZ(-14deg) translate3d(-18px, -12px, 26px) scaleX(0.92);
-    transform-origin: 0% 65%;
-  }
-  32% {
-    /* Phase 2: Traveling Cylindrical Curl Roll arching across right page */
-    transform: rotateY(-68deg) rotateX(28deg) rotateZ(-16deg) translate3d(-46px, -20px, 50px) scaleX(0.82);
-    transform-origin: 0% 60%;
-  }
-  52% {
-    /* Phase 3: Apex Cylinder crossing spine meridian at maximum 3D elevation */
-    transform: rotateY(-108deg) rotateX(16deg) rotateZ(-8deg) translate3d(-62px, -14px, 58px) scaleX(0.84);
-    transform-origin: 0% 50%;
-  }
-  72% {
-    /* Phase 4: Inner spine edge lands on left page FIRST while outer edge curls floating high */
-    transform: rotateY(-152deg) rotateX(-14deg) rotateZ(10deg) translate3d(-26px, -8px, 28px) scaleX(0.92);
-    transform-origin: 0% 45%;
-  }
-  88% {
-    /* Phase 5: Floating curled edge softens and descends on air cushion */
-    transform: rotateY(-174deg) rotateX(-4deg) rotateZ(2deg) translate3d(-6px, -2px, 8px) scaleX(0.98);
+  50% {
+    transform: rotateY(-90deg) scale(0.92);
     transform-origin: 0% 50%;
   }
   100% {
-    /* Phase 6: Flush cushioned touchdown onto stacked archival leaves */
-    transform: rotateY(-180deg) rotateX(0deg) rotateZ(0deg) translate3d(0, 0, 0.5px) scale(1);
+    transform: rotateY(-180deg) scale(1);
     transform-origin: 0% 50%;
   }
 }
 
-@keyframes realBookPartByPartBackward {
+@keyframes archivalPageTurnBackward {
   0% {
-    transform: rotateY(-180deg) rotateX(0deg) rotateZ(0deg) translate3d(0, 0, 0.5px) scale(1);
+    transform: rotateY(-180deg) scale(1);
     transform-origin: 0% 50%;
   }
-  14% {
-    /* Phase 1: Left bottom corner curls up diagonally */
-    transform: rotateY(-154deg) rotateX(24deg) rotateZ(14deg) translate3d(18px, -12px, 26px) scaleX(0.92);
-    transform-origin: 0% 65%;
-  }
-  32% {
-    /* Phase 2: Traveling cylinder curl rolls toward right */
-    transform: rotateY(-112deg) rotateX(28deg) rotateZ(16deg) translate3d(46px, -20px, 50px) scaleX(0.82);
-    transform-origin: 0% 60%;
-  }
-  52% {
-    /* Phase 3: Apex cylinder crossing spine */
-    transform: rotateY(-72deg) rotateX(16deg) rotateZ(8deg) translate3d(62px, -14px, 58px) scaleX(0.84);
-    transform-origin: 0% 50%;
-  }
-  72% {
-    /* Phase 4: Right spine lands first, outer corner stays arched */
-    transform: rotateY(-28deg) rotateX(-14deg) rotateZ(-10deg) translate3d(26px, -8px, 28px) scaleX(0.92);
-    transform-origin: 0% 45%;
-  }
-  88% {
-    /* Phase 5: Outer corner unrolls */
-    transform: rotateY(-6deg) rotateX(-4deg) rotateZ(-2deg) translate3d(6px, -2px, 8px) scaleX(0.98);
+  50% {
+    transform: rotateY(-90deg) scale(0.92);
     transform-origin: 0% 50%;
   }
   100% {
-    /* Phase 6: Settled flush */
-    transform: rotateY(0deg) rotateX(0deg) rotateZ(0deg) translate3d(0, 0, 0.5px) scale(1);
+    transform: rotateY(0deg) scale(1);
     transform-origin: 0% 50%;
   }
 }
@@ -962,84 +920,7 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* Animated Corner Curl Silhouettes */
-.book-turning-leaf.turning-forward .leaf-face-front {
-  animation: leafCornerCurlFront 0.94s cubic-bezier(0.25, 1, 0.35, 1) forwards;
-}
-
-.book-turning-leaf.turning-backward .leaf-face-front {
-  animation: leafCornerUncurlFront 0.94s cubic-bezier(0.25, 1, 0.35, 1) forwards;
-}
-
-.book-turning-leaf.turning-forward .leaf-face-back {
-  animation: leafCornerUncurlBack 0.94s cubic-bezier(0.25, 1, 0.35, 1) forwards;
-}
-
-.book-turning-leaf.turning-backward .leaf-face-back {
-  animation: leafCornerCurlBack 0.94s cubic-bezier(0.25, 1, 0.35, 1) forwards;
-}
-
-@keyframes leafCornerCurlFront {
-  0% {
-    border-radius: 0 8px 8px 0;
-  }
-  16% {
-    border-radius: 0 8px 55px 0;
-  }
-  40% {
-    border-radius: 0 8px 30px 0;
-  }
-  100% {
-    border-radius: 0 8px 8px 0;
-  }
-}
-
-@keyframes leafCornerUncurlFront {
-  0% {
-    border-radius: 0 8px 8px 0;
-  }
-  65% {
-    border-radius: 0 8px 30px 0;
-  }
-  86% {
-    border-radius: 0 8px 55px 0;
-  }
-  100% {
-    border-radius: 0 8px 8px 0;
-  }
-}
-
-@keyframes leafCornerUncurlBack {
-  0% {
-    border-radius: 8px 0 0 8px;
-  }
-  55% {
-    border-radius: 30px 0 0 8px;
-  }
-  78% {
-    border-radius: 55px 0 0 8px;
-  }
-  100% {
-    border-radius: 8px 0 0 8px;
-  }
-}
-
-@keyframes leafCornerCurlBack {
-  0% {
-    border-radius: 8px 0 0 8px;
-  }
-  16% {
-    border-radius: 55px 0 0 8px;
-  }
-  40% {
-    border-radius: 30px 0 0 8px;
-  }
-  100% {
-    border-radius: 8px 0 0 8px;
-  }
-}
-
-/* Dynamic Diagonal Specular Ridge & Curl Crease Lighting */
+/* Dynamic Paper Specular Sheen & Depth Lighting */
 .leaf-shadow-front,
 .leaf-shadow-back {
   position: absolute;
@@ -1047,149 +928,101 @@
   pointer-events: none;
   opacity: 0;
   z-index: 5;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.25s ease;
 }
 
 .leaf-shadow-front {
   background: linear-gradient(
-    135deg,
-    rgba(35, 22, 8, 0.6) 0%,
-    rgba(255, 255, 255, 0.72) 20%,
-    rgba(255, 255, 255, 0.18) 35%,
-    rgba(32, 18, 5, 0.48) 50%,
-    rgba(0, 0, 0, 0.3) 72%,
-    transparent 100%
+    to right,
+    rgba(0, 0, 0, 0.12) 0%,
+    rgba(255, 255, 255, 0.15) 30%,
+    transparent 80%
   );
-  background-size: 260% 260%;
   border-radius: 0 8px 8px 0;
 }
 
 .leaf-shadow-back {
   background: linear-gradient(
-    225deg,
-    rgba(35, 22, 8, 0.6) 0%,
-    rgba(255, 255, 255, 0.72) 20%,
-    rgba(255, 255, 255, 0.18) 35%,
-    rgba(32, 18, 5, 0.48) 50%,
-    rgba(0, 0, 0, 0.3) 72%,
-    transparent 100%
+    to left,
+    rgba(0, 0, 0, 0.12) 0%,
+    rgba(255, 255, 255, 0.15) 30%,
+    transparent 80%
   );
-  background-size: 260% 260%;
   border-radius: 8px 0 0 8px;
 }
 
 .book-turning-leaf.turning-forward .leaf-shadow-front {
-  animation: cylinderRollSweepForward 0.94s cubic-bezier(0.25, 1, 0.35, 1) forwards;
+  animation: leafSheenFadeForward 0.72s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
 }
 
 .book-turning-leaf.turning-forward .leaf-shadow-back {
-  animation: cylinderRollSweepBackLand 0.94s cubic-bezier(0.25, 1, 0.35, 1) forwards;
+  animation: leafSheenFadeBackLand 0.72s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
 }
 
 .book-turning-leaf.turning-backward .leaf-shadow-back {
-  animation: cylinderRollSweepBackward 0.94s cubic-bezier(0.25, 1, 0.35, 1) forwards;
+  animation: leafSheenFadeBackward 0.72s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
 }
 
 .book-turning-leaf.turning-backward .leaf-shadow-front {
-  animation: cylinderRollSweepFrontLand 0.94s cubic-bezier(0.25, 1, 0.35, 1) forwards;
+  animation: leafSheenFadeFrontLand 0.72s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
 }
 
-@keyframes cylinderRollSweepForward {
+@keyframes leafSheenFadeForward {
   0% {
-    background-position: 100% 100%;
     opacity: 0;
   }
-  14% {
-    background-position: 85% 85%;
-    opacity: 0.9;
+  25% {
+    opacity: 0.6;
   }
-  35% {
-    background-position: 48% 48%;
-    opacity: 1;
+  50% {
+    opacity: 0.35;
   }
-  52% {
-    background-position: 20% 20%;
-    opacity: 0.85;
-  }
-  68% {
-    background-position: 0% 0%;
-    opacity: 0.4;
-  }
-  80%, 100% {
-    background-position: 0% 0%;
+  75%, 100% {
     opacity: 0;
   }
 }
 
-@keyframes cylinderRollSweepBackLand {
+@keyframes leafSheenFadeBackLand {
   0%, 45% {
-    background-position: 0% 0%;
     opacity: 0;
   }
   60% {
-    background-position: 25% 25%;
-    opacity: 0.85;
+    opacity: 0.45;
   }
-  78% {
-    background-position: 65% 65%;
-    opacity: 0.75;
-  }
-  92% {
-    background-position: 90% 90%;
-    opacity: 0.3;
+  85% {
+    opacity: 0.2;
   }
   100% {
-    background-position: 100% 100%;
     opacity: 0;
   }
 }
 
-@keyframes cylinderRollSweepBackward {
+@keyframes leafSheenFadeBackward {
   0% {
-    background-position: 100% 100%;
     opacity: 0;
   }
-  14% {
-    background-position: 85% 85%;
-    opacity: 0.9;
+  25% {
+    opacity: 0.6;
   }
-  35% {
-    background-position: 48% 48%;
-    opacity: 1;
+  50% {
+    opacity: 0.35;
   }
-  52% {
-    background-position: 20% 20%;
-    opacity: 0.85;
-  }
-  68% {
-    background-position: 0% 0%;
-    opacity: 0.4;
-  }
-  80%, 100% {
-    background-position: 0% 0%;
+  75%, 100% {
     opacity: 0;
   }
 }
 
-@keyframes cylinderRollSweepFrontLand {
+@keyframes leafSheenFadeFrontLand {
   0%, 45% {
-    background-position: 0% 0%;
     opacity: 0;
   }
   60% {
-    background-position: 25% 25%;
-    opacity: 0.85;
+    opacity: 0.45;
   }
-  78% {
-    background-position: 65% 65%;
-    opacity: 0.75;
-  }
-  92% {
-    background-position: 90% 90%;
-    opacity: 0.3;
+  85% {
+    opacity: 0.2;
   }
   100% {
-    background-position: 100% 100%;
     opacity: 0;
   }
 }

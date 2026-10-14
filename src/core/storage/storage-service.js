@@ -4,8 +4,7 @@ import { INITIAL_MEMBERS } from '../../domain/seeds/members.seed.js';
 import { INITIAL_LOANS } from '../../domain/seeds/loans.seed.js';
 import { INITIAL_ACCOUNTS } from '../../domain/seeds/accounts.seed.js';
 import { LITERARY_QUOTES } from '../../domain/seeds/quotes.seed.js';
-import { canBorrow, getLoanDates as createLoanDates, isLoanOverdue } from '../../domain/models/loan.model.js';
-import { createPurchaseRecord } from '../../domain/models/account.model.js';
+import { isLoanOverdue } from '../../domain/models/loan.model.js';
 import { createBookRecord } from '../../domain/models/book.model.js';
 import { createMemberRecord } from '../../domain/models/member.model.js';
 
@@ -161,13 +160,6 @@ let storageService;
     },
 
     /**
-     * Centralized loan duration and date formatting helper
-     */
-    getLoanDates(durationDays = 14) {
-      return createLoanDates(durationDays);
-    },
-
-    /**
      * Helper to escape HTML characters in dynamic text across the application
      */
     escapeHtml(str) {
@@ -285,116 +277,6 @@ let storageService;
       return updated;
     },
 
-    deleteBook(id) {
-      // Close associated loans first so member counts and account stacks stay in sync.
-      this.getLoans()
-        .filter((loan) => loan.bookId === id)
-        .forEach((loan) => this.returnLoan(loan.id));
-
-      write(STORAGE_KEYS.BOOKS, this.getBooks().filter((book) => book.id !== id));
-      // Remove stale account entries too, in case older data has no matching loan.
-      const accounts = this.getAccounts();
-      accounts.forEach((account) => {
-        account.borrowedBooks = (account.borrowedBooks || []).filter((book) => book.bookId !== id);
-      });
-      write(STORAGE_KEYS.ACCOUNTS, accounts);
-      this.recalculateStatistics();
-      return true;
-    },
-
-    // ------------------------------------------------------------------------
-    // User Borrow & Buy Actions
-    // ------------------------------------------------------------------------
-
-    /**
-     * Borrows a book for a specific account
-     */
-    borrowBookForAccount(bookId, accountId) {
-      const book = this.getBookById(bookId);
-      if (!book) return { success: false, error: 'Book not found' };
-      if (book.status !== 'available') return { success: false, error: 'Book is currently unavailable' };
-
-      const account = this.getAccountById(accountId);
-      if (!account) return { success: false, error: 'Account not found' };
-
-      const activeLoanCount = this.getLoans().filter((loan) => loan.memberId === accountId).length;
-      if (!canBorrow(account, activeLoanCount)) {
-        return { success: false, error: 'Your membership borrowing limit has been reached' };
-      }
-
-      const { borrowedDate, dueDate, dueDateISO } = this.getLoanDates(14);
-
-      // Create loan
-      this.addLoan({
-        bookId: book.id,
-        bookTitle: book.title,
-        memberId: account.id,
-        memberName: account.name,
-        borrowedDate,
-        dueDate,
-        dueDateISO,
-        status: 'borrowed'
-      });
-
-      // Update account's borrowedBooks list & sync session
-      const updatedAccount = this.updateAccount(accountId, (acc) => {
-        acc.borrowedBooks = acc.borrowedBooks || [];
-        acc.borrowedBooks.push({
-          bookId: book.id,
-          title: book.title,
-          author: book.author,
-          borrowedDate,
-          dueDate,
-          dueDateISO,
-          status: 'borrowed'
-        });
-      });
-
-      return { success: true, book, account: updatedAccount || account };
-    },
-
-    /**
-     * Returns a borrowed book for an account
-     */
-    returnBookForAccount(bookId, accountId) {
-      const loans = this.getLoans();
-      const loan = loans.find((l) => l.bookId === bookId && l.memberId === accountId);
-
-      if (loan) {
-        this.returnLoan(loan.id);
-      } else {
-        this.updateBook(bookId, { status: 'available' });
-      }
-
-      this.updateAccount(accountId, (acc) => {
-        if (acc.borrowedBooks) {
-          acc.borrowedBooks = acc.borrowedBooks.filter((b) => b.bookId !== bookId);
-        }
-      });
-
-      return { success: true };
-    },
-
-    /**
-     * Buys a book for an account (stores invoice and book in purchased list)
-     */
-    buyBookForAccount(bookId, accountId) {
-      const book = this.getBookById(bookId);
-      if (!book) return { success: false, error: 'Book not found' };
-
-      const account = this.getAccountById(accountId);
-      if (!account) return { success: false, error: 'Account not found' };
-
-      const purchaseRecord = createPurchaseRecord(book);
-
-      const updatedAccount = this.updateAccount(accountId, (acc) => {
-        acc.purchasedBooks = acc.purchasedBooks || [];
-        acc.purchasedBooks.push(purchaseRecord);
-      });
-
-      return { success: true, purchase: purchaseRecord, book, account: updatedAccount || account };
-    },
-
     // ------------------------------------------------------------------------
     // Members Methods
     // ------------------------------------------------------------------------
@@ -422,20 +304,6 @@ let storageService;
       const updated = updateCollectionItem(STORAGE_KEYS.MEMBERS, id, updates);
       if (updated) this.recalculateStatistics();
       return updated;
-    },
-
-    deleteMember(id) {
-      // Return active loans before removing the member to restore book availability.
-      this.getLoans()
-        .filter((loan) => loan.memberId === id)
-        .forEach((loan) => this.returnLoan(loan.id));
-
-      write(STORAGE_KEYS.MEMBERS, this.getMembers().filter((member) => member.id !== id));
-      write(STORAGE_KEYS.ACCOUNTS, this.getAccounts().filter((account) => account.id !== id));
-      const currentUser = this.getCurrentUser();
-      if (currentUser && currentUser.id === id) this.clearCurrentUser();
-      this.recalculateStatistics();
-      return true;
     },
 
     // ------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-export function renderMemberCard(member, { escapeHtml, capitalize }) {
+export function renderMemberCard(member, { escapeHtml, capitalize, currentUser }) {
   const badgeClass = member.status === 'active' ? 'badge-active' : 'badge-inactive';
   return `
     <article class="member-card" data-member-id="${escapeHtml(member.id)}">
@@ -13,7 +13,7 @@ export function renderMemberCard(member, { escapeHtml, capitalize }) {
       </div>
       <div class="member-card-footer">
         <button type="button" class="btn btn-sm btn-action-ghost btn-view-member" data-id="${escapeHtml(member.id)}">View</button>
-        <button type="button" class="btn btn-sm btn-action-danger btn-delete-member" data-id="${escapeHtml(member.id)}">Delete</button>
+        ${currentUser?.role === 'admin' ? `<button type="button" class="btn btn-sm btn-action-danger btn-delete-member" data-id="${escapeHtml(member.id)}">Delete</button>` : ''}
       </div>
     </article>
   `;

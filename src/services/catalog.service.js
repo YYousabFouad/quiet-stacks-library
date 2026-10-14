@@ -33,12 +33,17 @@ export class CatalogService {
   }
 
   deleteMember(id) {
+    const activeLoans = this.repositories.loans.all().filter((loan) => loan.memberId === id);
     const removed = this.repositories.members.remove(id);
     if (!removed) return false;
-    this.repositories.loans.all().filter((loan) => loan.memberId === id)
-      .forEach((loan) => this.repositories.loans.remove(loan.id));
+    activeLoans.forEach((loan) => {
+      const book = this.repositories.books.findById(loan.bookId);
+      if (book) this.repositories.books.update(book.id, { status: 'available' });
+      this.repositories.loans.remove(loan.id);
+    });
     this.repositories.accounts.remove(id);
     if (this.storage.getCurrentUser()?.id === id) this.storage.clearCurrentUser();
+    this.storage.recalculateStatistics();
     this.#publish('member:deleted', { id });
     return true;
   }
@@ -55,8 +60,25 @@ export class CatalogService {
   }
 
   addMember(member) {
-    const record = createMemberRecord(member, member.id || `M-${String(Date.now()).slice(-3)}`);
+    const usedIds = new Set(this.repositories.members.all()
+      .map((existing) => Number(String(existing.id).match(/\d+$/)?.[0]))
+      .filter(Number.isFinite));
+    let nextId = 1;
+    while (usedIds.has(nextId)) nextId += 1;
+    const memberId = `M-${String(nextId).padStart(3, '0')}`;
+    const record = createMemberRecord(member, memberId);
     const result = this.repositories.members.create(record);
+    this.repositories.accounts.create({
+      id: result.id,
+      name: result.name,
+      email: result.email,
+      password: 'password123',
+      role: 'member',
+      membershipType: result.membershipType,
+      status: result.status,
+      borrowedBooks: [],
+      purchasedBooks: []
+    });
     this.#publish('member:created', { record: result });
     return result;
   }
