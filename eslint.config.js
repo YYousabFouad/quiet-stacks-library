@@ -1,6 +1,6 @@
 export default [
   {
-    ignores: ['dist/**', 'node_modules/**', 'coverage/**']
+    ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'assets/vendor/**']
   },
   {
     files: ['src/**/*.js', '*.config.js'],

@@ -1,5 +1,16 @@
 import { libraryServices as services } from '../runtime.js';
 import { playPaperTurnSound } from '../effects/audio-synthesizer.js';
+import { initVantaBackground } from '../effects/vanta-background.js';
+import {
+  animatePageEntrance,
+  animateIncomingFields,
+  animateCardShake,
+  animateAlertEntrance,
+  animateCornerFlutter,
+  animateDemoAccountFill,
+  animateDashboardZoomOut,
+} from '../effects/motion-orchestrator.js';
+import { PageCurlEngine } from '../effects/page-curl-controller.js';
 
 /**
  * Quiet Stacks Library — High-Performance Archival Book Auth Controller
@@ -20,7 +31,7 @@ import { playPaperTurnSound } from '../effects/audio-synthesizer.js';
       };
 
   const ALERT_ICONS = {
-    success: '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />',
+    success: '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />',
     error: '<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />'
   };
 
@@ -64,6 +75,7 @@ import { playPaperTurnSound } from '../effects/audio-synthesizer.js';
 
       alertBox.innerHTML = `${iconSvg}<span>${escapeHtml(message)}</span>`;
       alertBox.className = 'auth-alert visible ' + (isSuccess ? 'auth-alert-success' : 'auth-alert-error');
+      animateAlertEntrance(alertBox);
     }
 
     function hideAlert() {
@@ -73,19 +85,7 @@ import { playPaperTurnSound } from '../effects/audio-synthesizer.js';
     }
 
     function shakeBook() {
-      const target = document.querySelector('.library-book');
-      if (!target) return;
-      target.animate([
-        { transform: 'translateX(0)' },
-        { transform: 'translateX(-7px)' },
-        { transform: 'translateX(7px)' },
-        { transform: 'translateX(-5px)' },
-        { transform: 'translateX(5px)' },
-        { transform: 'translateX(0)' }
-      ], {
-        duration: 400,
-        easing: 'ease-in-out'
-      });
+      animateCardShake();
     }
 
     // ------------------------------------------------------------------------
@@ -137,77 +137,49 @@ import { playPaperTurnSound } from '../effects/audio-synthesizer.js';
     }
 
     // ------------------------------------------------------------------------
-    // High-Fidelity 3D Camber Book Page-Turn Controller
+    // WebGL Page-Curl Engine Controller (real paper deformation)
     // ------------------------------------------------------------------------
-    const curlCanvas = document.getElementById('book-curl-canvas');
-    if (curlCanvas) {
-      curlCanvas.dataset.pageCurlReady = 'true';
-      curlCanvas.style.display = 'none';
+    let curlEngine = null;
+    try {
+      curlEngine = new PageCurlEngine({
+        getMode: () => currentMode,
+        onNavigate: (mode) => updateNavUI(mode),
+        onSound: () => playPaperTurnSound(),
+      });
+    } catch (error) {
+      console.warn('[Auth] Page-turn effect unavailable.', error);
     }
 
-    let isTurning = false;
-
     function turnPageTo(mode) {
-      if (currentMode === mode || isTurning) return;
-      isTurning = true;
-      const forward = mode === 'signup';
-      currentMode = mode;
-      updateNavUI(mode);
-      playPaperTurnSound();
+      if (currentMode === mode) return;
+
+      const incomingPanel = mode === 'signup'
+        ? document.getElementById('panel-signup')
+        : document.getElementById('panel-login');
+      if (incomingPanel) {
+        animateIncomingFields(incomingPanel);
+      }
+
+      if (curlEngine) {
+        curlEngine.turnTo(mode);
+      } else {
+        // Engine not loaded yet: switch instantly
+        updateNavUI(mode);
+        if (turningLeaf && pagesSpread) {
+          const isSignup = mode === 'signup';
+          pagesSpread.classList.toggle('spread-turned-over', isSignup);
+          turningLeaf.classList.toggle('leaf-turned-over', isSignup);
+          turningLeaf.classList.toggle('leaf-at-rest', !isSignup);
+          if (underPage) underPage.classList.toggle('mobile-active', isSignup);
+        }
+      }
+
 
       if (window.matchMedia('(max-width: 680px)').matches) {
-        if (pagesSpread) pagesSpread.classList.toggle('spread-turned-over', forward);
-        if (turningLeaf) {
-          turningLeaf.classList.toggle('leaf-turned-over', forward);
-          turningLeaf.classList.toggle('leaf-at-rest', !forward);
-        }
-        if (underPage) underPage.classList.toggle('mobile-active', forward);
-        isTurning = false;
         const bookStage = document.querySelector('.book-stage');
         if (bookStage) {
           bookStage.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-        return;
-      }
-
-      if (turningLeaf && pagesSpread) {
-        turningLeaf.classList.remove('turning-forward', 'turning-backward', 'leaf-at-rest', 'leaf-turned-over');
-        void turningLeaf.offsetWidth;
-        turningLeaf.classList.add('turning', forward ? 'turning-forward' : 'turning-backward');
-
-        if (forward) {
-          pagesSpread.classList.add('spread-turned-over');
-          if (underPage) underPage.classList.add('mobile-active');
-        }
-
-        const handleAnimationEnd = (e) => {
-          if (e.target !== turningLeaf) return;
-          turningLeaf.classList.remove('turning', 'turning-forward', 'turning-backward');
-          turningLeaf.classList.toggle('leaf-turned-over', forward);
-          turningLeaf.classList.toggle('leaf-at-rest', !forward);
-          if (!forward) {
-            pagesSpread.classList.remove('spread-turned-over');
-            if (underPage) underPage.classList.remove('mobile-active');
-          }
-          turningLeaf.removeEventListener('animationend', handleAnimationEnd);
-          isTurning = false;
-        };
-
-        turningLeaf.addEventListener('animationend', handleAnimationEnd);
-        setTimeout(() => {
-          if (isTurning) {
-            turningLeaf.classList.remove('turning', 'turning-forward', 'turning-backward');
-            turningLeaf.classList.toggle('leaf-turned-over', forward);
-            turningLeaf.classList.toggle('leaf-at-rest', !forward);
-            if (!forward) {
-              pagesSpread.classList.remove('spread-turned-over');
-              if (underPage) underPage.classList.remove('mobile-active');
-            }
-            isTurning = false;
-          }
-        }, 800);
-      } else {
-        isTurning = false;
       }
     }
 
@@ -410,15 +382,18 @@ import { playPaperTurnSound } from '../effects/audio-synthesizer.js';
           hideAlert();
 
           const card = this.closest('.demo-account-card');
-          if (card) {
-            card.animate([
-              { backgroundColor: '#fef3c7' },
-              { backgroundColor: '#faf6ed' }
-            ], { duration: 400 });
-          }
+          const submitBtn = document.querySelector('#login-form .auth-btn-submit');
+          animateDemoAccountFill(card, submitBtn);
 
           showAlert(`Loaded credentials for ${this.getAttribute('data-name') || 'Patron'}. Click "Open Reading Stack" to enter!`, 'success');
         }
+      });
+    });
+
+    // Interactive dog-ear corner flutter
+    document.querySelectorAll('.page-turn-corner').forEach((corner) => {
+      corner.addEventListener('mouseenter', function () {
+        animateCornerFlutter(this);
       });
     });
 
@@ -471,23 +446,16 @@ import { playPaperTurnSound } from '../effects/audio-synthesizer.js';
     // Seamless Dashboard Zoom-Out
     // ------------------------------------------------------------------------
     function triggerDashboardZoomOut() {
-      if (revealBackdrop) {
-        revealBackdrop.classList.add('active');
-      }
-
-      if (authContainer) {
-        authContainer.classList.add('zoom-out-active');
-      }
-
       const shelfHeader = document.querySelector('.ambient-shelf-header');
       if (shelfHeader) {
         shelfHeader.style.opacity = '1';
       }
 
-      setTimeout(() => {
+      animateDashboardZoomOut(authContainer, revealBackdrop, () => {
         window.location.href = destinationUrl;
-      }, 550);
+      });
     }
+
 
     // ------------------------------------------------------------------------
     // Login Submission Handler
@@ -588,5 +556,10 @@ import { playPaperTurnSound } from '../effects/audio-synthesizer.js';
         }, 280);
       });
     }
+
+    // Initialize Three.js + Vanta.NET Archival Background & Anime.js Entrance
+    initVantaBackground();
+    animatePageEntrance();
   });
 })();
+

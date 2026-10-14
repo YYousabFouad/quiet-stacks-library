@@ -20,14 +20,23 @@
 }
 
 /* Background Library Desk & Ambient Lighting */
+.vanta-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.72;
+}
+
 .library-ambient-bg {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
   background: 
-    radial-gradient(circle at 50% 25%, #ffffff 0%, rgba(251, 248, 241, 0.95) 60%, #efe7d6 100%);
+    radial-gradient(circle at 50% 25%, rgba(255, 255, 255, 0.45) 0%, rgba(251, 248, 241, 0.75) 60%, rgba(239, 231, 214, 0.85) 100%);
 }
+
 
 /* Ambient Bookshelf Banner (Pinned to bottom matching design) */
 .ambient-shelf-header {
@@ -511,9 +520,13 @@
   overflow: visible;
 }
 
-/* Keep real DOM visible and sharp during smooth page turns */
-.book-pages-spread.is-curling .book-turning-leaf {
-  z-index: 35;
+/* While Canvas 3D curl engine is actively rendering physical paper deformation */
+.book-pages-spread.is-curling .book-turning-leaf,
+.book-pages-spread.is-curling .leaf-face-front,
+.book-pages-spread.is-curling .leaf-face-back {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 
@@ -1566,15 +1579,16 @@
   .book-page-right {
     position: relative;
     width: 100%;
-    min-height: 520px;
+    min-height: 540px;
+    height: auto;
     order: 1;
     border-radius: 0;
-    padding: var(--space-5) var(--space-4);
+    padding: var(--space-5) var(--space-4) var(--space-6);
     box-shadow: none;
     background: #ffffff;
     display: none;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
     z-index: 2;
     box-sizing: border-box;
   }

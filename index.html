@@ -13,8 +13,28 @@
     <!-- Main Stylesheets -->
     <link rel="stylesheet" href="assets/css/style.css" />
     <link rel="stylesheet" href="assets/css/auth.css" />
+
+    <!-- W3C Import Map for Bare Module Specifiers (Three.js & Anime.js) -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./assets/vendor/three.module.js",
+          "animejs": "./assets/vendor/anime.es.js"
+        }
+      }
+    </script>
+
+    <!-- Standalone Vanta.NET UMD Library -->
+    <script defer src="assets/vendor/vanta.net.min.js"></script>
   </head>
   <body class="auth-page">
+    <!-- Vanta.NET Three.js Archival Constellation Background -->
+    <div
+      id="vanta-background"
+      class="vanta-background"
+      aria-hidden="true"
+    ></div>
+
     <!-- Library Study Ambient Background (Matches Dashboard #fbf8f1) -->
     <div class="library-ambient-bg" aria-hidden="true"></div>
 
@@ -549,13 +569,6 @@
                   >
                 </div>
               </section>
-
-              <!-- Page-Turn Dog-Ear Corner -->
-              <div
-                class="page-turn-corner corner-bottom-right back-to-login-link"
-                title="Turn back to Sign In"
-                aria-hidden="true"
-              ></div>
             </div>
 
             <!-- ========================================================

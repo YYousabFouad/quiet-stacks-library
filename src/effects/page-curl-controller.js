@@ -85,6 +85,7 @@ let pageCurlController;
 
   class PageCurlEngine {
     constructor(opts) {
+      window.__curlEngine = this;
       this.opts = opts;
       this.spread = document.querySelector('.book-pages-spread');
       this.canvas = document.getElementById('book-curl-canvas');
@@ -135,7 +136,7 @@ let pageCurlController;
           if (!this.busy && this.dirty) this.renderFaces();
         }, 300);
       };
-      ['input', 'change', 'click'].forEach((ev) => this.leaf.addEventListener(ev, markDirty, true));
+      ['input', 'change'].forEach((ev) => this.leaf.addEventListener(ev, markDirty, true));
 
       let resizeTimer;
       window.addEventListener('resize', () => {
@@ -368,34 +369,30 @@ let pageCurlController;
     }
 
     // ------------------------------------------------------------------------
-    // ------------------------------------------------------------------------
-    // The curl. Coordinates: x from spine (0) to fore-edge (pageW), y up.
-    // A backward turn is the same motion with the sheet group mirrored.
+    // Apple Books Cylindrical Page-Curl Algorithm (iOS 16.4 / CoreAnimation Model)
+    // Maps 2D paper sheet onto a traveling developable cylinder with natural corner peel
     // ------------------------------------------------------------------------
     deform(t) {
       const W = this.pageW;
       const H = this.pageH;
       const halfH = H / 2;
 
-      // Natural corner peel that gently straightens as the sheet sweeps across
-      const theta0 = this.mobileLayout ? (13 * Math.PI) / 180 : THETA0;
-      const phi0 = this.mobileLayout ? (25 * Math.PI) / 180 : PHI0;
-      const theta = -theta0 * Math.pow(1 - t, 1.4);
+      const tClamped = clamp(t, 0.0001, 0.9999);
+      const sinPi = Math.sin(Math.PI * tClamped);
+
+      // Natural corner peel angle: diagonal tilt that gently straightens as the sheet sweeps across
+      const theta0 = (22 * Math.PI) / 180;
+      const theta = -theta0 * Math.pow(1 - tClamped, 1.25);
       const c = Math.cos(theta);
       const s = Math.sin(theta);
 
-      // Crease travels smoothly across the sheet from right edge to spine (0)
+      // Crease travels from outer corner to the spine
       const dStart = W * c + halfH * Math.abs(s);
-      const d = dStart * (1 - t);
+      const d = dStart * (1 - tClamped);
 
       // Roll radius swells gracefully mid-turn and converges to 0 at landing
-      const sinPi = Math.sin(Math.PI * t);
-      const R = W * (this.mobileLayout ? 0.2 : 0.15) * Math.pow(sinPi, 0.65);
-      const phi = phi0 * sinPi;
-      const cosPhi = Math.cos(phi);
-      const sinPhi = Math.sin(phi);
-
-      this.line = { c, s, d };
+      const R = Math.max(0.5, W * 0.16 * Math.pow(sinPi, 0.72));
+      const arc = Math.PI * R;
 
       const pos = this.frontMesh.geometry.attributes.position;
       const arr = pos.array;
@@ -405,42 +402,49 @@ let pageCurlController;
       for (let i = 0, n = aS.length; i < n; i++) {
         const x = orig[i * 3];
         const y = orig[i * 3 + 1];
-        const sd = x * c + y * s - d; // signed distance past the crease line
+
+        // Signed distance past the traveling crease line
+        const sd = x * c + y * s - d;
         aS[i] = sd;
 
         if (sd <= 0) {
-          // Unpeeled portion of the page lies flat on the book until the crease reaches it.
-          // This ensures a single natural sheet turns smoothly without a double-hump or 2-page illusion.
+          // Region 1: Flat paper resting on the book prior to the crease reaching it
           arr[i * 3] = x;
           arr[i * 3 + 1] = y;
           arr[i * 3 + 2] = 0;
           continue;
         }
 
-        // Curled sheet past the crease line: wraps around dynamic 3D cylinder
-        const Rl = R * (1.12 - 0.24 * ((y + halfH) / H));
-        const arc = Math.PI * Rl;
         let nCoord;
         let z;
-        if (sd <= arc && Rl > 0.0001) {
-          const b = sd / Rl;
-          nCoord = d + Rl * Math.sin(b);
-          z = Rl * (1 - Math.cos(b));
+
+        if (sd <= arc) {
+          // Region 2: Paper wrapping smoothly around the 3D cylinder
+          const b = sd / R;
+          nCoord = d + R * Math.sin(b);
+          z = R * (1 - Math.cos(b));
         } else {
+          // Region 3: Flipped flap that has curled past the cylinder crown
+          // Glides flat/tangent back across to the opposite page
           const L = sd - arc;
-          nCoord = d - L * cosPhi;
-          z = 2 * Rl + L * sinPhi;
+          nCoord = d - L;
+          // Flap settles down towards the page surface as L extends
+          const flapDrop = Math.exp(-L / (W * 0.55));
+          z = (2 * R) * flapDrop * (1 - tClamped * 0.25) + (1 - tClamped) * 0.5;
         }
+
         const dn = nCoord - (d + sd);
         arr[i * 3] = x + dn * c;
         arr[i * 3 + 1] = y + dn * s;
-        arr[i * 3 + 2] = z;
+        arr[i * 3 + 2] = Math.max(0, z);
       }
 
       pos.needsUpdate = true;
       this.frontMesh.geometry.attributes.aS.needsUpdate = true;
       this.frontMesh.geometry.computeVertexNormals();
     }
+
+
 
     // Clip the real DOM face to the flat (sd <= 0) part, using the exact same crease line
     clipFace(forward) {
@@ -483,9 +487,10 @@ let pageCurlController;
 
     begin(forward) {
       this.busy = true;
+      if (this.canvas) this.canvas.dataset.pageCurlBusy = 'true';
       this.forward = forward;
 
-      if (!this.texReady || this.dirty) {
+      if (!this.texReady || !this.tex.front || !this.tex.back) {
         this.renderFaces();
         this.texReady = true;
       }
@@ -495,8 +500,6 @@ let pageCurlController;
         this.sheet.position.x = -this.W / 2;
         this.frontMat.map = this.tex.front;
         this.backMat.map = this.tex.back;
-        this.frontMat.needsUpdate = true;
-        this.backMat.needsUpdate = true;
         this.frontMesh.geometry.setAttribute('uv', this.uvNormal);
         this.backMesh.geometry.setAttribute('uv', this.uvFlipped);
       } else {
@@ -505,8 +508,6 @@ let pageCurlController;
         this.sheet.position.x = 0;
         this.frontMat.map = forward ? this.tex.front : this.tex.back;
         this.backMat.map = forward ? this.tex.back : this.tex.front;
-        this.frontMat.needsUpdate = true;
-        this.backMat.needsUpdate = true;
         this.frontMesh.geometry.setAttribute('uv', forward ? this.uvNormal : this.uvFlipped);
         this.backMesh.geometry.setAttribute('uv', forward ? this.uvFlipped : this.uvNormal);
       }
@@ -545,6 +546,7 @@ let pageCurlController;
         this.canvas.style.opacity = '';
         this.canvas.style.display = 'none';
         this.busy = false;
+        if (this.canvas) this.canvas.dataset.pageCurlBusy = 'false';
         if (this.needsLayout) {
           this.needsLayout = false;
           this.layout();
@@ -565,12 +567,25 @@ let pageCurlController;
 
     tween(from, to, duration, ease, done) {
       cancelAnimationFrame(this.raf);
-      const start = performance.now();
+      let lastTime = null;
+      let elapsed = 0;
       const step = (now) => {
-        const p = clamp((now - start) / duration, 0, 1);
+        if (lastTime === null) {
+          lastTime = now;
+          this.frame(from);
+          this.raf = requestAnimationFrame(step);
+          return;
+        }
+        const delta = Math.min(now - lastTime, 48); // max 48ms step to prevent frame-skip jumps
+        lastTime = now;
+        elapsed += delta;
+        const p = clamp(elapsed / duration, 0, 1);
         this.frame(from + (to - from) * ease(p));
-        if (p < 1) this.raf = requestAnimationFrame(step);
-        else done();
+        if (p < 1) {
+          this.raf = requestAnimationFrame(step);
+        } else {
+          done();
+        }
       };
       this.raf = requestAnimationFrame(step);
     }
@@ -681,7 +696,10 @@ let pageCurlController;
         this.renderFaces();
       }
       this.texReady = true;
-      if (this.canvas) this.canvas.dataset.pageCurlReady = 'true';
+      if (this.canvas) {
+        this.canvas.dataset.pageCurlReady = 'true';
+        this.canvas.dataset.pageCurlBusy = 'false';
+      }
       this.warmUp();
     }
 

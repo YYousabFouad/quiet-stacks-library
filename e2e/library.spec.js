@@ -1,3 +1,6 @@
+import http from 'http';
+import fs from 'fs';
+import path from 'path';
 import { test, expect } from '@playwright/test';
 
 test('demo sign-in opens the dashboard and renders the catalog', async ({ page }) => {
@@ -116,3 +119,58 @@ test('auth page fits the responsive reference viewports without horizontal overf
     }
   }
 });
+
+test('static HTTP server hosts index.html with 0 console errors and resolves three and animejs', async ({ page }) => {
+  const pageErrors = [];
+  const consoleErrors = [];
+  page.on('pageerror', (error) => pageErrors.push(error.message));
+  page.on('console', (msg) => {
+    if (msg.type() === 'error') {
+      consoleErrors.push(msg.text());
+    }
+  });
+
+  const server = http.createServer((req, res) => {
+    let reqPath = decodeURI(req.url.split('?')[0]);
+    if (reqPath === '/') reqPath = '/index.html';
+    const filePath = path.join(process.cwd(), reqPath);
+    if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
+      res.writeHead(404);
+      res.end('Not found');
+      return;
+    }
+    const ext = path.extname(filePath);
+    const mime = {
+      '.html': 'text/html',
+      '.js': 'text/javascript',
+      '.css': 'text/css',
+      '.json': 'application/json',
+      '.svg': 'image/svg+xml'
+    }[ext] || 'application/octet-stream';
+    res.writeHead(200, { 'Content-Type': mime });
+    fs.createReadStream(filePath).pipe(res);
+  });
+
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  const port = server.address().port;
+
+  try {
+    await page.goto(`http://127.0.0.1:${port}/index.html`);
+    await page.waitForFunction(() => document.getElementById('book-curl-canvas')?.dataset.pageCurlReady === 'true', { timeout: 10_000 });
+
+    // Switch tabs to exercise page curl animation
+    await page.getByRole('tab', { name: 'Register' }).click();
+    await expect(page.locator('#tab-signup')).toHaveAttribute('aria-selected', 'true');
+    await page.waitForFunction(() => document.getElementById('book-curl-canvas')?.dataset.pageCurlBusy === 'false', { timeout: 10_000 });
+
+    await page.getByRole('tab', { name: 'Sign In' }).click();
+    await expect(page.locator('#tab-login')).toHaveAttribute('aria-selected', 'true');
+    await page.waitForFunction(() => document.getElementById('book-curl-canvas')?.dataset.pageCurlBusy === 'false', { timeout: 10_000 });
+
+    expect(pageErrors).toEqual([]);
+    expect(consoleErrors).toEqual([]);
+  } finally {
+    server.close();
+  }
+});
+
