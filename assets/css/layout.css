@@ -251,3 +251,15 @@
   }
 }
 
+/* ==========================================================================
+   Dark Theme Overrides — Layout
+   ========================================================================== */
+
+[data-theme="dark"] .sticky-nav-bar {
+  background-color: rgba(15, 23, 42, 0.95);
+}
+
+[data-theme="dark"] .sticky-nav-bar.is-stuck {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+

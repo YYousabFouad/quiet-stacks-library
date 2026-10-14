@@ -42,6 +42,9 @@ export function initVantaBackground() {
     return null;
   }
 
+  // Detect dark theme
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
   try {
     vantaInstance = netInit({
       el: container,
@@ -53,8 +56,8 @@ export function initVantaBackground() {
       minWidth: 200.0,
       scale: 1.0,
       scaleMobile: 0.8,
-      color: 0x1b4332,           // Library deep forest emerald
-      backgroundColor: 0xfbf8f1, // Archival warm cream parchment
+      color: isDark ? 0x2d5a3d : 0x1b4332,           // Deep forest green (dark) or forest green (light)
+      backgroundColor: isDark ? 0x1a1612 : 0xfbf8f1, // Dark leather or warm cream parchment
       points: 9.0,
       maxDistance: 22.0,
       spacing: 17.0,
