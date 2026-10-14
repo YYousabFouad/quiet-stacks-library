@@ -21,17 +21,15 @@ Libaray-system/
     │   ├── layout.css           # Grid layouts, header, banners, responsive breakpoints
     │   ├── components.css       # Cards, badges, buttons, tables, filters, user session, modals
     │   └── auth.css             # Elevated glassmorphism & animated auth styles
-    ├── js/
-    │   ├── storage.js           # LocalStorage service: accounts, auth, books, members, loans, stats
-    │   ├── auth.js              # Auth controller: page turns, tabs, and form validation
-    │   ├── page-curl.js         # Three.js page curl interaction
-    │   └── app.js               # Dashboard controller: live rendering, search, buy/borrow, modal flows
-    ├── vendor/
-    │   ├── three.min.js         # Three.js engine used by the page curl
-    │   ├── vanta.net.min.js     # Bundled visual effect library (not currently used)
-    │   └── anime.min.js         # Bundled animation library (not currently used)
-    └── images/
-        └── book-banner.svg      # Vector SVG illustration for the header bookshelf
+    └── src/
+        ├── core/                 # Storage driver and persistence service
+        ├── domain/              # Repositories, loan and purchase rules, extracted seeds
+        ├── components/          # Book cards, member cards and loan rows
+        ├── effects/             # Three.js page-curl controller
+        ├── services/            # Auth, catalog, lending, account and statistics services
+        ├── views/               # Auth and dashboard page controllers
+        ├── main-auth.js         # Authentication page entry point
+        └── main-dashboard.js    # Dashboard page entry point
 ```
 
 ---
@@ -53,7 +51,7 @@ Quick "Fill" demo buttons are available on [index.html](index.html) and [login.h
 
 ## 💾 LocalStorage Data Schema & Sample Dataset
 
-The data layer in [storage.js](assets/js/storage.js) handles persistent client-side storage across six primary keys:
+The data layer in [storage-service.js](src/core/storage/storage-service.js) persists the existing LocalStorage schema through an adapter across seven primary keys:
 
 1. **`quiet_stacks_accounts`**
    - User account records containing `id`, `name`, `email`, `password`, `role`, `membershipType`, `borrowedBooks`, and `purchasedBooks` (with invoices, price paid, and timestamps).
@@ -64,7 +62,7 @@ The data layer in [storage.js](assets/js/storage.js) handles persistent client-s
 4. **`quiet_stacks_members`** (8 Members)
    - Fields: `id` (e.g. `M-001` through `M-008`), `name`, `email`, `membershipType`, `status`, `borrowedCount`.
 5. **`quiet_stacks_loans`** (16 Loans)
-   - Active lending records: `id`, `bookId`, `bookTitle`, `memberId`, `memberName`, `borrowedDate`, `dueDate`, `status` (11 _Borrowed_, 5 _Overdue_).
+   - Active lending records: `id`, `bookId`, `bookTitle`, `memberId`, `memberName`, display dates, `dueDateISO`, and `status` (11 _Borrowed_, 5 _Overdue_ in the sample set). New loans use the due timestamp to recalculate overdue status.
 6. **`quiet_stacks_statistics`**
    - Real-time counters: `totalBooks: 20`, `totalMembers: 8`, `borrowed: 11`, `overdue: 5`.
 
@@ -89,14 +87,16 @@ The data layer in [storage.js](assets/js/storage.js) handles persistent client-s
 
 ## 🚀 How to Run
 
-Launch the starter file [index.html](index.html) directly in any modern browser, or run a local static server:
+Install dependencies with `npm install`, then start the Vite development server:
 
 ```bash
-# Python 3
-python3 -m http.server 3000
+npm run dev
 ```
 
 1. You start on the **Log In & Sign Up** portal (`index.html`).
 2. Use the **1-click Demo Fill** buttons (`John Smith`, `Sarah Ali`, or `Chief Librarian`) or sign up as a new member.
 3. Upon authentication, you will be redirected to the library dashboard (`dashboard.html`).
 4. Logging out returns you back to the starter file. You can also preview the catalog as a guest.
+
+Create a production bundle with `npm run build` and preview it with `npm run preview`.
+Run the configured unit-test runner with `npm test` and static checks with `npm run lint`.

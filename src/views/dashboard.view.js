@@ -1,3 +1,12 @@
+import { libraryServices as services } from '../runtime.js';
+import { renderBookCard } from '../components/book-card.component.js';
+import { renderMemberCard } from '../components/member-card.component.js';
+import { renderLoanRow } from '../components/loan-row.component.js';
+import { setupQuoteBanner } from '../components/quote-banner.component.js';
+import { setupBackToTop } from '../components/back-to-top.component.js';
+import { renderUserSession as renderUserSessionComponent } from '../components/user-session.component.js';
+import { eventBus } from '../core/event-bus.js';
+
 /**
  * Quiet Stacks Library — Application UI Controller
  * Binds LocalStorage Service to UI components, manages real-time filtering,
@@ -54,8 +63,8 @@
   /**
    * Helper to escape HTML characters in dynamic text (delegates to shared LibraryStorage)
    */
-  const escapeHtml = (window.LibraryStorage && window.LibraryStorage.escapeHtml)
-    ? window.LibraryStorage.escapeHtml.bind(window.LibraryStorage)
+  const escapeHtml = (services && services.escapeHtml)
+    ? services.escapeHtml.bind(services)
     : function (str) {
         if (!str) return '';
         const div = document.createElement('div');
@@ -73,44 +82,21 @@
   function renderUserSession() {
     const sessionBar = elements.userSessionBar || document.getElementById('user-session-bar');
     if (!sessionBar) return;
-
-    const currentUser = window.LibraryStorage.getCurrentUser();
-
-    if (currentUser) {
-      const roleLabel = currentUser.role === 'admin' ? 'Chief Librarian' : capitalize(currentUser.membershipType || 'Member');
-      sessionBar.innerHTML = `
-        <a href="#modal-my-account" class="user-badge" id="btn-open-account" title="View my borrowed and purchased books">
-          <svg class="user-avatar-icon" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-          </svg>
-          <span>${escapeHtml(currentUser.name)} (${escapeHtml(roleLabel)})</span>
-        </a>
-        <button type="button" class="btn btn-sm btn-action-ghost" id="btn-logout" title="Sign out of account">
-          Log Out
-        </button>
-      `;
-
-      // Wire logout button
-      const logoutBtn = sessionBar.querySelector('#btn-logout');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', function () {
-          window.LibraryStorage.logout();
-          window.location.href = 'index.html?msg=logged_out';
-        });
+    renderUserSessionComponent(sessionBar, services.auth.currentUser(), {
+      escapeHtml,
+      capitalize,
+      onLogout: () => {
+        services.auth.logout();
+        window.location.href = 'index.html?msg=logged_out';
       }
-    } else {
-      sessionBar.innerHTML = `
-        <a href="index.html#login" class="btn btn-sm btn-secondary">Log In</a>
-        <a href="index.html#signup" class="btn btn-sm btn-primary">Sign Up</a>
-      `;
-    }
+    });
   }
 
   /**
    * Renders the Statistics counters from storage
    */
   function renderStatistics() {
-    const stats = window.LibraryStorage.getStatistics();
+    const stats = services.stats.statistics();
     if (elements.statTotalBooks) elements.statTotalBooks.textContent = stats.totalBooks;
     if (elements.statMembers) elements.statMembers.textContent = stats.totalMembers;
     if (elements.statBorrowed) elements.statBorrowed.textContent = stats.borrowed;
@@ -126,9 +112,9 @@
     const searchTerm = (elements.bookSearchInput ? elements.bookSearchInput.value : '').toLowerCase().trim();
     const selectedCategory = (elements.bookCategorySelect ? elements.bookCategorySelect.value : '').toLowerCase().trim();
 
-    const allBooks = window.LibraryStorage.getBooks();
-    const activeLoans = window.LibraryStorage.getLoans();
-    const currentUser = window.LibraryStorage.getCurrentUser();
+    const allBooks = services.catalog.books();
+    const activeLoans = services.lending.loans();
+    const currentUser = services.auth.currentUser();
 
     const filtered = allBooks.filter((book) => {
       const matchesSearch =
@@ -152,62 +138,15 @@
       return;
     }
 
-    elements.booksGrid.innerHTML = filtered
-      .map((book) => {
-        const isAvailable = book.status === 'available';
-        const isBorrowed = book.status === 'borrowed';
-        const isOverdue = book.status === 'overdue';
-        const activeLoan = (isBorrowed || isOverdue)
-          ? activeLoans.find((loan) => loan.bookId === book.id)
-          : null;
-        const canReturn = Boolean(currentUser && activeLoan && activeLoan.memberId === currentUser.id);
-
-        let badgeClass = 'badge-available';
-        let actionBtnText = 'Borrow';
-
-        if (isBorrowed) {
-          badgeClass = 'badge-borrowed';
-          actionBtnText = 'Return';
-        } else if (isOverdue) {
-          badgeClass = 'badge-overdue';
-          actionBtnText = canReturn ? 'Return' : 'Unavailable';
-        } else if (isBorrowed) {
-          actionBtnText = canReturn ? 'Return' : 'Unavailable';
-        }
-
-        const priceDisplay = (book.price || 19.99).toFixed(2);
-
-        return `
-          <article class="book-card" data-book-id="${book.id}">
-            <div class="book-card-header">
-              <h3 class="book-title">${escapeHtml(book.title)}</h3>
-              <p class="book-author">${escapeHtml(book.author)}</p>
-            </div>
-            <div class="book-meta">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-                <span class="book-category">${escapeHtml(book.categoryLabel || capitalize(book.category))}</span>
-                <span class="book-price-tag">$${priceDisplay}</span>
-              </div>
-              <span>ISBN ${escapeHtml(book.isbn)} &bull; ${escapeHtml(String(book.year))}</span>
-            </div>
-            <div class="book-card-footer">
-              <span class="badge ${badgeClass}">${capitalize(book.status)}</span>
-              <div class="card-actions">
-                <button type="button" class="btn btn-sm btn-action-primary btn-book-action" data-action="${isAvailable ? 'borrow' : (canReturn ? 'return' : 'unavailable')}" data-id="${escapeHtml(book.id)}" ${!isAvailable && !canReturn ? 'disabled aria-disabled="true"' : ''}>
-                  ${actionBtnText}
-                </button>
-                <button type="button" class="btn btn-sm btn-action-buy btn-buy-book" data-id="${escapeHtml(book.id)}" title="Purchase a permanent personal copy">
-                  Buy
-                </button>
-                <button type="button" class="btn btn-sm btn-action-danger btn-delete-book" data-id="${escapeHtml(book.id)}">
-                  Delete
-                </button>
-              </div>
-            </div>
-          </article>
-        `;
-      })
-      .join('');
+    elements.booksGrid.innerHTML = filtered.map((book) => {
+      const isActive = book.status === 'borrowed' || book.status === 'overdue';
+      return renderBookCard(book, {
+        activeLoan: isActive ? activeLoans.find((loan) => loan.bookId === book.id) : null,
+        currentUser,
+        escapeHtml,
+        capitalize
+      });
+    }).join('');
   }
 
   /**
@@ -217,7 +156,7 @@
     if (!elements.membersGrid) return;
 
     const searchTerm = (elements.memberSearchInput ? elements.memberSearchInput.value : '').toLowerCase().trim();
-    const allMembers = window.LibraryStorage.getMembers();
+    const allMembers = services.catalog.members();
 
     const filtered = allMembers.filter((member) => {
       return (
@@ -238,27 +177,7 @@
     }
 
     elements.membersGrid.innerHTML = filtered
-      .map((member) => {
-        const badgeClass = member.status === 'active' ? 'badge-active' : 'badge-inactive';
-
-        return `
-          <article class="member-card" data-member-id="${member.id}">
-            <div class="member-header">
-              <h3 class="member-name">${escapeHtml(member.name)}</h3>
-              <span class="badge ${badgeClass}">${capitalize(member.status)}</span>
-            </div>
-            <div class="member-meta">
-              <span class="member-id">ID: ${escapeHtml(member.id)}</span>
-              <span>${escapeHtml(member.email)}</span>
-              <span class="member-borrowed-count">Borrowed: ${member.borrowedCount || 0}</span>
-            </div>
-            <div class="member-card-footer">
-              <button type="button" class="btn btn-sm btn-action-ghost btn-view-member" data-id="${member.id}">View</button>
-              <button type="button" class="btn btn-sm btn-action-danger btn-delete-member" data-id="${member.id}">Delete</button>
-            </div>
-          </article>
-        `;
-      })
+      .map((member) => renderMemberCard(member, { escapeHtml, capitalize }))
       .join('');
   }
 
@@ -268,7 +187,7 @@
   function renderLoans() {
     if (!elements.loansTableBody) return;
 
-    const loans = window.LibraryStorage.getLoans();
+    const loans = services.lending.loans();
 
     if (loans.length === 0) {
       elements.loansTableBody.innerHTML = `
@@ -282,24 +201,7 @@
     }
 
     elements.loansTableBody.innerHTML = loans
-      .map((loan) => {
-        const badgeClass = loan.status === 'overdue' ? 'badge-overdue' : 'badge-borrowed';
-
-        return `
-          <tr data-loan-id="${loan.id}">
-            <td class="book-title-cell">${escapeHtml(loan.bookTitle)}</td>
-            <td>${escapeHtml(loan.memberName)}</td>
-            <td>${escapeHtml(loan.borrowedDate)}</td>
-            <td>${escapeHtml(loan.dueDate)}</td>
-            <td><span class="badge ${badgeClass}">${capitalize(loan.status)}</span></td>
-            <td>
-              <button type="button" class="btn btn-sm btn-action-primary btn-return-loan" data-id="${loan.id}">
-                Return
-              </button>
-            </td>
-          </tr>
-        `;
-      })
+      .map((loan) => renderLoanRow(loan, { escapeHtml, capitalize }))
       .join('');
   }
 
@@ -313,11 +215,11 @@
     const borrowedListContainer = document.getElementById('account-tab-borrowed-content');
     const purchasedListContainer = document.getElementById('account-tab-purchased-content');
 
-    const currentUser = window.LibraryStorage.getCurrentUser();
+    const currentUser = services.auth.currentUser();
     if (!currentUser) return;
 
     // Refresh user from storage
-    const freshUser = window.LibraryStorage.getAccountById(currentUser.id) || currentUser;
+    const freshUser = services.accounts.byId(currentUser.id) || currentUser;
 
     const borrowedList = freshUser.borrowedBooks || [];
     const purchasedList = freshUser.purchasedBooks || [];
@@ -465,7 +367,7 @@
           return;
         }
 
-        window.LibraryStorage.addBook({
+        services.catalog.addBook({
           title,
           author,
           category,
@@ -499,7 +401,7 @@
           return;
         }
 
-        window.LibraryStorage.addMember({
+        services.catalog.addMember({
           name,
           email,
           membershipType,
@@ -543,9 +445,9 @@
         if (!btn) return;
 
         const bookId = btn.getAttribute('data-id');
-        const currentUser = window.LibraryStorage.getCurrentUser();
+        const currentUser = services.auth.currentUser();
         if (currentUser) {
-          window.LibraryStorage.returnBookForAccount(bookId, currentUser.id);
+          services.lending.return(bookId, currentUser.id);
           renderAll();
         }
       });
@@ -563,13 +465,13 @@
         if (!target) return;
 
         const bookId = target.getAttribute('data-id');
-        const book = window.LibraryStorage.getBookById(bookId);
+        const book = services.catalog.bookById(bookId);
         if (!book) return;
 
         // Delete Book
         if (target.classList.contains('btn-delete-book')) {
           if (confirm(`Are you sure you want to remove "${book.title}" from shelves?`)) {
-            window.LibraryStorage.deleteBook(bookId);
+            services.catalog.deleteBook(bookId);
             renderAll();
           }
           return;
@@ -577,7 +479,7 @@
 
         // Buy Book
         if (target.classList.contains('btn-buy-book')) {
-          const currentUser = window.LibraryStorage.getCurrentUser();
+          const currentUser = services.auth.currentUser();
           if (!currentUser) {
             if (confirm(`You need a member account to purchase "${book.title}". Go to Log In page now?`)) {
               window.location.href = 'index.html#login';
@@ -587,7 +489,7 @@
 
           const price = (book.price || 19.99).toFixed(2);
           if (confirm(`Purchase "${book.title}" for $${price}?\n\nThis copy will be permanently assigned to your account.`)) {
-            const res = window.LibraryStorage.buyBookForAccount(bookId, currentUser.id);
+            const res = services.accounts.purchase(bookId, currentUser.id);
             if (res.success) {
               alert(`🎉 Purchase Confirmed!\n\nThank you, ${currentUser.name}!\nTitle: ${book.title}\nTotal: $${price}\nInvoice: ${res.purchase.invoiceNumber}\n\nYou can view your purchased receipt under "My Account".`);
               renderAll();
@@ -601,7 +503,7 @@
         // Borrow or Return Action
         if (target.classList.contains('btn-book-action')) {
           const action = target.getAttribute('data-action');
-          const currentUser = window.LibraryStorage.getCurrentUser();
+          const currentUser = services.auth.currentUser();
 
           if (action === 'borrow') {
             if (!currentUser) {
@@ -611,26 +513,27 @@
               }
 
               // Guest fallback: pick first active member
-              const members = window.LibraryStorage.getMembers().filter((m) => m.status === 'active');
+              const members = services.catalog.members().filter((m) => m.status === 'active');
               if (members.length === 0) {
                 alert('No active members available.');
                 return;
               }
               const borrower = members[0];
-              const { borrowedDate, dueDate } = window.LibraryStorage.getLoanDates(14);
-              window.LibraryStorage.addLoan({
+              const { borrowedDate, dueDate, dueDateISO } = services.lending.dates(14);
+              services.lending.addLoan({
                 bookId: book.id,
                 bookTitle: book.title,
                 memberId: borrower.id,
                 memberName: borrower.name,
                 borrowedDate,
                 dueDate,
+                dueDateISO,
                 status: 'borrowed'
               });
               alert(`"${book.title}" borrowed by sample member ${borrower.name}.`);
             } else {
               // Borrow for logged-in user
-              const res = window.LibraryStorage.borrowBookForAccount(bookId, currentUser.id);
+              const res = services.lending.borrow(bookId, currentUser.id);
               if (res.success) {
                 alert(`📚 Borrowed Successfully!\n\n"${book.title}" is now borrowed by ${currentUser.name} (${currentUser.id}).\nDue Date: In 14 days.\nManage your active loans anytime under "My Account".`);
               } else {
@@ -639,12 +542,12 @@
             }
             renderAll();
           } else if (action === 'return') {
-            const loan = window.LibraryStorage.getLoans().find((item) => item.bookId === bookId);
+            const loan = services.lending.loans().find((item) => item.bookId === bookId);
             if (!currentUser || !loan || loan.memberId !== currentUser.id) {
               alert('Only the member who borrowed this book can return it from their book card.');
               return;
             }
-            window.LibraryStorage.returnBookForAccount(bookId, currentUser.id);
+            services.lending.return(bookId, currentUser.id);
             alert(`"${book.title}" was returned to shelves.`);
             renderAll();
           }
@@ -661,15 +564,15 @@
         const memberId = target.getAttribute('data-id');
 
         if (target.classList.contains('btn-delete-member')) {
-          const member = window.LibraryStorage.getMemberById(memberId);
+          const member = services.catalog.memberById(memberId);
           if (confirm(`Remove member "${member?.name || memberId}"?`)) {
-            window.LibraryStorage.deleteMember(memberId);
+            services.catalog.deleteMember(memberId);
             renderAll();
           }
         } else if (target.classList.contains('btn-view-member')) {
-          const member = window.LibraryStorage.getMemberById(memberId);
+          const member = services.catalog.memberById(memberId);
           if (member) {
-            const memberLoans = window.LibraryStorage.getLoans().filter((l) => l.memberId === memberId);
+            const memberLoans = services.lending.loans().filter((l) => l.memberId === memberId);
             const loanTitles = memberLoans.length > 0 ? memberLoans.map((l) => `  • ${l.bookTitle} (Due: ${l.dueDate}, ${capitalize(l.status)})`).join('\n') : '  None';
             alert(`Member Profile:\n\nName: ${member.name}\nID: ${member.id}\nEmail: ${member.email}\nMembership: ${capitalize(member.membershipType)}\nStatus: ${capitalize(member.status)}\n\nCurrently Borrowed (${member.borrowedCount}):\n${loanTitles}`);
           }
@@ -684,7 +587,7 @@
         if (!target) return;
 
         const loanId = target.getAttribute('data-id');
-        window.LibraryStorage.returnLoan(loanId);
+        services.lending.returnLoan(loanId);
         renderAll();
       });
     }
@@ -694,7 +597,7 @@
     if (resetBtn) {
       resetBtn.addEventListener('click', function () {
         if (confirm('Restore full sample library dataset (20 books, 8 members, 8 loans, demo accounts)?')) {
-          window.LibraryStorage.resetDefaults();
+          services.catalog.resetDefaults();
           renderAll();
         }
       });
@@ -887,95 +790,11 @@
   }
 
   // --------------------------------------------------------------------------
-  // Daily Literary Quote Banner
-  // --------------------------------------------------------------------------
-  let currentQuoteIndex = 0;
-
-  function displayQuote(index, animate = false) {
-    const textEl = document.getElementById('daily-quote-text');
-    const authorEl = document.getElementById('daily-quote-author');
-    const sourceEl = document.getElementById('daily-quote-source');
-    if (!textEl || !authorEl || !sourceEl) return;
-
-    const quotes = window.LibraryStorage.getQuotes ? window.LibraryStorage.getQuotes() : [];
-    if (!quotes || quotes.length === 0) return;
-
-    currentQuoteIndex = ((index % quotes.length) + quotes.length) % quotes.length;
-    const q = quotes[currentQuoteIndex];
-
-    if (animate) {
-      textEl.style.opacity = '0';
-      setTimeout(() => {
-        textEl.textContent = `"${q.text}"`;
-        authorEl.textContent = q.author;
-        sourceEl.textContent = q.source;
-        textEl.style.opacity = '1';
-      }, 150);
-    } else {
-      textEl.textContent = `"${q.text}"`;
-      authorEl.textContent = q.author;
-      sourceEl.textContent = q.source;
-    }
-  }
-
-  function setupQuoteBanner() {
-    displayQuote(0);
-
-    const btnNext = document.getElementById('btn-next-quote');
-    if (btnNext) {
-      btnNext.addEventListener('click', function () {
-        displayQuote(currentQuoteIndex + 1, true);
-      });
-    }
-  }
-
-  // --------------------------------------------------------------------------
-  // Back to Top Button & Animated Power Ring
-  // --------------------------------------------------------------------------
-  function setupBackToTop() {
-    const btn = document.getElementById('btn-back-to-top');
-    const ringCircle = document.getElementById('power-ring-circle');
-    if (!btn || !ringCircle) return;
-
-    // Radius 23 => circumference ≈ 144.51
-    const circumference = 2 * Math.PI * 23;
-    ringCircle.style.strokeDasharray = `${circumference} ${circumference}`;
-    ringCircle.style.strokeDashoffset = `${circumference}`;
-
-    const updateScrollProgress = () => {
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-
-      if (scrollTop > 250) {
-        btn.classList.add('visible');
-      } else {
-        btn.classList.remove('visible');
-      }
-
-      if (scrollHeight > 0) {
-        const progress = Math.min(Math.max(scrollTop / scrollHeight, 0), 1);
-        const offset = circumference - (progress * circumference);
-        ringCircle.style.strokeDashoffset = `${offset}`;
-      }
-    };
-
-    window.addEventListener('scroll', updateScrollProgress, { passive: true });
-    updateScrollProgress();
-
-    btn.addEventListener('click', function () {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
-    });
-  }
-
-  // --------------------------------------------------------------------------
   // Application Bootstrap
   // --------------------------------------------------------------------------
   function init() {
     // Auth route guard for the library dashboard
-    const currentUser = window.LibraryStorage ? window.LibraryStorage.getCurrentUser() : null;
+    const currentUser = services ? services.auth.currentUser() : null;
     const urlParams = new URLSearchParams(window.location.search);
     const isGuest = urlParams.get('guest') === 'true';
 
@@ -985,12 +804,13 @@
       return;
     }
 
+    eventBus.on('library:updated', renderAll);
     renderAll();
     setupFilters();
     setupForms();
     setupDelegatedActions();
     setupScrollSpy();
-    setupQuoteBanner();
+    setupQuoteBanner(services.quotes.all());
     setupBackToTop();
   }
 

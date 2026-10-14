@@ -1,3 +1,6 @@
+import { libraryServices as services } from '../runtime.js';
+import { playPaperTurnSound } from '../effects/audio-synthesizer.js';
+
 /**
  * Quiet Stacks Library — High-Performance Archival Book Auth Controller
  * Hardware-accelerated 180° leaf turning physics, instant credential auto-fill,
@@ -7,8 +10,8 @@
 (function () {
   'use strict';
 
-  const escapeHtml = (window.LibraryStorage && window.LibraryStorage.escapeHtml)
-    ? window.LibraryStorage.escapeHtml.bind(window.LibraryStorage)
+  const escapeHtml = (services && services.escapeHtml)
+    ? services.escapeHtml.bind(services)
     : function (str) {
         if (!str) return '';
         const div = document.createElement('div');
@@ -86,63 +89,6 @@
     }
 
     // ------------------------------------------------------------------------
-    // Procedural Archival Paper Sound Synthesizer (Zero Assets, 100% Offline)
-    // ------------------------------------------------------------------------
-    let audioCtx = null;
-
-    function playPaperTurnSound() {
-      try {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContextClass) return;
-        if (!audioCtx) {
-          audioCtx = new AudioContextClass();
-        }
-        if (audioCtx.state === 'suspended') {
-          audioCtx.resume();
-        }
-
-        const duration = 0.42;
-        const bufferSize = Math.floor(audioCtx.sampleRate * duration);
-        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-        const data = buffer.getChannelData(0);
-
-        let b0 = 0, b1 = 0, b2 = 0;
-        for (let i = 0; i < bufferSize; i++) {
-          const white = Math.random() * 2 - 1;
-          b0 = 0.99886 * b0 + white * 0.0555;
-          b1 = 0.99332 * b1 + white * 0.075;
-          b2 = 0.96900 * b2 + white * 0.1538;
-          data[i] = (b0 + b1 + b2 + white * 0.5) * 0.08;
-        }
-
-        const noiseNode = audioCtx.createBufferSource();
-        noiseNode.buffer = buffer;
-
-        const filter = audioCtx.createBiquadFilter();
-        filter.type = 'bandpass';
-        filter.frequency.setValueAtTime(1100, audioCtx.currentTime);
-        filter.frequency.exponentialRampToValueAtTime(2100, audioCtx.currentTime + 0.14);
-        filter.frequency.exponentialRampToValueAtTime(750, audioCtx.currentTime + duration);
-        filter.Q.setValueAtTime(1.5, audioCtx.currentTime);
-
-        const gainNode = audioCtx.createGain();
-        gainNode.gain.setValueAtTime(0.001, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.11, audioCtx.currentTime + 0.08);
-        gainNode.gain.exponentialRampToValueAtTime(0.03, audioCtx.currentTime + 0.22);
-        gainNode.gain.exponentialRampToValueAtTime(0.07, audioCtx.currentTime + 0.32);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-
-        noiseNode.connect(filter);
-        filter.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-
-        noiseNode.start();
-      } catch (_) {
-        // Silently bypass if audio is restricted
-      }
-    }
-
-    // ------------------------------------------------------------------------
     // Real-Book 180° Leaf Page-Turn Controller Across the Whole Book
     // ------------------------------------------------------------------------
     const pagesSpread = document.querySelector('.book-pages-spread');
@@ -194,13 +140,13 @@
     // WebGL Page-Curl Engine Controller
     // ------------------------------------------------------------------------
     let curlEngine = null;
-    if (typeof window.PageCurlEngine !== 'undefined') {
-      curlEngine = new window.PageCurlEngine({
+    import('../effects/page-curl-controller.js').then(({ PageCurlEngine }) => {
+      curlEngine = new PageCurlEngine({
         getMode: () => currentMode,
         onNavigate: (mode) => updateNavUI(mode),
         onSound: () => playPaperTurnSound(),
       });
-    }
+    }).catch((error) => console.warn('[Auth] Page-turn effect unavailable.', error));
 
     function turnPageTo(mode) {
       if (curlEngine && curlEngine.canAnimate && curlEngine.canAnimate()) {
@@ -440,8 +386,8 @@
     // ------------------------------------------------------------------------
     // Active Session Banner
     // ------------------------------------------------------------------------
-    if (sessionBanner && window.LibraryStorage) {
-      const currentUser = window.LibraryStorage.getCurrentUser();
+    if (sessionBanner && services) {
+      const currentUser = services.auth.currentUser();
       if (currentUser) {
         const roleLabel = currentUser.role === 'admin' ? 'Chief Librarian' : (currentUser.membershipType || 'Member');
         sessionBanner.style.display = 'flex';
@@ -458,7 +404,7 @@
         const bannerLogout = sessionBanner.querySelector('#btn-banner-logout');
         if (bannerLogout) {
           bannerLogout.addEventListener('click', function () {
-            window.LibraryStorage.logout();
+            services.auth.logout();
             sessionBanner.style.display = 'none';
             showAlert('Signed out successfully.', 'success');
           });
@@ -528,7 +474,7 @@
         setSubmitLoading(submitBtn, 'Locating Volume...');
 
         setTimeout(() => {
-          const result = window.LibraryStorage.login(emailOrId, password);
+          const result = services.auth.login(emailOrId, password);
 
           if (result.success) {
             showAlert(`Access Granted. Welcome back, ${result.account.name}! Opening stacks...`, 'success');
@@ -584,7 +530,7 @@
         setSubmitLoading(submitBtn, 'Inscribing Ledger...');
 
         setTimeout(() => {
-          const result = window.LibraryStorage.register({
+          const result = services.auth.register({
             name,
             email,
             password,

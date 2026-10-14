@@ -1,3 +1,6 @@
+import * as THREE from 'three';
+
+let pageCurlController;
 /**
  * Quiet Stacks Library — WebGL Page-Curl Engine (Three.js r134)
  *
@@ -82,7 +85,6 @@
 
   class PageCurlEngine {
     constructor(opts) {
-      window.__curlEngine = this;
       this.opts = opts;
       this.spread = document.querySelector('.book-pages-spread');
       this.canvas = document.getElementById('book-curl-canvas');
@@ -106,7 +108,7 @@
       // Normalise the resting DOM state without animating it
       this.applyState(this.opts.getMode());
 
-      if (this.canvas && window.THREE) {
+      if (this.canvas) {
         try {
           this.initGL();
           this.webgl = true;
@@ -206,7 +208,6 @@
     // Three.js scene
     // ------------------------------------------------------------------------
     initGL() {
-      const THREE = window.THREE;
       this.THREE = THREE;
 
       const renderer = new THREE.WebGLRenderer({ canvas: this.canvas, alpha: true, antialias: true });
@@ -680,6 +681,7 @@
         this.renderFaces();
       }
       this.texReady = true;
+      if (this.canvas) this.canvas.dataset.pageCurlReady = 'true';
       this.warmUp();
     }
 
@@ -940,5 +942,7 @@
     }
   }
 
-  window.PageCurlEngine = PageCurlEngine;
+  pageCurlController = PageCurlEngine;
 })();
+
+export { pageCurlController as PageCurlEngine };

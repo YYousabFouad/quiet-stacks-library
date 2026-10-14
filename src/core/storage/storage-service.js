@@ -1,10 +1,24 @@
+import { LocalStorageDriver } from './local-storage-driver.js';
+import { INITIAL_BOOKS } from '../../domain/seeds/books.seed.js';
+import { INITIAL_MEMBERS } from '../../domain/seeds/members.seed.js';
+import { INITIAL_LOANS } from '../../domain/seeds/loans.seed.js';
+import { INITIAL_ACCOUNTS } from '../../domain/seeds/accounts.seed.js';
+import { LITERARY_QUOTES } from '../../domain/seeds/quotes.seed.js';
+import { canBorrow, getLoanDates as createLoanDates, isLoanOverdue } from '../../domain/models/loan.model.js';
+import { createPurchaseRecord } from '../../domain/models/account.model.js';
+import { createBookRecord } from '../../domain/models/book.model.js';
+import { createMemberRecord } from '../../domain/models/member.model.js';
+
+let storageService;
+
 /**
  * Quiet Stacks Library — Storage Service
  * Manages localStorage persistence for Books, Members, Loans, Accounts, and Statistics.
  */
 
-(function (window) {
+(function () {
   'use strict';
+  const storageDriver = new LocalStorageDriver();
 
   // Storage Keys
   const STORAGE_KEYS = {
@@ -20,536 +34,19 @@
   const CURRENT_DATA_VERSION = '2.3';
 
   // Comprehensive Seed Dataset with Prices for Purchasing
-  const INITIAL_BOOKS = [
-    {
-      id: 'book-1',
-      title: 'Clean Code',
-      author: 'Robert C. Martin',
-      category: 'programming',
-      categoryLabel: 'Programming',
-      isbn: '978-0132350884',
-      year: 2008,
-      price: 28.50,
-      status: 'borrowed'
-    },
-    {
-      id: 'book-2',
-      title: 'JavaScript: The Good Parts',
-      author: 'Douglas Crockford',
-      category: 'programming',
-      categoryLabel: 'Programming',
-      isbn: '978-0596517748',
-      year: 2008,
-      price: 19.95,
-      status: 'borrowed'
-    },
-    {
-      id: 'book-3',
-      title: 'Cosmos',
-      author: 'Carl Sagan',
-      category: 'science',
-      categoryLabel: 'Science',
-      isbn: '978-0345331359',
-      year: 1980,
-      price: 16.99,
-      status: 'overdue'
-    },
-    {
-      id: 'book-4',
-      title: 'The Alchemist',
-      author: 'Paulo Coelho',
-      category: 'fiction',
-      categoryLabel: 'Fiction',
-      isbn: '978-0062315007',
-      year: 1988,
-      price: 14.50,
-      status: 'overdue'
-    },
-    {
-      id: 'book-5',
-      title: 'The Pragmatic Programmer',
-      author: 'Andrew Hunt & David Thomas',
-      category: 'programming',
-      categoryLabel: 'Programming',
-      isbn: '978-0201616224',
-      year: 1999,
-      price: 32.00,
-      status: 'borrowed'
-    },
-    {
-      id: 'book-6',
-      title: 'Design Patterns: Elements of Reusable Object-Oriented Software',
-      author: 'Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides',
-      category: 'programming',
-      categoryLabel: 'Programming',
-      isbn: '978-0201633610',
-      year: 1994,
-      price: 38.99,
-      status: 'borrowed'
-    },
-    {
-      id: 'book-7',
-      title: 'Refactoring: Improving the Design of Existing Code',
-      author: 'Martin Fowler',
-      category: 'programming',
-      categoryLabel: 'Programming',
-      isbn: '978-0201485677',
-      year: 1999,
-      price: 29.95,
-      status: 'borrowed'
-    },
-    {
-      id: 'book-8',
-      title: 'Structure and Interpretation of Computer Programs',
-      author: 'Harold Abelson & Gerald Jay Sussman',
-      category: 'programming',
-      categoryLabel: 'Programming',
-      isbn: '978-0262510875',
-      year: 1996,
-      price: 34.50,
-      status: 'available'
-    },
-    {
-      id: 'book-9',
-      title: 'A Brief History of Time',
-      author: 'Stephen Hawking',
-      category: 'science',
-      categoryLabel: 'Science',
-      isbn: '978-0553380163',
-      year: 1988,
-      price: 18.00,
-      status: 'borrowed'
-    },
-    {
-      id: 'book-10',
-      title: 'The Selfish Gene',
-      author: 'Richard Dawkins',
-      category: 'science',
-      categoryLabel: 'Science',
-      isbn: '978-0199291151',
-      year: 1976,
-      price: 15.99,
-      status: 'borrowed'
-    },
-    {
-      id: 'book-11',
-      title: 'Silent Spring',
-      author: 'Rachel Carson',
-      category: 'science',
-      categoryLabel: 'Science',
-      isbn: '978-0618249060',
-      year: 1962,
-      price: 13.95,
-      status: 'available'
-    },
-    {
-      id: 'book-12',
-      title: 'Astrophysics for People in a Hurry',
-      author: 'Neil deGrasse Tyson',
-      category: 'science',
-      categoryLabel: 'Science',
-      isbn: '978-0393609394',
-      year: 2017,
-      price: 14.95,
-      status: 'available'
-    },
-    {
-      id: 'book-13',
-      title: '1984',
-      author: 'George Orwell',
-      category: 'fiction',
-      categoryLabel: 'Fiction',
-      isbn: '978-0451524935',
-      year: 1949,
-      price: 11.99,
-      status: 'borrowed'
-    },
-    {
-      id: 'book-14',
-      title: 'To Kill a Mockingbird',
-      author: 'Harper Lee',
-      category: 'fiction',
-      categoryLabel: 'Fiction',
-      isbn: '978-0060935467',
-      year: 1960,
-      price: 12.50,
-      status: 'overdue'
-    },
-    {
-      id: 'book-15',
-      title: 'One Hundred Years of Solitude',
-      author: 'Gabriel García Márquez',
-      category: 'fiction',
-      categoryLabel: 'Fiction',
-      isbn: '978-0060883287',
-      year: 1967,
-      price: 16.50,
-      status: 'overdue'
-    },
-    {
-      id: 'book-16',
-      title: 'Crime and Punishment',
-      author: 'Fyodor Dostoevsky',
-      category: 'fiction',
-      categoryLabel: 'Fiction',
-      isbn: '978-0143107637',
-      year: 1866,
-      price: 13.25,
-      status: 'borrowed'
-    },
-    {
-      id: 'book-17',
-      title: 'Meditations',
-      author: 'Marcus Aurelius',
-      category: 'philosophy',
-      categoryLabel: 'Philosophy',
-      isbn: '978-0140449334',
-      year: 180,
-      price: 9.99,
-      status: 'borrowed'
-    },
-    {
-      id: 'book-18',
-      title: 'The Republic',
-      author: 'Plato',
-      category: 'philosophy',
-      categoryLabel: 'Philosophy',
-      isbn: '978-0140455113',
-      year: -375,
-      price: 10.50,
-      status: 'available'
-    },
-    {
-      id: 'book-19',
-      title: 'Sapiens: A Brief History of Humankind',
-      author: 'Yuval Noah Harari',
-      category: 'history',
-      categoryLabel: 'History',
-      isbn: '978-0062316097',
-      year: 2014,
-      price: 21.99,
-      status: 'borrowed'
-    },
-    {
-      id: 'book-20',
-      title: 'Guns, Germs, and Steel',
-      author: 'Jared Diamond',
-      category: 'history',
-      categoryLabel: 'History',
-      isbn: '978-0393317558',
-      year: 1997,
-      price: 17.50,
-      status: 'overdue'
-    }
-  ];
 
-  const INITIAL_MEMBERS = [
-    {
-      id: 'M-001',
-      name: 'John Smith',
-      email: 'john@example.com',
-      membershipType: 'standard',
-      status: 'active',
-      borrowedCount: 3
-    },
-    {
-      id: 'M-002',
-      name: 'Sarah Ali',
-      email: 'sarah@example.com',
-      membershipType: 'student',
-      status: 'active',
-      borrowedCount: 3
-    },
-    {
-      id: 'M-003',
-      name: 'Omar Hassan',
-      email: 'omar@example.com',
-      membershipType: 'faculty',
-      status: 'inactive',
-      borrowedCount: 0
-    },
-    {
-      id: 'M-004',
-      name: 'Elena Rostova',
-      email: 'elena.r@example.com',
-      membershipType: 'premium',
-      status: 'active',
-      borrowedCount: 2
-    },
-    {
-      id: 'M-005',
-      name: 'Marcus Vance',
-      email: 'marcus.v@example.com',
-      membershipType: 'standard',
-      status: 'active',
-      borrowedCount: 2
-    },
-    {
-      id: 'M-006',
-      name: 'Maya Lin',
-      email: 'maya.lin@example.com',
-      membershipType: 'student',
-      status: 'active',
-      borrowedCount: 2
-    },
-    {
-      id: 'M-007',
-      name: 'David Kim',
-      email: 'david.kim@example.com',
-      membershipType: 'standard',
-      status: 'active',
-      borrowedCount: 1
-    },
-    {
-      id: 'M-008',
-      name: 'Amina Diallo',
-      email: 'amina.d@example.com',
-      membershipType: 'faculty',
-      status: 'active',
-      borrowedCount: 2
-    }
-  ];
 
-  const INITIAL_LOANS = [
-    {
-      id: 'loan-1',
-      bookId: 'book-1',
-      bookTitle: 'Clean Code',
-      memberId: 'M-001',
-      memberName: 'John Smith',
-      borrowedDate: 'Sep 20',
-      dueDate: 'Oct 04',
-      status: 'borrowed'
-    },
-    {
-      id: 'loan-2',
-      bookId: 'book-2',
-      bookTitle: 'JavaScript: The Good Parts',
-      memberId: 'M-002',
-      memberName: 'Sarah Ali',
-      borrowedDate: 'Sep 18',
-      dueDate: 'Oct 02',
-      status: 'borrowed'
-    },
-    {
-      id: 'loan-3',
-      bookId: 'book-4',
-      bookTitle: 'The Alchemist',
-      memberId: 'M-001',
-      memberName: 'John Smith',
-      borrowedDate: 'Sep 10',
-      dueDate: 'Sep 24',
-      status: 'overdue'
-    },
-    {
-      id: 'loan-4',
-      bookId: 'book-6',
-      bookTitle: 'Design Patterns: Elements of Reusable Object-Oriented Software',
-      memberId: 'M-005',
-      memberName: 'Marcus Vance',
-      borrowedDate: 'Sep 22',
-      dueDate: 'Oct 06',
-      status: 'borrowed'
-    },
-    {
-      id: 'loan-5',
-      bookId: 'book-9',
-      bookTitle: 'A Brief History of Time',
-      memberId: 'M-006',
-      memberName: 'Maya Lin',
-      borrowedDate: 'Sep 19',
-      dueDate: 'Oct 03',
-      status: 'borrowed'
-    },
-    {
-      id: 'loan-6',
-      bookId: 'book-13',
-      bookTitle: '1984',
-      memberId: 'M-005',
-      memberName: 'Marcus Vance',
-      borrowedDate: 'Sep 25',
-      dueDate: 'Oct 09',
-      status: 'borrowed'
-    },
-    {
-      id: 'loan-7',
-      bookId: 'book-15',
-      bookTitle: 'One Hundred Years of Solitude',
-      memberId: 'M-004',
-      memberName: 'Elena Rostova',
-      borrowedDate: 'Aug 28',
-      dueDate: 'Sep 11',
-      status: 'overdue'
-    },
-    {
-      id: 'loan-8',
-      bookId: 'book-19',
-      bookTitle: 'Sapiens: A Brief History of Humankind',
-      memberId: 'M-008',
-      memberName: 'Amina Diallo',
-      borrowedDate: 'Sep 24',
-      dueDate: 'Oct 08',
-      status: 'borrowed'
-    },
-    {
-      id: 'loan-9',
-      bookId: 'book-5',
-      bookTitle: 'The Pragmatic Programmer',
-      memberId: 'M-002',
-      memberName: 'Sarah Ali',
-      borrowedDate: 'Sep 28',
-      dueDate: 'Oct 12',
-      status: 'borrowed'
-    },
-    {
-      id: 'loan-10',
-      bookId: 'book-3',
-      bookTitle: 'Cosmos',
-      memberId: 'M-007',
-      memberName: 'David Kim',
-      borrowedDate: 'Sep 12',
-      dueDate: 'Sep 26',
-      status: 'overdue'
-    },
-    {
-      id: 'loan-11',
-      bookId: 'book-7',
-      bookTitle: 'Refactoring: Improving the Design of Existing Code',
-      memberId: 'M-004',
-      memberName: 'Elena Rostova',
-      borrowedDate: 'Oct 01',
-      dueDate: 'Oct 15',
-      status: 'borrowed'
-    },
-    {
-      id: 'loan-12',
-      bookId: 'book-10',
-      bookTitle: 'The Selfish Gene',
-      memberId: 'M-008',
-      memberName: 'Amina Diallo',
-      borrowedDate: 'Sep 26',
-      dueDate: 'Oct 10',
-      status: 'borrowed'
-    },
-    {
-      id: 'loan-13',
-      bookId: 'book-14',
-      bookTitle: 'To Kill a Mockingbird',
-      memberId: 'M-006',
-      memberName: 'Maya Lin',
-      borrowedDate: 'Sep 15',
-      dueDate: 'Sep 29',
-      status: 'overdue'
-    },
-    {
-      id: 'loan-14',
-      bookId: 'book-16',
-      bookTitle: 'Crime and Punishment',
-      memberId: 'M-001',
-      memberName: 'John Smith',
-      borrowedDate: 'Sep 27',
-      dueDate: 'Oct 11',
-      status: 'borrowed'
-    },
-    {
-      id: 'loan-15',
-      bookId: 'book-17',
-      bookTitle: 'Meditations',
-      memberId: 'M-005',
-      memberName: 'Marcus Vance',
-      borrowedDate: 'Oct 02',
-      dueDate: 'Oct 16',
-      status: 'borrowed'
-    },
-    {
-      id: 'loan-16',
-      bookId: 'book-20',
-      bookTitle: 'Guns, Germs, and Steel',
-      memberId: 'M-002',
-      memberName: 'Sarah Ali',
-      borrowedDate: 'Sep 05',
-      dueDate: 'Sep 19',
-      status: 'overdue'
-    }
-  ];
+
+
+
 
   // Seed User Accounts with login credentials and their purchase/borrow histories
-  const INITIAL_ACCOUNTS = [
-    {
-      id: 'M-001',
-      name: 'John Smith',
-      email: 'john@example.com',
-      password: 'password123',
-      role: 'member',
-      membershipType: 'standard',
-      status: 'active',
-      borrowedBooks: [
-        { bookId: 'book-1', title: 'Clean Code', borrowedDate: 'Sep 20', dueDate: 'Oct 04', status: 'borrowed' },
-        { bookId: 'book-4', title: 'The Alchemist', borrowedDate: 'Sep 10', dueDate: 'Sep 24', status: 'overdue' },
-        { bookId: 'book-16', title: 'Crime and Punishment', borrowedDate: 'Sep 27', dueDate: 'Oct 11', status: 'borrowed' }
-      ],
-      purchasedBooks: [
-        {
-          bookId: 'book-5',
-          title: 'The Pragmatic Programmer',
-          author: 'Andrew Hunt & David Thomas',
-          price: 32.00,
-          purchaseDate: 'Sep 15, 2026',
-          invoiceNumber: 'INV-1001'
-        }
-      ]
-    },
-    {
-      id: 'M-002',
-      name: 'Sarah Ali',
-      email: 'sarah@example.com',
-      password: 'password123',
-      role: 'member',
-      membershipType: 'student',
-      status: 'active',
-      borrowedBooks: [
-        { bookId: 'book-2', title: 'JavaScript: The Good Parts', borrowedDate: 'Sep 18', dueDate: 'Oct 02', status: 'borrowed' },
-        { bookId: 'book-5', title: 'The Pragmatic Programmer', borrowedDate: 'Sep 28', dueDate: 'Oct 12', status: 'borrowed' },
-        { bookId: 'book-20', title: 'Guns, Germs, and Steel', borrowedDate: 'Sep 05', dueDate: 'Sep 19', status: 'overdue' }
-      ],
-      purchasedBooks: [
-        {
-          bookId: 'book-8',
-          title: 'Structure and Interpretation of Computer Programs',
-          author: 'Harold Abelson & Gerald Jay Sussman',
-          price: 34.50,
-          purchaseDate: 'Sep 12, 2026',
-          invoiceNumber: 'INV-1002'
-        }
-      ]
-    },
-    {
-      id: 'M-000',
-      name: 'Chief Librarian',
-      email: 'admin@quietstacks.com',
-      password: 'admin123',
-      role: 'admin',
-      membershipType: 'faculty',
-      status: 'active',
-      borrowedBooks: [],
-      purchasedBooks: [
-        {
-          bookId: 'book-3',
-          title: 'Cosmos',
-          author: 'Carl Sagan',
-          price: 16.99,
-          purchaseDate: 'Sep 01, 2026',
-          invoiceNumber: 'INV-1000'
-        }
-      ]
-    }
-  ];
+
 
   // Helper Methods for Safe LocalStorage Handling
   function read(key, fallback = []) {
     try {
-      const data = localStorage.getItem(key);
-      return data ? JSON.parse(data) : fallback;
+      return storageDriver.get(key, fallback);
     } catch (e) {
       console.error(`Error reading ${key} from localStorage:`, e);
       return fallback;
@@ -558,7 +55,7 @@
 
   function write(key, value) {
     try {
-      localStorage.setItem(key, JSON.stringify(value));
+      storageDriver.set(key, value);
     } catch (e) {
       console.error(`Error writing ${key} to localStorage:`, e);
     }
@@ -596,7 +93,7 @@
       let storedVersion = read(STORAGE_KEYS.VERSION, null);
       if (!storedVersion) {
         // Fallback in case raw unquoted string was written
-        storedVersion = localStorage.getItem(STORAGE_KEYS.VERSION);
+        storedVersion = storageDriver.getRaw(STORAGE_KEYS.VERSION);
       }
 
       const hasBooks = read(STORAGE_KEYS.BOOKS, null);
@@ -642,7 +139,7 @@
     },
 
     clearCurrentUser() {
-      localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+      storageDriver.remove(STORAGE_KEYS.CURRENT_USER);
     },
 
     /**
@@ -667,10 +164,7 @@
      * Centralized loan duration and date formatting helper
      */
     getLoanDates(durationDays = 14) {
-      const options = { month: 'short', day: 'numeric' };
-      const borrowedDate = new Date().toLocaleDateString('en-US', options);
-      const dueDate = new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', options);
-      return { borrowedDate, dueDate };
+      return createLoanDates(durationDays);
     },
 
     /**
@@ -778,17 +272,7 @@
 
     addBook(bookData) {
       const books = this.getBooks();
-      const newBook = {
-        id: 'book-' + Date.now(),
-        title: bookData.title.trim(),
-        author: bookData.author.trim(),
-        category: bookData.category.toLowerCase(),
-        categoryLabel: bookData.categoryLabel || bookData.category,
-        isbn: bookData.isbn ? bookData.isbn.trim() : 'N/A',
-        year: bookData.year ? parseInt(bookData.year, 10) : new Date().getFullYear(),
-        price: bookData.price ? parseFloat(bookData.price) : 19.99,
-        status: bookData.status || 'available'
-      };
+      const newBook = createBookRecord(bookData);
       books.unshift(newBook);
       write(STORAGE_KEYS.BOOKS, books);
       this.recalculateStatistics();
@@ -833,7 +317,12 @@
       const account = this.getAccountById(accountId);
       if (!account) return { success: false, error: 'Account not found' };
 
-      const { borrowedDate, dueDate } = this.getLoanDates(14);
+      const activeLoanCount = this.getLoans().filter((loan) => loan.memberId === accountId).length;
+      if (!canBorrow(account, activeLoanCount)) {
+        return { success: false, error: 'Your membership borrowing limit has been reached' };
+      }
+
+      const { borrowedDate, dueDate, dueDateISO } = this.getLoanDates(14);
 
       // Create loan
       this.addLoan({
@@ -843,6 +332,7 @@
         memberName: account.name,
         borrowedDate,
         dueDate,
+        dueDateISO,
         status: 'borrowed'
       });
 
@@ -855,6 +345,7 @@
           author: book.author,
           borrowedDate,
           dueDate,
+          dueDateISO,
           status: 'borrowed'
         });
       });
@@ -894,15 +385,7 @@
       const account = this.getAccountById(accountId);
       if (!account) return { success: false, error: 'Account not found' };
 
-      const purchaseRecord = {
-        bookId: book.id,
-        title: book.title,
-        author: book.author,
-        price: book.price || 19.99,
-        category: book.categoryLabel || book.category,
-        purchaseDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-        invoiceNumber: 'INV-' + Math.floor(1000 + Math.random() * 9000)
-      };
+      const purchaseRecord = createPurchaseRecord(book);
 
       const updatedAccount = this.updateAccount(accountId, (acc) => {
         acc.purchasedBooks = acc.purchasedBooks || [];
@@ -927,14 +410,7 @@
       const members = this.getMembers();
       const id = memberData.id || nextMemberId();
 
-      const newMember = {
-        id: id,
-        name: memberData.name.trim(),
-        email: memberData.email.trim(),
-        membershipType: memberData.membershipType || 'standard',
-        status: memberData.status || 'active',
-        borrowedCount: memberData.borrowedCount || 0
-      };
+      const newMember = createMemberRecord(memberData, id);
 
       members.unshift(newMember);
       write(STORAGE_KEYS.MEMBERS, members);
@@ -979,6 +455,7 @@
         memberName: loanData.memberName,
         borrowedDate: loanData.borrowedDate || 'Today',
         dueDate: loanData.dueDate || 'In 14 days',
+        dueDateISO: loanData.dueDateISO || null,
         status: loanData.status || 'borrowed'
       };
       loans.unshift(newLoan);
@@ -1035,9 +512,27 @@
     // ------------------------------------------------------------------------
     // Statistics Calculation & Persistence
     // ------------------------------------------------------------------------
-    recalculateStatistics() {
+    recalculateStatistics(now = new Date()) {
       const books = this.getBooks();
       const loans = this.getLoans();
+
+      let loansChanged = false;
+      let booksChanged = false;
+      loans.forEach((loan) => {
+        if (!loan.dueDateISO) return;
+        const status = isLoanOverdue(loan, now) ? 'overdue' : 'borrowed';
+        if (loan.status !== status) {
+          loan.status = status;
+          loansChanged = true;
+          const book = books.find((item) => item.id === loan.bookId);
+          if (book && book.status !== status) {
+            book.status = status;
+            booksChanged = true;
+          }
+        }
+      });
+      if (loansChanged) write(STORAGE_KEYS.LOANS, loans);
+      if (booksChanged) write(STORAGE_KEYS.BOOKS, books);
 
       // Loan records are the source of truth for each member's current count.
       const borrowedByMember = new Map();
@@ -1115,68 +610,12 @@
     }
   };
 
-  const LITERARY_QUOTES = [
-    {
-      text: "When you want something, all the universe conspires in helping you to achieve it.",
-      author: "Paulo Coelho",
-      source: "The Alchemist"
-    },
-    {
-      text: "Somewhere, something incredible is waiting to be known.",
-      author: "Carl Sagan",
-      source: "Cosmos"
-    },
-    {
-      text: "Truth can only be found in one place: the code.",
-      author: "Robert C. Martin",
-      source: "Clean Code"
-    },
-    {
-      text: "Perhaps one did not want to be loved so much as to be understood.",
-      author: "George Orwell",
-      source: "1984"
-    },
-    {
-      text: "You never really understand a person until you consider things from his point of view.",
-      author: "Harper Lee",
-      source: "To Kill a Mockingbird"
-    },
-    {
-      text: "Don't live with broken windows. Fix bad designs, wrong decisions, and poor code when you see them.",
-      author: "Andrew Hunt & David Thomas",
-      source: "The Pragmatic Programmer"
-    },
-    {
-      text: "The soul becomes dyed with the color of its thoughts.",
-      author: "Marcus Aurelius",
-      source: "Meditations"
-    },
-    {
-      text: "Look up at the stars and not down at your feet. Try to make sense of what you see.",
-      author: "Stephen Hawking",
-      source: "A Brief History of Time"
-    },
-    {
-      text: "There is always something left to love.",
-      author: "Gabriel García Márquez",
-      source: "One Hundred Years of Solitude"
-    },
-    {
-      text: "The beginning is the most important part of the work.",
-      author: "Plato",
-      source: "The Republic"
-    },
-    {
-      text: "Programs must be written for people to read, and only incidentally for machines to execute.",
-      author: "Harold Abelson",
-      source: "Structure and Interpretation of Computer Programs"
-    }
-  ];
 
-  // Expose to global window
-  window.LibraryStorage = StorageService;
 
   // Auto-initialize storage on script load
+  storageService = StorageService;
   StorageService.init();
 
-})(window);
+})();
+
+export { storageService as StorageService };
