@@ -91,59 +91,59 @@
 }
 
 /* ==========================================================================
-   Dark Theme Overrides — "Archival Midnight" Palette
-   Warm, aged aesthetic: dark leather, candlelight gold, deep forest, old parchment
+   Dark Theme Overrides — "Slate & Tan" Palette
+   Ink black, cool slate, warm taupe, aged tan and cream.
    ========================================================================== */
 
 [data-theme="dark"] {
-  /* Brand Colors — Deep Forest Green (like vintage book cloth) */
-  --color-primary: #2d5a3d;
-  --color-primary-hover: #3a7a4d;
-  --color-primary-light: #4a8a5d;
-  --color-primary-subtle: #1a3a25;
+  /* Brand Colors — Aged Tan accent on slate */
+  --color-primary: #c6ac8f;
+  --color-primary-hover: #eae0d5;
+  --color-primary-light: #eae0d5;
+  --color-primary-subtle: #22333b;
 
-  /* Accent — Candlelight Gold / Aged Amber */
-  --color-accent-amber: #d4a843;
-  --color-accent-amber-hover: #e8b85a;
-  --color-accent-amber-subtle: #3d2f10;
+  /* Accent — Warm Tan / Cream */
+  --color-accent-amber: #c6ac8f;
+  --color-accent-amber-hover: #eae0d5;
+  --color-accent-amber-subtle: #22333b;
 
-  /* Neutrals & Surfaces — Warm Dark Browns (leather, dark wood) */
-  --color-bg-page: #1a1612;
-  --color-bg-surface: #241f1a;
-  --color-bg-muted: #2d2721;
-  --color-bg-subtle: #1f1a15;
+  /* Neutrals & Surfaces — Ink, Slate & Taupe */
+  --color-bg-page: #0a0908;
+  --color-bg-surface: #22333b;
+  --color-bg-muted: #2f4049;
+  --color-bg-subtle: #141c21;
 
-  /* Borders & Dividers — Warm Muted Edges */
-  --color-border: #3d3329;
-  --color-border-subtle: #2d2721;
-  --color-border-hover: #5c4a3a;
+  /* Borders & Dividers — Taupe edges, tan highlight */
+  --color-border: #5e503f;
+  --color-border-subtle: #2b3740;
+  --color-border-hover: #c6ac8f;
 
-  /* Typography Colors — Parchment & Aged Ink */
-  --color-text-main: #f5f0e8;
-  --color-text-secondary: #c9b896;
-  --color-text-muted: #8b7d6b;
-  --color-text-inverse: #1a1612;
+  /* Typography Colors — Cream, Tan & Muted Stone */
+  --color-text-main: #eae0d5;
+  --color-text-secondary: #c6ac8f;
+  --color-text-muted: #8f8676;
+  --color-text-inverse: #0a0908;
 
   /* Status Badges */
-  --badge-available-bg: #1a3a25;
-  --badge-available-text: #8fd6a8;
-  --badge-available-border: #2d5a3d;
+  --badge-available-bg: #22333b;
+  --badge-available-text: #c6ac8f;
+  --badge-available-border: #5e503f;
 
-  --badge-borrowed-bg: #3d2f10;
-  --badge-borrowed-text: #d4a843;
-  --badge-borrowed-border: #5c4a3a;
+  --badge-borrowed-bg: #5e503f;
+  --badge-borrowed-text: #eae0d5;
+  --badge-borrowed-border: #c6ac8f;
 
-  --badge-overdue-bg: #3a1a1a;
-  --badge-overdue-text: #e8a0a0;
-  --badge-overdue-border: #5c3a3a;
+  --badge-overdue-bg: #4a2f2a;
+  --badge-overdue-text: #e8c4b0;
+  --badge-overdue-border: #7a4a3f;
 
-  --badge-inactive-bg: #2d2721;
-  --badge-inactive-text: #8b7d6b;
-  --badge-inactive-border: #3d3329;
+  --badge-inactive-bg: #22333b;
+  --badge-inactive-text: #8f8676;
+  --badge-inactive-border: #3a464e;
 
-  /* Shadows — Warm, Deep, Candle-lit */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(26, 22, 18, 0.4);
-  --shadow-hover: 0 4px 14px rgba(212, 168, 67, 0.12), 0 1px 3px rgba(0, 0, 0, 0.5);
-  --shadow-modal: 0 12px 36px rgba(0, 0, 0, 0.7), 0 2px 8px rgba(0, 0, 0, 0.5);
+  /* Shadows — Deep ink with a faint tan glow */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.55), 0 4px 12px rgba(10, 9, 8, 0.5);
+  --shadow-hover: 0 4px 14px rgba(198, 172, 143, 0.14), 0 1px 3px rgba(0, 0, 0, 0.55);
+  --shadow-modal: 0 12px 36px rgba(0, 0, 0, 0.75), 0 2px 8px rgba(0, 0, 0, 0.55);
 }

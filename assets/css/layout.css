@@ -78,6 +78,15 @@
   display: none;
 }
 
+/* Theme toggle sits inline in the nav bar, next to the Reset button */
+.sticky-nav-bar .theme-toggle-btn {
+  position: static;
+  align-self: center;
+  width: 36px;
+  height: 36px;
+  box-shadow: none;
+}
+
 .nav-tab-item {
   display: inline-flex;
   align-items: center;
@@ -256,10 +265,10 @@
    ========================================================================== */
 
 [data-theme="dark"] .sticky-nav-bar {
-  background-color: rgba(15, 23, 42, 0.95);
+  background-color: rgba(34, 51, 59, 0.95);
 }
 
 [data-theme="dark"] .sticky-nav-bar.is-stuck {
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
 }
 

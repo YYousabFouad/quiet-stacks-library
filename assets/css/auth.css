@@ -1435,33 +1435,33 @@
 }
 
 /* ==========================================================================
-   Dark Theme Overrides — Auth Page (Archival Midnight Palette)
+   Dark Theme Overrides — Auth Page (Slate & Tan Palette)
    ========================================================================== */
 
 [data-theme="dark"] .library-ambient-bg {
-  background: radial-gradient(circle at 50% 25%, rgba(36, 31, 26, 0.7) 0%, rgba(26, 22, 18, 0.9) 60%, rgba(15, 12, 10, 0.98) 100%);
+  background: radial-gradient(circle at 50% 25%, rgba(34, 51, 59, 0.7) 0%, rgba(10, 9, 8, 0.9) 60%, rgba(10, 9, 8, 0.98) 100%);
 }
 
 [data-theme="dark"] .book-pages-spread {
-  background: #241f1a;
+  background: #1b262c;
   box-shadow:
-    0 0 0 1px #3d3329 inset,
-    -3px 0 0 0 #2d2721,
-    -6px 0 0 0 #241f1a,
-    -9px 1px 0 0 #1f1a15,
+    0 0 0 1px #3a464e inset,
+    -3px 0 0 0 #22333b,
+    -6px 0 0 0 #1b262c,
+    -9px 1px 0 0 #131b20,
     -13px 2px 5px rgba(0, 0, 0, 0.55),
-    3px 0 0 0 #2d2721,
-    6px 0 0 0 #241f1a,
-    9px 1px 0 0 #1f1a15,
+    3px 0 0 0 #22333b,
+    6px 0 0 0 #1b262c,
+    9px 1px 0 0 #131b20,
     13px 2px 5px rgba(0, 0, 0, 0.55),
-    0 3px 0 0 #2d2721,
-    0 6px 0 0 #241f1a,
-    0 9px 0 0 #1f1a15,
+    0 3px 0 0 #22333b,
+    0 6px 0 0 #1b262c,
+    0 9px 0 0 #131b20,
     0 15px 24px -4px rgba(0, 0, 0, 0.65);
 }
 
 [data-theme="dark"] .book-page-left {
-  background: linear-gradient(to right, #241f1a 0%, #1f1a15 82%, #241f1a 96%, #2d2721 100%);
+  background: linear-gradient(to right, #1b262c 0%, #131b20 82%, #1b262c 96%, #22333b 100%);
   border-right-color: rgba(255, 255, 255, 0.06);
   box-shadow:
     inset -18px 0 28px -10px rgba(0, 0, 0, 0.5),
@@ -1469,14 +1469,14 @@
 }
 
 [data-theme="dark"] .book-page-right {
-  background: linear-gradient(to left, #241f1a 0%, #1f1a15 82%, #241f1a 96%, #2d2721 100%);
+  background: linear-gradient(to left, #1b262c 0%, #131b20 82%, #1b262c 96%, #22333b 100%);
   box-shadow:
     inset 18px 0 28px -10px rgba(0, 0, 0, 0.5),
     inset 0 2px 6px rgba(255, 255, 255, 0.03);
 }
 
 [data-theme="dark"] .leaf-face-front {
-  background: linear-gradient(to left, #241f1a 0%, #1f1a15 82%, #241f1a 96%, #2d2721 100%);
+  background: linear-gradient(to left, #1b262c 0%, #131b20 82%, #1b262c 96%, #22333b 100%);
   box-shadow:
     inset 18px 0 28px -10px rgba(0, 0, 0, 0.5),
     inset -2px 0 3px rgba(0, 0, 0, 0.2),
@@ -1484,7 +1484,7 @@
 }
 
 [data-theme="dark"] .leaf-face-back {
-  background: linear-gradient(to right, #241f1a 0%, #1f1a15 82%, #241f1a 96%, #2d2721 100%);
+  background: linear-gradient(to right, #1b262c 0%, #131b20 82%, #1b262c 96%, #22333b 100%);
   border-right-color: rgba(255, 255, 255, 0.06);
   box-shadow:
     inset -18px 0 28px -10px rgba(0, 0, 0, 0.5),
@@ -1493,41 +1493,52 @@
 }
 
 [data-theme="dark"] .book-tabs-nav {
-  background: rgba(36, 31, 26, 0.95);
-  border-color: rgba(212, 168, 67, 0.25);
+  background: rgba(34, 51, 59, 0.95);
+  border-color: rgba(198, 172, 143, 0.3);
 }
 
 [data-theme="dark"] .book-tabs-slider {
-  background: #2d2721;
+  background: #22333b;
 }
 
 [data-theme="dark"] .ex-libris-seal {
-  background: #1a1612;
+  background: #0a0908;
 }
 
 [data-theme="dark"] .demo-accounts-box {
-  background: #1a1612;
+  background: #0a0908;
+}
+
+[data-theme="dark"] .archival-quote-box {
+  background: rgba(34, 51, 59, 0.85);
+  border-left-color: #c6ac8f;
+  color: var(--color-text-main);
+}
+
+[data-theme="dark"] .archival-quote-box cite {
+  color: var(--color-primary);
 }
 
 [data-theme="dark"] .demo-account-card:hover {
-  background: #241f1a;
+  background: #1b262c;
 }
 
 [data-theme="dark"] .btn-fill-demo {
-  background: #1a1612;
+  background: #0a0908;
 }
 
 [data-theme="dark"] .btn-fill-demo:hover {
   background: var(--color-primary);
+  color: var(--color-text-inverse);
 }
 
 [data-theme="dark"] .auth-input,
 [data-theme="dark"] .auth-select {
-  background-color: #1a1612;
+  background-color: #0a0908;
 }
 
 [data-theme="dark"] .auth-input::placeholder {
-  color: #8b7d6b;
+  color: #8f8676;
 }
 
 /* ==========================================================================

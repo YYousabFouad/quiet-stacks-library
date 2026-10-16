@@ -1,6 +1,7 @@
 /**
  * Quiet Stacks Library — Theme Manager
- * Handles dark/light theme toggling, persistence, and system preference detection.
+ * Handles dark/light theme toggling and persistence.
+ * The light theme is the default; the OS colour scheme no longer overrides it.
  */
 
 const THEME_KEY = 'quiet_stacks_theme';
@@ -21,15 +22,8 @@ function storeTheme(theme) {
   }
 }
 
-function getSystemTheme() {
-  if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    return 'dark';
-  }
-  return 'light';
-}
-
 export function getCurrentTheme() {
-  return getStoredTheme() || getSystemTheme() || 'light';
+  return getStoredTheme() || 'light';
 }
 
 export function applyTheme(theme) {
@@ -51,17 +45,6 @@ export function toggleTheme() {
 export function initTheme() {
   const theme = getCurrentTheme();
   applyTheme(theme);
-
-  // Listen for system theme changes
-  if (typeof window !== 'undefined' && window.matchMedia) {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    mediaQuery.addEventListener('change', (e) => {
-      // Only auto-switch if user hasn't manually set a preference
-      if (!getStoredTheme()) {
-        applyTheme(e.matches ? 'dark' : 'light');
-      }
-    });
-  }
 
   return theme;
 }
